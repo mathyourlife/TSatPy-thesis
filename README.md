@@ -18,9 +18,17 @@ mkdir -p ~/.virtualenvs
 export WORKON_HOME=$HOME/.virtualenvs
 source /usr/local/bin/virtualenvwrapper.sh
 mkvirtualenv --no-site-packages -p /usr/bin/python2.7 tsat
-workon test
+workon tsat
 
 git clone git@github.com:MathYourLife/TSatPy.git
 cd TSatPy
 pip install -e .
+```
+
+## Testing
+
+```bash
+nosetests
+# or to see any print statements
+nosetests --nocapture --with-coverage
 ```
