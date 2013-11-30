@@ -1,5 +1,8 @@
 
 
 test:
-	python -m unittest discover tests '*_test.py'
+	nosetests --nocapture --with-coverage
 
+lint:
+	pep8 TSatPy
+	pylint TSatPy

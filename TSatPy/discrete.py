@@ -20,29 +20,29 @@ class Derivative(object):
         self.last_time = None
         self.rate = None
 
-    def update(self, val, ts=None):
+    def update(self, val, epoch=None):
         """
         Set the new value and calculate the derivative.  Rate value
         will not be available until the second update.
 
         :param val: New value
         :type  val: Numeric
-        :param ts: Epoch timestamp for the new value.  If none, current timestamp is used.
-        :type  ts: float
+        :param epoch: Epoch timestamp for the new value.  If none, current timestamp is used.
+        :type  epoch: float
         """
 
-        if ts is None:
-            ts = time.time()
+        if epoch is None:
+            epoch = time.time()
 
         try:
-            self.rate = (val - self.last_value) / float(ts - self.last_time)
+            self.rate = (val - self.last_value) / float(epoch - self.last_time)
         except TypeError:
             pass
         except ZeroDivisionError:
             pass
 
         self.last_value = val
-        self.last_time = ts
+        self.last_time = epoch
 
     def reset(self):
         """
