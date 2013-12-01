@@ -41,5 +41,43 @@ class TestDerivative(unittest.TestCase):
         self.assertEquals(None, der.val)
 
 
+class TestIntegral(unittest.TestCase):
+
+    @patch('time.time')
+    def test_derivative(self, mock_time):
+
+        mock_time.return_value = 1234
+
+        dint = discrete.Integral()
+        self.assertEquals(None, dint.last_time)
+        self.assertEquals(None, dint.last_value)
+        self.assertEquals(None, dint.val)
+
+        dint.update(4)
+        self.assertEquals(1234, dint.last_time)
+        self.assertEquals(4, dint.last_value)
+        self.assertEquals(0, dint.val)
+
+        dint.update(6)
+        self.assertEquals(1234, dint.last_time)
+        self.assertEquals(6, dint.last_value)
+        self.assertEquals(0, dint.val)
+
+        mock_time.return_value = 1237
+
+        dint.update(11)
+        self.assertEquals(1237, dint.last_time)
+        self.assertEquals(11, dint.last_value)
+        self.assertEquals(25.5, dint.val)
+
+        d_str = '<Integral sum:25.5>'
+        self.assertEquals(d_str, str(dint))
+
+        dint.reset()
+        self.assertEquals(None, dint.last_time)
+        self.assertEquals(None, dint.last_value)
+        self.assertEquals(None, dint.val)
+
+
 if __name__ == "__main__":
     unittest.main()
