@@ -1,6 +1,6 @@
 import unittest
 from mock import patch
-from TSatPy import discrete
+from TSatPy import Discrete
 
 
 class TestDerivative(unittest.TestCase):
@@ -10,7 +10,7 @@ class TestDerivative(unittest.TestCase):
 
         mock_time.return_value = 1234
 
-        der = discrete.Derivative()
+        der = Discrete.Derivative()
         self.assertEquals(None, der.last_time)
         self.assertEquals(None, der.last_value)
         self.assertEquals(None, der.val)
@@ -48,7 +48,7 @@ class TestIntegral(unittest.TestCase):
 
         mock_time.return_value = 1234
 
-        dint = discrete.Integral()
+        dint = Discrete.Integral()
         self.assertEquals(None, dint.last_time)
         self.assertEquals(None, dint.last_value)
         self.assertEquals(None, dint.val)
