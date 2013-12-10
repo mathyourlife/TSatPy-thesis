@@ -63,6 +63,16 @@ def within_threshold(a, b):
 
 class TestQuaternionOperations(unittest.TestCase):
 
+    def test_eq(self):
+
+        a = Quaternion([1,2,-3], 0.4)
+        b = Quaternion([1,2,-3], 0.4)
+        self.assertEquals(a,b)
+
+        a = Quaternion([1,2,-3], 0.4)
+        b = Quaternion([-1,-2,3], -0.4)
+        self.assertEquals(a,b)
+
     def test_add(self):
         a = Quaternion([1,0.2,-3], 0.3)
         b = Quaternion([2,0.1,-2], 0.8)
