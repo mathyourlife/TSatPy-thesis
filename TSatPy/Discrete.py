@@ -92,8 +92,6 @@ class Integral(object):
 
         try:
             self.sum += (val + self.last_value) * float(epoch - self.last_time) / 2
-        except ZeroDivisionError:
-            pass
         except TypeError:
             self.sum = 0
 
