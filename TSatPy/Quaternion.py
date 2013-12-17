@@ -1,5 +1,8 @@
 """
-Attitude Quaternion
+Quaternion Classes
+
+This logic is targeted mainly for rotational quaternions,
+but can be used for more general quaternion calculations.
 """
 
 import numpy as np
@@ -7,7 +10,15 @@ import numpy as np
 
 class Quaternion(object):
     """
-    Attitude quaternion class
+    Quaternion class
+
+    :param vector: quaternion vector or the axis of rotation (3x1)
+    :type  vector: np.mat
+    :param scalar: quaternion scalar value.  If none is set, radians
+                   should be specified
+    :type  scalar: numeric
+    :param radians: Specify a rotation about the vector (axis of rotation)
+    :type  radians: numeric
     """
 
     float_threshold = 1e-15
@@ -57,6 +68,9 @@ class Quaternion(object):
         self.scalar /= mag
 
     def is_unit(self):
+        """
+        Is this quaternion a unit quaternion with magnitude 1
+        """
 
         return np.abs(self.mag() - 1) < self.float_threshold
 
@@ -79,21 +93,41 @@ class Quaternion(object):
 
     @property
     def rmatrix(self):
+        """
+        Create a 3x3 rotational matrix based on this quaternion.
+        """
 
         s = self.scalar
         v = self.vector
-        x1 = (s**2 - (v.T * v)[0,0]) * np.eye(3)
+        x1 = (s**2 - (v.T * v)[0, 0]) * np.eye(3)
         x2 = 2 * self.vector * self.vector.T
         x3 = 2 * s * self.x
 
         return x1 + x2 - x3
 
     def rotate_points(self, pts):
+        """
+        Rotate a series of points based on this quaternion.
 
+        :param pts: Points to be rotated in R3 [[x1, y1, z1],[x2, y2, z2],...]
+        :type  pts: np.mat
+
+        :returns: 3x3 rotational matrix for this rotational quaternion
+        :rtype: np.mat
+        """
         r_pts = self.rmatrix * pts.T
         return r_pts.T
 
     def from_rotation(self, vector, radians):
+        """
+        Define an instance of the rotational quaternion with an axis of rotation
+        and the angle of rotation.
+
+        :param vector: axis of rotation 3x1
+        :type  vector: np.mat
+        :param radians: angle of rotation
+        :type  radians: float
+        """
 
         v = np.matrix(vector, dtype=np.float)
         v = v/(v*v.T)[0, 0]
@@ -134,8 +168,9 @@ class Quaternion(object):
 
 
 class Identity(Quaternion):
+    """
+    The identity quaternion <0, 0, 0>, 1
+    """
 
     def __init__(self):
-        self.vector = np.mat([0, 0, 0])
-        self.scalar = 1
-
+        super(Identity, self).__init__([0, 0, 0], 1)

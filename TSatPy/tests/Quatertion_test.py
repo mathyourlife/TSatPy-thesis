@@ -138,7 +138,7 @@ class TestQuaternionOperations(unittest.TestCase):
             [-2, 1, 0],
         ], dtype=np.float)
 
-        self.assertTrue((q.x==truth).all())
+        self.assertTrue((q.x == truth).all())
 
 
 class TestQuaternionAngles(unittest.TestCase):
@@ -215,7 +215,6 @@ class TestQuaternionAngles(unittest.TestCase):
 
         self.assertLess(np.sum(np.abs(new_pts - truth)), Quaternion.float_threshold)
 
-
         pts = np.mat([
             [1, 0, 0],
             [0, 1, 0],
@@ -230,7 +229,10 @@ class TestQuaternionAngles(unittest.TestCase):
         ])
 
         for idx, pt in enumerate(truth):
-            self.assertLess(np.sum(np.abs(new_pts[idx, :] - truth[idx, :])), Quaternion.float_threshold)
+            self.assertLess(
+                np.sum(np.abs(new_pts[idx, :] - truth[idx, :])),
+                Quaternion.float_threshold
+            )
 
     def test_rotate_from_compound_quaternion(self):
 
@@ -254,7 +256,10 @@ class TestQuaternionAngles(unittest.TestCase):
         ])
 
         for idx, pt in enumerate(truth):
-            self.assertLess(np.sum(np.abs(new_pts[idx, :] - truth[idx, :])), Quaternion.float_threshold)
+            self.assertLess(
+                np.sum(np.abs(new_pts[idx, :] - truth[idx, :])),
+                Quaternion.float_threshold
+            )
 
 
 class TestIdentityQuaternion(unittest.TestCase):

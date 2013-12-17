@@ -6,7 +6,7 @@ test:
 
 lint:
 	pep8 TSatPy
-	pylint TSatPy
+	pylint TSatPy --disable=C0103
 
 doc:
 	sphinx-apidoc -F -o docs/ TSatPy/
