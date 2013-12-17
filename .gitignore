@@ -1,4 +1,5 @@
 docs
+coverage_report
 
 *.py[cod]
 
