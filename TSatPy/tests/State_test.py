@@ -1,5 +1,5 @@
 import unittest
-from TSatPy.Quaternion import Quaternion, Identity
+from TSatPy.State import Quaternion, Identity
 import numpy as np
 
 
@@ -261,6 +261,32 @@ class TestQuaternionAngles(unittest.TestCase):
                 Quaternion.float_threshold
             )
 
+    def test_decompose(self):
+
+        qr = Quaternion([0, 0, 1], radians=np.pi/4)
+        qn = Quaternion([3, 1, 0], radians=np.pi/10)
+
+        q = qn * qr
+
+        qr_check, qn_check = q.decompose()
+
+        print eq(qn, qn_check)
+
+        qr_test = qr * qr_check.conj()
+        self.assertEquals(1, qr_test.scalar)
+        self.assertEquals(0, np.sum(qr_test.vector))
+
+        qn_test = qn * qn_check.conj()
+        self.assertEquals(1, qn_test.scalar)
+        self.assertEquals(0, np.sum(qn_test.vector))
+
+
+
+def eq(self, q):
+
+    qi = self * q.conj()
+
+    return np.sum(np.abs(qi.vector) + np.abs(qi.scalar) - 1) < Quaternion.float_threshold
 
 class TestIdentityQuaternion(unittest.TestCase):
 

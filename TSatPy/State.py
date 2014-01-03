@@ -36,6 +36,9 @@ class Quaternion(object):
 
     def __eq__(self, q):
 
+        qi = self * q.conj()
+
+        return np.sum(np.abs(qi.vector) + np.abs(qi.scalar) - 1) < Quaternion.float_threshold
         # Exactly equal
         if self.scalar == q.scalar and np.all(self.vector == q.vector):
             return True
@@ -130,10 +133,35 @@ class Quaternion(object):
         """
 
         v = np.matrix(vector, dtype=np.float)
-        v = v/(v*v.T)[0, 0]
+        v = v / np.sqrt((v*v.T)[0, 0])
 
         self.vector = v * np.sin(-radians/2)
         self.scalar = np.cos(-radians/2)
+
+    def decompose(self):
+
+        Q = (
+            self.scalar * self.vector[0, 0]
+            - self.vector[1, 0] * self.vector[2, 0]
+        )/float(
+            self.scalar * self.vector[1, 0]
+            + self.vector[0, 0] * self.vector[2, 0]
+        )
+        n0 = np.sqrt(self.scalar**2 + self.vector[2, 0]**2)
+        r0 = self.scalar / n0
+        r3 = self.vector[2, 0] / n0
+        n2 = np.sqrt((1 - n0**2) / (Q**2 + 1))
+        n1 = Q * n2
+
+        q_r = Quaternion([0, 0, r3], r0)
+
+        q_n = Quaternion([n1, n2, 0], n0)
+        q_check = q_n * q_r
+
+        if not (np.sum(np.sign(q_check.vector[0:2, 0]) == np.sign(self.vector[0:2, 0])) > 0):
+            q_n.vector = -q_n.vector
+
+        return q_r, q_n
 
     def __neg__(self):
 
