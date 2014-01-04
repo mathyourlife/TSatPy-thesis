@@ -132,6 +132,16 @@ class Quaternion(object):
         self.scalar = np.cos(-radians/2)
 
     def decompose(self):
+        """
+        Take a single quaternion representing a state rotation and decompose
+        it into two rotational quaternions.  A pure rotation about z
+        followed by a rotation about an axis in the x-y plane.
+
+        :return: pair of rotational quaternions (q_z, q_n)
+                 q_z: rotation about the body z axis
+                 q_n: nutation - rotation about an axis in the xy plane
+        :rtype: (quaternion, quaternion)
+        """
 
         Q = (
             self.scalar * self.vector[0, 0]
@@ -198,7 +208,14 @@ class Identity(Quaternion):
 
 
 class BodyRate(object):
+    """
+    Track body rates about the body principle axes.
 
+    Rates are measured in radians per second.
+
+    :param w: Body rates (3x1) [wx, wy, wz]
+    :type  w: list
+    """
     def __init__(self, w):
 
         self.w = np.mat(w, dtype=np.float)
@@ -228,4 +245,3 @@ class BodyRate(object):
             self.w[0, 0], self.w[1, 0], self.w[2, 0])
 
     __repr__ = __str__
-

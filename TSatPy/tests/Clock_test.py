@@ -39,5 +39,3 @@ class TestMetronome(unittest.TestCase):
         clock.set_speed(-2)
         MockTime.return_value = 13
         self.assertEquals(10, clock.tick())
-
-

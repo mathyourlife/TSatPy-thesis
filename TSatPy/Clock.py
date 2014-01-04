@@ -30,7 +30,6 @@ class Metronome(object):
 
         return (time.time() - self.start_marker) * self.speed + self.speed_changed
 
-
     def set_speed(self, speed):
         """
         Set the speed of the simulation clock.

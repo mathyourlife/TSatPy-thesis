@@ -294,9 +294,9 @@ class TestBodyRate(unittest.TestCase):
 
     def test_x(self):
         w = BodyRate([1, 2, 3])
-        test = np.mat([[ 0, -3,  2],
-          [ 3,  0, -1],
-          [-2,  1,  0]])
+        test = np.mat([[0, -3,  2],
+                       [3,  0, -1],
+                       [-2,  1,  0]])
 
         self.assertTrue(np.all(test == w.x))
 
