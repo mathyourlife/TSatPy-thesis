@@ -1,5 +1,5 @@
 import unittest
-from TSatPy.State import Quaternion, Identity
+from TSatPy.State import Quaternion, Identity, BodyRate
 import numpy as np
 
 
@@ -270,23 +270,9 @@ class TestQuaternionAngles(unittest.TestCase):
 
         qr_check, qn_check = q.decompose()
 
-        print eq(qn, qn_check)
+        self.assertEquals(qn, qn_check)
+        self.assertEquals(qr, qr_check)
 
-        qr_test = qr * qr_check.conj()
-        self.assertEquals(1, qr_test.scalar)
-        self.assertEquals(0, np.sum(qr_test.vector))
-
-        qn_test = qn * qn_check.conj()
-        self.assertEquals(1, qn_test.scalar)
-        self.assertEquals(0, np.sum(qn_test.vector))
-
-
-
-def eq(self, q):
-
-    qi = self * q.conj()
-
-    return np.sum(np.abs(qi.vector) + np.abs(qi.scalar) - 1) < Quaternion.float_threshold
 
 class TestIdentityQuaternion(unittest.TestCase):
 
@@ -296,3 +282,25 @@ class TestIdentityQuaternion(unittest.TestCase):
         b = Quaternion([0, 0, 0], 1)
 
         self.assertEquals(a, b)
+
+
+class TestBodyRate(unittest.TestCase):
+
+    def test_body_rate(self):
+        w_check = np.mat([1, 2, 3]).T
+        w = BodyRate([1, 2, 3])
+
+        self.assertTrue(np.all(w_check == w.w))
+
+    def test_x(self):
+        w = BodyRate([1, 2, 3])
+        test = np.mat([[ 0, -3,  2],
+          [ 3,  0, -1],
+          [-2,  1,  0]])
+
+        self.assertTrue(np.all(test == w.x))
+
+    def test_str(self):
+
+        w = BodyRate([1, -2, 3.5])
+        self.assertEquals('<BodyRate <1 -2 3.5>>', str(w))

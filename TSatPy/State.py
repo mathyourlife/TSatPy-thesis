@@ -1,8 +1,9 @@
 """
-Quaternion Classes
+Satellite state classes
 
-This logic is targeted mainly for rotational quaternions,
-but can be used for more general quaternion calculations.
+This logic is targeted mainly for rotational quaternions and
+angular body rates which make up the system's state,
+but can be used for more general calculations.
 """
 
 import numpy as np
@@ -21,14 +22,14 @@ class Quaternion(object):
     :type  radians: numeric
     """
 
-    float_threshold = 1e-15
+    float_threshold = 1e-13
 
     def __init__(self, vector, scalar=None, radians=None):
 
         if scalar is None:
             self.from_rotation(vector, radians)
         else:
-            self.vector = np.mat(vector, dtype=np.float).T
+            self.vector = np.mat(vector, dtype=np.float)
             self.scalar = float(scalar)
 
         if self.vector.shape == (1, 3):
@@ -38,16 +39,8 @@ class Quaternion(object):
 
         qi = self * q.conj()
 
-        return np.sum(np.abs(qi.vector) + np.abs(qi.scalar) - 1) < Quaternion.float_threshold
-        # Exactly equal
-        if self.scalar == q.scalar and np.all(self.vector == q.vector):
-            return True
-
-        # Equal but opposite signs
-        if -self.scalar == q.scalar and np.all(-self.vector == q.vector):
-            return True
-
-        return False
+        return np.sum(np.abs(qi.vector) + np.abs(qi.scalar)
+                      - np.power(self.mag(), 2)) < Quaternion.float_threshold
 
     def __ne__(self, q):
         return not self.__eq__(q)
@@ -202,3 +195,37 @@ class Identity(Quaternion):
 
     def __init__(self):
         super(Identity, self).__init__([0, 0, 0], 1)
+
+
+class BodyRate(object):
+
+    def __init__(self, w):
+
+        self.w = np.mat(w, dtype=np.float)
+
+        if self.w.shape == (1, 3):
+            self.w = self.w.T
+
+    @property
+    def x(self):
+        """
+        Skew-symetric cross product matrix
+        """
+        return np.mat([
+            [0, -self.w[2, 0], self.w[1, 0]],
+            [self.w[2, 0], 0, -self.w[0, 0]],
+            [-self.w[1, 0], self.w[0, 0], 0],
+        ])
+
+    def __str__(self):
+        """
+        :return: representation of the body rate
+        :rtype:  str
+        """
+
+        return "<%s <%g %g %g>>" % (
+            self.__class__.__name__,
+            self.w[0, 0], self.w[1, 0], self.w[2, 0])
+
+    __repr__ = __str__
+
