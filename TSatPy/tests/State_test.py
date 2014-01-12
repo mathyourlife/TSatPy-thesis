@@ -1,5 +1,7 @@
 import unittest
-from TSatPy.State import Quaternion, Identity, BodyRate
+from mock import patch
+from TSatPy.State import Quaternion, Identity, QuaternionDynamics, BodyRate
+from TSatPy.Clock import Metronome
 import numpy as np
 
 
@@ -282,6 +284,100 @@ class TestIdentityQuaternion(unittest.TestCase):
         b = Quaternion([0, 0, 0], 1)
 
         self.assertEquals(a, b)
+
+
+class TestQuaternionDynamics(unittest.TestCase):
+
+    def test_init(self):
+
+        clock = Metronome()
+        q = Quaternion([0, 0, 1], radians=0)
+        qd = QuaternionDynamics(q, clock)
+
+        self.assertEquals(q, qd.q)
+        self.assertEquals(Quaternion([0, 0, 0], 0), qd.q_dot)
+
+    @patch('time.time', return_value=12)
+    def test_propagate_from_default(self, MockTime):
+
+        # Initialize the system clock
+        clock = Metronome()
+
+        # Setup for 1/4 turn each sec about the +z axis
+        q = Quaternion([0, 0, 1], radians=0)
+        qd = QuaternionDynamics(q, clock)
+        w = BodyRate([0, 0, np.pi/2])
+
+        # First propagation is a gimmie since last time is not set
+        # no dt know since the initialization time of the instance may
+        # not be trustworthy for simulations
+        MockTime.return_value = 13
+        q = qd.propagate(w)
+        self.assertEquals(q, Quaternion([0, 0, 1], radians=0))
+
+        # First quater turn happens on the second propagation call
+        MockTime.return_value = 14
+        q = qd.propagate(w)
+        self.assertEquals(q, Quaternion([0, 0, 1], radians=np.pi/2))
+
+    @patch('time.time', return_value=12)
+    def test_propagate_non_default_state(self, MockTime):
+
+        # Initialize the system clock
+        clock = Metronome()
+
+        # Setup for 1/4 turn each sec about the +z axis
+        q = Quaternion([0, 0, 1], radians=np.pi/2)
+        qd = QuaternionDynamics(q, clock)
+        w = BodyRate([0, 0, np.pi/2])
+
+        # First propagation is a gimmie since last time is not set
+        # no dt know since the initialization time of the instance may
+        # not be trustworthy for simulations
+        MockTime.return_value = 13
+        q = qd.propagate(w)
+        self.assertEquals(q, Quaternion([0, 0, 1], radians=np.pi/2))
+
+        # First quater turn happens on the second propagation call
+        MockTime.return_value = 14
+        q = qd.propagate(w)
+        self.assertEquals(q, Quaternion([0, 0, 1], radians=np.pi))
+
+    @patch('time.time', return_value=12)
+    def test_propagate_linearinterpolate_body_rate(self, MockTime):
+
+        # Initialize the system clock
+        clock = Metronome()
+
+        # Setup for 1/4 turn each sec about the +z axis
+        q = Quaternion([0, 0, 1], radians=np.pi/2)
+        qd = QuaternionDynamics(q, clock)
+        w = BodyRate([0, 0, np.pi/2])
+
+        MockTime.return_value = 13
+        q = qd.propagate(w)
+        MockTime.return_value = 14
+        q = qd.propagate(w)
+        MockTime.return_value = 15
+        q = qd.propagate(w)
+
+        self.assertEquals(q, Quaternion([0, 0, 1], radians=1.5 * np.pi))
+
+    @patch('time.time', return_value=12)
+    def test_zero_dt(self, MockTime):
+
+        # Initialize the system clock
+        clock = Metronome()
+
+        # Setup for 1/4 turn each sec about the +z axis
+        q = Quaternion([0, 0, 1], radians=np.pi/2)
+        qd = QuaternionDynamics(q, clock)
+        w = BodyRate([0, 0, np.pi/2])
+
+        q = qd.propagate(w)
+        q = qd.propagate(w)
+
+        self.assertEquals(q, Quaternion([0, 0, 1], radians=np.pi/2))
 
 
 class TestBodyRate(unittest.TestCase):

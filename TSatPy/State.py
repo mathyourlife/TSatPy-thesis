@@ -7,7 +7,7 @@ but can be used for more general calculations.
 """
 
 import numpy as np
-
+from scipy.linalg import expm
 
 class Quaternion(object):
     """
@@ -166,6 +166,14 @@ class Quaternion(object):
 
         return q_r, q_n
 
+    @property
+    def mat(self):
+
+        return np.mat([[self.vector[0, 0]],
+                       [self.vector[1, 0]],
+                       [self.vector[2, 0]],
+                       [self.scalar]])
+
     def __neg__(self):
 
         return Quaternion(-self.vector, -self.scalar)
@@ -205,6 +213,60 @@ class Identity(Quaternion):
 
     def __init__(self):
         super(Identity, self).__init__([0, 0, 0], 1)
+
+
+class QuaternionDynamics(object):
+
+    def __init__(self, q, clock):
+        self.q = q
+        self.clock = clock
+        self.q_dot = Quaternion([0, 0, 0], 0)
+        self.last_update = None
+        self.w = None
+
+    def propagate(self, w):
+        t = self.clock.tick()
+        try:
+            dt = t - self.last_update
+        except TypeError:
+            self.last_update = t
+            return self.q
+
+        omega2 = self._omega(-w.w)
+        try:
+            omega1 = self._omega(-self.w.w)
+            omega_bar = (omega1 + omega2) / 2
+        except AttributeError:
+            omega1 = omega2
+            omega_bar = omega2
+
+        phi = expm(0.5 * omega_bar * dt) + 1/48 * (omega2 * omega1 - omega1 * omega2) * dt**2
+
+        q2mat = phi * self.q.mat
+        q2 = Quaternion(q2mat[0:3, 0], q2mat[3, 0])
+        q2.normalize()
+
+        q_dot = q2 - self.q
+        try:
+            q_dot.vector /= dt
+            q_dot.scalar /= dt
+            self.q_dot = q_dot
+        except ZeroDivisionError:
+            pass
+        self.q = q2
+
+        self.w = w
+        return self.q
+
+    def _omega(self, w):
+        wx = w[0, 0]
+        wy = w[1, 0]
+        wz = w[2, 0]
+
+        return np.mat([[0, wz, -wy, wx],
+                       [-wz, 0, wx, wy],
+                       [wy, -wx, 0, wz],
+                       [-wx, -wy, -wz, 0]])
 
 
 class BodyRate(object):
