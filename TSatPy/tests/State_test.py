@@ -1,6 +1,6 @@
 import unittest
 from mock import patch
-from TSatPy.State import Quaternion, Identity, QuaternionDynamics, BodyRate
+from TSatPy.State import Quaternion, Identity, QuaternionDynamics, BodyRate, Plant, EulerMomentEquations
 from TSatPy.Clock import Metronome
 import numpy as np
 
@@ -388,6 +388,20 @@ class TestBodyRate(unittest.TestCase):
 
         self.assertTrue(np.all(w_check == w.w))
 
+    def test_add(self):
+        w1 = BodyRate([1, 2, 3])
+        w2 = BodyRate([4, -2, 5])
+        w3 = w1 + w2
+        self.assertEquals(w3, BodyRate([5, 0, 8]))
+
+    def test_iadd(self):
+        w1 = BodyRate([1, 2, 3])
+        pre_id = id(w1)
+        w2 = BodyRate([4, -2, 5])
+        w1 += w2
+        self.assertEquals(w1, BodyRate([5, 0, 8]))
+        self.assertEquals(pre_id, id(w1))
+
     def test_x(self):
         w = BodyRate([1, 2, 3])
         test = np.mat([[0, -3,  2],
@@ -400,3 +414,37 @@ class TestBodyRate(unittest.TestCase):
 
         w = BodyRate([1, -2, 3.5])
         self.assertEquals('<BodyRate <1 -2 3.5>>', str(w))
+
+class TestEulerMomentEquations(unittest.TestCase):
+
+    @patch('time.time', return_value=12)
+    def test_moment_equations_init(self, MockTime):
+
+        # Initialize the system clock
+        clock = Metronome()
+
+        # Setup for 1/4 turn each sec about the +z axis
+        w = BodyRate([0.5, 0.1, 0.75])
+        eme = EulerMomentEquations([[5, 0, 0], [0, 4, 0], [0, 0, 2.25]], w, clock)
+
+        # Initial propagate to set the last time updated
+        MockTime.return_value = 13
+        w = eme.propagate([-0.08125, 1.15125, 1.075])
+        self.assertEquals(w, BodyRate([0.5, 0.1, 0.75]))
+
+        # First propagate
+        MockTime.return_value = 14
+        w = eme.propagate([-0.08125, 1.15125, 1.075])
+
+        # Some floating point errors exist so account for slight variations
+        w_check = BodyRate([0.51, 0.13, 1.25])
+        self.assertLess(np.sum(np.abs(w.w - w_check.w)), 1e-14)
+
+
+class TestPlant(unittest.TestCase):
+
+    def test_plant_init(self):
+        clock = Metronome()
+        q = Quaternion([0, 0, 1], radians=np.pi/2)
+        w = BodyRate([0, 0, np.pi/4])
+        p = Plant(q, w, clock)

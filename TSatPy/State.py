@@ -285,6 +285,26 @@ class BodyRate(object):
         if self.w.shape == (1, 3):
             self.w = self.w.T
 
+    def __add__(self, w):
+        """
+        Sum two BodyRate instances
+        """
+        return BodyRate(self.w + w.w)
+
+    def __iadd__(self, w):
+        """
+        Useful if adding deltas to an existing BodyRate instead of creating
+        a new instance each time.
+        """
+        self.w += w.w
+        return self
+
+    def __eq__(self, w):
+        """
+        Body rates are equivalent if their vectors are identical
+        """
+        return np.all(self.w == w.w)
+
     @property
     def x(self):
         """
@@ -307,3 +327,52 @@ class BodyRate(object):
             self.w[0, 0], self.w[1, 0], self.w[2, 0])
 
     __repr__ = __str__
+
+
+class EulerMomentEquations(object):
+    """
+    Euler's equations describe the rotation of a rigid body, using a
+    rotating reference frame with its axes fixed to the body and parallel
+    to the body's principal axes of inertia.
+    """
+
+    def __init__(self, I, w, clock):
+        self.I = np.mat(I, dtype=np.float)
+        self.w = w
+        self.clock = clock
+        self.last_update = None
+
+    def propagate(self, M):
+        t = self.clock.tick()
+        try:
+            dt = t - self.last_update
+        except TypeError:
+            self.last_update = t
+            return self.w
+
+        w_dot = BodyRate([
+            M[0] / self.I[0, 0] - (self.I[2, 2] - self.I[1, 1]) * self.w.w[1, 0] * self.w.w[2, 0] / self.I[0, 0],
+            M[1] / self.I[1, 1] - (self.I[0, 0] - self.I[2, 2]) * self.w.w[0, 0] * self.w.w[2, 0] / self.I[1, 1],
+            M[2] / self.I[2, 2] - (self.I[1, 1] - self.I[0, 0]) * self.w.w[0, 0] * self.w.w[1, 0] / self.I[2, 2],
+        ])
+
+        # Update body rate rate on the class.
+        self.w_dot = w_dot
+
+        # Update the body rate state
+        w_delta = w_dot.w * dt
+
+        self.w.w += w_delta
+
+        return self.w
+
+
+class Plant(object):
+    """
+    Tracks the full system state of the TableSat
+    """
+
+    def __init__(self, q, w, clock):
+        self.pos = QuaternionDynamics(q, clock)
+
+
