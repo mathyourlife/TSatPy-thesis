@@ -447,4 +447,31 @@ class TestPlant(unittest.TestCase):
         clock = Metronome()
         q = Quaternion([0, 0, 1], radians=np.pi/2)
         w = BodyRate([0, 0, np.pi/4])
-        p = Plant(q, w, clock)
+        I = [[4,0,0],[0,4,0],[0,0,4]]
+
+        p = Plant(I, q, w, clock)
+
+    @patch('time.time', return_value=12)
+    def test_propagate(self, MockTime):
+
+        clock = Metronome()
+
+        dt = 0.1
+        duration = 4
+
+        end_time = clock.tick() + duration
+
+        q = Quaternion([0, 0, 1], radians=0)
+        w = BodyRate([0, 0, 0])
+        I = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
+
+        p = Plant(I, q, w, clock)
+
+        while clock.tick() <= end_time:
+            MockTime.return_value += dt
+            p.propagate([0, 0, 10])
+
+        err = np.sum(np.abs(p.vel.w.w - BodyRate([0,0,20]).w))
+
+        self.assertLess(err, 1e-12)
+

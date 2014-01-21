@@ -363,7 +363,7 @@ class EulerMomentEquations(object):
         w_delta = w_dot.w * dt
 
         self.w.w += w_delta
-
+        self.last_update = t
         return self.w
 
 
@@ -372,7 +372,25 @@ class Plant(object):
     Tracks the full system state of the TableSat
     """
 
-    def __init__(self, q, w, clock):
+    def __init__(self, I, q, w, clock):
         self.pos = QuaternionDynamics(q, clock)
+        self.vel = EulerMomentEquations(I, w, clock)
 
+    def propagate(self, M):
 
+        w = self.vel.propagate(M);
+        q = self.pos.propagate(w);
+
+        return q, w
+
+    def __str__(self):
+        """
+        :return: representation of the body rate
+        :rtype:  str
+        """
+
+        return "<%s %s, %s>" % (
+            self.__class__.__name__,
+            self.pos.q, self.vel.w)
+
+    __repr__ = __str__
