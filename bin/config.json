@@ -1,0 +1,5 @@
+{
+    "api_port": 8083,
+    "api_host": "localhost",
+    "log_file": "/tmp/tsatpy.log"
+}
