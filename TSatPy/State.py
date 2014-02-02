@@ -12,7 +12,8 @@ from scipy.linalg import expm
 
 class Quaternion(object):
     """
-    Quaternion class
+    Quaternion class.  Based on William Rowan Hamilton's definition
+    of the 4-tuple as an extension of the common complex number (a+bi)
 
     :param vector: quaternion vector or the axis of rotation (3x1)
     :type  vector: np.mat
@@ -369,6 +370,14 @@ class EulerMomentEquations(object):
         self.last_update = None
 
     def propagate(self, M):
+        """
+        Propagate a rigid body's angular rates based on Euler's Moment Equations.
+
+        :param M: Applied moment about the rigid body's principal axes (3x1)
+        :type  M: 3 element list
+        :return: new body rate
+        :rtype: BodyRate
+        """
         t = self.clock.tick()
         try:
             dt = t - self.last_update
@@ -403,13 +412,25 @@ class Plant(object):
         self.vel = EulerMomentEquations(I, w, clock)
 
     def propagate(self, M):
+        """
+        Propagate the state of the plant.  Based on an applied moment,
+        propagate the body rate then quaternion states.
 
-        w = self.vel.propagate(M);
-        q = self.pos.propagate(w);
+        :param M: Applied moment about the rigid body's principal axes (3x1)
+        :type  M: 3 element list
+        :return: new body rate and quaternion state (w, q)
+        :rtype: w (BodyRate), q (Quaternion)
+        """
+        w = self.vel.propagate(M)
+        q = self.pos.propagate(w)
 
         return q, w
 
     def latex(self):
+        """
+        :return: LaTeX representation of the plant's state
+        :rtype:  dict
+        """
         return {
             'q': self.pos.q.latex(),
             'w': self.vel.w.latex(),
@@ -417,10 +438,9 @@ class Plant(object):
 
     def __str__(self):
         """
-        :return: representation of the body rate
+        :return: representation of the plant
         :rtype:  str
         """
-
         return "<%s %s, %s>" % (
             self.__class__.__name__,
             self.pos.q, self.vel.w)

@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-#from distutils.core import setup, Command
 from setuptools import setup
 import TSatPy
 import os
@@ -14,10 +13,13 @@ with open(REQ_FILE) as rfile:
 classifiers = [
     'Development Status :: %s' % TSatPy.DEV_STATUS,
     'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
     'License :: OSI Approved :: MIT License',
-    'Operating System :: OS Independent',
+    'Operating System :: Unix',
     'Programming Language :: Python',
     'Programming Language :: Python :: 2',
+    'Topic :: Scientific/Engineering',
+    'Topic :: Software Development',
 ]
 
 kwargs = {
