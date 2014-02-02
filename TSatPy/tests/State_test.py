@@ -30,7 +30,6 @@ class TestQuaternionBasics(unittest.TestCase):
         self.assertEquals(4/m, q.scalar)
 
     def test_conj(self):
-
         vec = [1, 2, 3]
         q = Quaternion(vec,  4)
 
@@ -41,13 +40,17 @@ class TestQuaternionBasics(unittest.TestCase):
     def test_str(self):
         vec = [1, 2, 3]
         q = Quaternion(vec,  4)
-
-        q_str = '<Quaternion <1 2 3>, 4>'
-
+        q_str = '<Quaternion [1 2 3], 4>'
         self.assertEquals(q_str, str(q))
 
-    def test_definition(self):
+    def test_latex(self):
+        vec = [1, 2, 3]
+        q = Quaternion(vec,  4)
+        q_str = '1 \\textbf{i} +2 \\textbf{j} +3 \\textbf{k} +4'
+        self.assertEquals(q_str, q.latex())
 
+
+    def test_definition(self):
         i = Quaternion([1, 0, 0], 0)
         j = Quaternion([0, 1, 0], 0)
         k = Quaternion([0, 0, 1], 0)
@@ -69,7 +72,6 @@ def within_threshold(a, b):
 class TestQuaternionOperations(unittest.TestCase):
 
     def test_eq(self):
-
         a = Quaternion([1, 2, -3], 0.4)
         b = Quaternion([1, 2, -3], 0.4)
         self.assertEquals(a, b)
@@ -83,7 +85,6 @@ class TestQuaternionOperations(unittest.TestCase):
         self.assertFalse(a == b)
 
     def test_neq(self):
-
         a = Quaternion([1, 2, -3], -0.4)
         b = Quaternion([-1, -2, 3], -0.4)
         self.assertNotEquals(a, b)
@@ -158,7 +159,6 @@ class TestQuaternionAngles(unittest.TestCase):
         )
 
     def test_is_unit(self):
-
         units = [
             ([1, 0, 0], 0),
             ([0, 0, 0], 1),
@@ -178,7 +178,6 @@ class TestQuaternionAngles(unittest.TestCase):
             self.assertFalse(q.is_unit())
 
     def test_rotational_matrix(self):
-
         # Test a 1/4 turn about the z axis
         q = Quaternion([0, 0, 1], radians=np.pi/2)
 
@@ -199,7 +198,6 @@ class TestQuaternionAngles(unittest.TestCase):
         self.assertLess(np.sum(np.abs(new_pt - truth)), Quaternion.float_threshold)
 
     def test_rotate_points(self):
-
         # Rotate a couple points 1/4 turn about the +z axis
         pts = np.mat([
             [1, 0, 1],
@@ -237,7 +235,6 @@ class TestQuaternionAngles(unittest.TestCase):
             )
 
     def test_rotate_from_compound_quaternion(self):
-
         q1 = Quaternion([0, 0, 1], radians=np.pi/2)
         q2 = Quaternion([1, 0, 0], radians=np.pi/2)
 
@@ -279,7 +276,6 @@ class TestQuaternionAngles(unittest.TestCase):
 class TestIdentityQuaternion(unittest.TestCase):
 
     def test_identity(self):
-
         a = Identity()
         b = Quaternion([0, 0, 0], 1)
 
@@ -289,7 +285,6 @@ class TestIdentityQuaternion(unittest.TestCase):
 class TestQuaternionDynamics(unittest.TestCase):
 
     def test_init(self):
-
         clock = Metronome()
         q = Quaternion([0, 0, 1], radians=0)
         qd = QuaternionDynamics(q, clock)
@@ -299,7 +294,6 @@ class TestQuaternionDynamics(unittest.TestCase):
 
     @patch('time.time', return_value=12)
     def test_propagate_from_default(self, MockTime):
-
         # Initialize the system clock
         clock = Metronome()
 
@@ -322,7 +316,6 @@ class TestQuaternionDynamics(unittest.TestCase):
 
     @patch('time.time', return_value=12)
     def test_propagate_non_default_state(self, MockTime):
-
         # Initialize the system clock
         clock = Metronome()
 
@@ -345,7 +338,6 @@ class TestQuaternionDynamics(unittest.TestCase):
 
     @patch('time.time', return_value=12)
     def test_propagate_linearinterpolate_body_rate(self, MockTime):
-
         # Initialize the system clock
         clock = Metronome()
 
@@ -365,7 +357,6 @@ class TestQuaternionDynamics(unittest.TestCase):
 
     @patch('time.time', return_value=12)
     def test_zero_dt(self, MockTime):
-
         # Initialize the system clock
         clock = Metronome()
 
@@ -411,15 +402,17 @@ class TestBodyRate(unittest.TestCase):
         self.assertTrue(np.all(test == w.x))
 
     def test_str(self):
-
         w = BodyRate([1, -2, 3.5])
-        self.assertEquals('<BodyRate <1 -2 3.5>>', str(w))
+        self.assertEquals('<BodyRate [1 -2 3.5]>', str(w))
+
+    def test_latex(self):
+        w = BodyRate([1, -2, 3.5])
+        self.assertEquals('1 \\textbf{i} -2 \\textbf{j} +3.5 \\textbf{k}', w.latex())
 
 class TestEulerMomentEquations(unittest.TestCase):
 
     @patch('time.time', return_value=12)
     def test_moment_equations_init(self, MockTime):
-
         # Initialize the system clock
         clock = Metronome()
 
@@ -451,14 +444,35 @@ class TestPlant(unittest.TestCase):
 
         p = Plant(I, q, w, clock)
 
+    def test_str(self):
+        clock = Metronome()
+        q = Quaternion([-0.5, -2.5, 1], -3)
+        w = BodyRate([0, 0, -2])
+        I = [[4,0,0],[0,4,0],[0,0,4]]
+
+        p = Plant(I, q, w, clock)
+        expected = '<Plant <Quaternion [-0.5 -2.5 1], -3>, <BodyRate [0 0 -2]>>'
+        self.assertEquals(str(p), expected)
+
+    def test_latex(self):
+        clock = Metronome()
+        q = Quaternion([-0.5, -2.5, 1], -3)
+        w = BodyRate([0, 0, -2])
+        I = [[4,0,0],[0,4,0],[0,0,4]]
+
+        p = Plant(I, q, w, clock)
+        expected = {
+            'q': '-0.5 \\textbf{i} -2.5 \\textbf{j} +1 \\textbf{k} -3',
+            'w': '0 \\textbf{i} +0 \\textbf{j} -2 \\textbf{k}',
+        }
+        self.assertEquals(p.latex(), expected)
+
     @patch('time.time', return_value=12)
     def test_propagate(self, MockTime):
-
         clock = Metronome()
 
         dt = 0.1
         duration = 4
-
         end_time = clock.tick() + duration
 
         q = Quaternion([0, 0, 1], radians=0)
