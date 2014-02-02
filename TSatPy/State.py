@@ -9,6 +9,7 @@ but can be used for more general calculations.
 import numpy as np
 from scipy.linalg import expm
 
+
 class Quaternion(object):
     """
     Quaternion class
@@ -192,13 +193,26 @@ class Quaternion(object):
         v = self.vector * q.scalar + q.vector * self.scalar + np.cross(self.vector.T, q.vector.T).T
         return Quaternion(v.T, s)
 
+    def latex(self):
+        """
+        Create a LaTeX representation of the current state of the quaternion
+
+        :return: LaTeX quaternion str
+        :rtype: str
+        """
+        msg = '%g \\textbf{i} %+g \\textbf{j} %+g \\textbf{k} %+g' % (
+            self.vector[0, 0], self.vector[1, 0], self.vector[2, 0],
+            self.scalar
+            )
+        return msg
+
     def __str__(self):
         """
         :return: representation of the quaternion
         :rtype:  str
         """
 
-        return "<%s <%g %g %g>, %g>" % (
+        return "<%s [%g %g %g], %g>" % (
             self.__class__.__name__,
             self.vector[0, 0], self.vector[1, 0], self.vector[2, 0],
             self.scalar)
@@ -208,7 +222,7 @@ class Quaternion(object):
 
 class Identity(Quaternion):
     """
-    The identity quaternion <0, 0, 0>, 1
+    The identity quaternion [0, 0, 0], 1
     """
 
     def __init__(self):
@@ -316,13 +330,25 @@ class BodyRate(object):
             [-self.w[1, 0], self.w[0, 0], 0],
         ])
 
+    def latex(self):
+        """
+        Create a LaTeX representation of the current state of the quaternion
+
+        :return: LaTeX quaternion str
+        :rtype: str
+        """
+        msg = '%g \\textbf{i} %+g \\textbf{j} %+g \\textbf{k}' % (
+            self.w[0, 0], self.w[1, 0], self.w[2, 0],
+            )
+        return msg
+
     def __str__(self):
         """
         :return: representation of the body rate
         :rtype:  str
         """
 
-        return "<%s <%g %g %g>>" % (
+        return "<%s [%g %g %g]>" % (
             self.__class__.__name__,
             self.w[0, 0], self.w[1, 0], self.w[2, 0])
 
@@ -382,6 +408,12 @@ class Plant(object):
         q = self.pos.propagate(w);
 
         return q, w
+
+    def latex(self):
+        return {
+            'q': self.pos.q.latex(),
+            'w': self.vel.w.latex(),
+        }
 
     def __str__(self):
         """
