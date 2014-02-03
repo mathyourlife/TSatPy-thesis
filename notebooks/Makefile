@@ -1,0 +1,3 @@
+
+ipython:
+	ipython notebook
