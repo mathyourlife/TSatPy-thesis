@@ -1,6 +1,9 @@
 docs
 coverage_report
 
+# IPython
+.ipynb_checkpoints
+
 *.py[cod]
 
 # C extensions
