@@ -1,0 +1,830 @@
+\documentclass[12pt]{report}
+
+\usepackage{thesis}
+
+% TODO Items
+\newcommand\todo[1]{\textcolor{red}{[TODO: #1]}}
+
+\usepackage{comment}
+
+
+\begin{document}
+\pagenumbering{roman}
+
+\thesistitle
+{DEVELOPMENT OF A HIGH-INTEGRITY ANALYTICAL AND EXPERIMENTAL TESTBED FOR OBSERVER-BASED CONTROLLERS FOR NASA's MAGNETOSPHERIC MULTISCALE MISSION SPACECRAFT}
+{Daniel R. Couture}
+{B.S., University of New Hampshire, 2001}
+{Master of Science\\in\\Mechanical Engineering}
+{August, 2013}
+{2013}
+
+%\input{preface/preface}
+% \include{sections/Background}
+% \include{sections/State}
+\include{sections/ExperimentalPlatform}
+
+% \chapter{Background}
+
+% The National Aeronautics and Space Administration (NASA) is planning to launch the Magnetospheric Multiscale (MMS) Mission into orbit around the Earth in order to study reconnection of the magnetic fields.  The effects of the phenomenon can be clearly seen in disturbances to spacecraft, GPS signals, and even inducing current in the power grid to the point of causing outages.  Although the effects are redily observed the internal dynamics and modelling is only theorized.  Magnetic field reconnection traces back to coronal mass ejections (CME) from the sun.  These CMEs contain their own magnetic field properties that when collide with the fields surrounding the Earth can cause opposing field lines to cross.  The crossing and separation is called reconnection.  It's occurance can open up portals connecting plasma from the interstellar medium to that of the Earth's magnetosphere which can produce a release of a large amount of energy.  A reconnection event starts on the dayside magnetopause of the Earth and
+% rapidly folds over to magnetotail.  The diffusion region of the event can travel at about \todo{lookup speed} and has a thickness of \todo{lookup thickness} which can pass orbiting satellites in a fraction of a second.  Theories about the internal structure of the diffusion region \todo{reference active theories} have been difficult to test because of the speed of the event.  The general approach to getting a full view of the area surrounding a satellite is to mount a sensor facing out from the satellite and set the satellite to be spin stabilized so that through the turn a series of observations can be made and then stitched together to form a full field of view.  In order for this approach to be partially successful the satellite would have to be spinning at about 600 rpm to get a single full view image, which for a moderate sized satellite would introduce a restrictive amount of rotational dynamics coumpounded by the fact that each MMS satellite has 4 Spin-plane Double Probe (SDP) booms \todo{work in
+% reference to UNH R. B. Torbert for FIELDS investigation} extending about 50 meters out from the spacecraft (s/c) body and two Axial Double Probe (ADP) booms extending 10 meters out along the rotational axis.  The potential 600 rpm speed would translate into a SDP tip velocity around 3,000 meters per second.
+% The approach taken by the MMS team is to mount a series of instruments around the s/c to have a full view at all times.  This in conjunction with the rate of measurements each instrument can take will provide a much richer set of data for the mission scientists to analyze.
+
+
+% \munfig{Credit: http://mms.gsfc.nasa.gov}{2d_field_lines}{pretty/2d_earth_mag_field_lines.png}{0.4}
+
+
+% \section{What is it?}
+% 4 identical satellites
+% consallation formation flight
+% magnetospheric multiscale mission MMS
+% constructed in Goddard Space Flight Center
+% classifies as a Solar Terrestrial probe mission
+
+% \todo{image of MMS}
+
+% \section{Mission}
+
+% Science questions to answer \cite{mms_website}
+%     What determines when reconnection starts and how fast it proceeds?
+%     What is the structure of the diffusion region?
+%     How do the plasmas and magnetic fields disconnect and reconnect in the diffusion regions?
+%     What role do the electrons play in facilitating reconnection?
+%     What is the role of turbulence in the reconnection process?
+%     How does reconnection lead to the acceleration of particles to high energies?
+
+
+% \todo{image of formation flight}
+% study microphysics of
+% 	magnetic reconnection
+% 	energetic particle acceleration
+% 	turbulence
+% Launch Readiness Date (LRD): October 2014 \cite{mms_website}
+% s/c MMS-1, MMS-2..MMS-4
+% reconnection: Electromagnetic engergy from the sun interacts with Earth's magnetosphere ausing magneti field lines to cross and create a burst of energy \cite{nasa_edge_video_ne_at_mms}
+% magnetic reconnection measured ions and electrons as boundary passes to create 3d model of it passing by
+% Fast plasma investigation
+% probing the electron diffusion region (EDR) (passes too rapidly to get an accurate view with current equipment small (1-10 km) and rapidly moving (10-100 km/s))
+% adjacent magnetic fields generally have significaltly different orientations such that when they intersect, a large amount of energy is dispursed within a small region in the form of heat and kinetic energy.  The region = diffuision region
+% explore magnetic reconnection
+% dynamic regions of magnetosphere
+% orbits planned to pass through the upstream and downstream magnetic reconnection sites
+% 1) day side - solar wind field lines connection
+% 2) down stream -
+% 3) plasma travels down and causes the Arura
+% through magnetospheric reconnection, portals allow energetic particles to traverse from outside to the interior of the magnetosphere
+% predict when solar space weather within the magnetosphere and if they will affect orbiting satellites
+% adverse space weather within the magnetosphere can negatively impace spacecraft system health GPS, induce disruptive current in electrical grids, communictaions, increased radiation exposure on trans-polar flights
+
+% Difficult to understand
+% magnetic boundary passes satellites quickly so has been hard to measure
+% MMS has intsruments to capture measurements
+% Instruments mounted on all sides of the
+% 8 sensors 1/30th sec instead of
+
+% October 2014, Atlas five launch \cite{nasa_edge_video}
+
+% \section{Team}
+% International partnership Japan/US/French
+
+% Marshall space flight Alabama calibrate DIS
+
+% \section{Payload}
+% Octagonal design
+% 3.5 meters wide and 1.2 meters high
+
+% 1,250 kg
+
+% Sensors
+% 	star sensor -> attitude
+% 	accelerometers -> $\Delta V$
+
+% Fast Plasma Instrument (FPI) - controls
+% 	16 Dual Electron spectrometer (DES) Goddary built
+% 	16 Dual Ion Spectrometer (DIS) Japan *** built, hand delivered
+% 	180 degree and +- 22degree measurement
+% 	30 millisec measurement rate 100x faster than previous missions entire view of sky
+% FPI
+% 	despins data
+
+% Instument Data processing Unit (IDPU) - brains of measurements
+% 	collects, compresses, transmits requested measurement data
+% 	configure while on mission
+
+% booms
+% 	eight deployable booms
+% 	two 12.5m axial booms (electric field sensors)
+% 	four 60m wire booms
+% 	two 5m booms in spin plane for magnetometers
+% rigid, wire, top/bottom booms
+% important to keep consistent spin rate to get accurate estimates of boom location
+
+% \todo{image of spectrometers}
+
+% \section{Propulsion}
+
+% types: solid propellents, bi propellents, electro propulsion, cold gas systems
+% chose: mono-propellant blowdown - hydrozene power thrusters \cite{nasa_edge_video_propulsion}
+% 3 rpm
+% radial thrusters - spinning
+% axial thrusters - prevent nutation
+
+% concern:
+% propulsion introduce distrubances
+
+% 20 second pulses
+
+% fuel limits by number of adjustments
+
+% monitor fuel left - via pressure, temperature via ideal gas law
+
+% determine performance characteristics of the thrusters prior to launch, exit velocity
+
+% dry mass, wet mass -> time variant mass
+
+% responsible for maintaining accurate formation flight with interspacecraft separation from 100s of km down to 10 km
+
+% planned orbit adjustment about 1 / 2weeks
+
+% critical to fly in tetrahedron to achieve 3d model
+
+% Earth Moon system influence to target the desired location/time
+
+% \section{performance requirements}
+
+% $\pm 0.5$ deg attitude tollerance
+% 1/10th of a second
+
+
+% \chapter{The Quaternion}\label{ch:quaternion}
+% \pagenumbering{arabic}
+
+% The concept of a quaternion first appeared in 1843 by William Rowan Hamilton \cite{kuipers}.  The use of the quaternion is a extension on the rules governing the mathematics behind imaginary/complex numbers which have rank 2 to a hyer-complex number of rank 4.
+
+% \section{Origin}\label{sec:quaternion_origin}
+
+% Complex number interactions through multiplication where $1 = 1 + 0i$ and $i = 0 + 1i$ are
+
+% \eqntable{Complex Number Multiplication Table}{complex_multiplication}{|c|c|c|}{ \hline
+% 	\times & 1 &  i \\ \hline
+% 	1      & 1 &  i \\ \hline
+% 	i      & i & -1 \\ \hline
+% }
+
+% When expanding this concept to create the quaternion, Hamilton defined the four orthogonal unit quaternions as
+
+% \subeqn{
+% 	1 &= 1 + 0\bs{i} + 0\bs{j} + 0\bs{k} \\
+% 	i &= 0 + 1\bs{i} + 0\bs{j} + 0\bs{k} \\
+% 	j &= 0 + 0\bs{i} + 1\bs{j} + 0\bs{k} \\
+% 	k &= 0 + 0\bs{i} + 0\bs{j} + 1\bs{k}
+% }
+
+% and the initial interactions between the orthogonal unit quaternions were $i^2 = j^2 = k^2 = ijk = -1$ \cite{kuipers}.  From Hamilton's identity, the complex number multiplication table can be expanded to quaternion multiplication in Table \ref{eqn:quaternion_multiplication}.  Quaternion products are read as $\text{row} \otimes \text{column}$.  Note that the quaternion product is not cummutative as $i \otimes j = k$ but $j \otimes i = -k$.
+
+% \eqntable{Quaternion multiplication table}{quaternion_multiplication}{|c|c|c|c|c|}{ \hline
+% 	\otimes & 1 &  i &  j &  k \\ \hline
+% 	1       & 1 &  i &  j &  k \\ \hline
+% 	i       & i & -1 &  k & -j \\ \hline
+% 	j       & j & -k & -1 &  i \\ \hline
+% 	k       & k &  j & -i & -1 \\ \hline
+% }
+
+% \section{Quaternion Properties}
+
+% The quaternion notation to be used in this thesis follows the structure of 4-tuple in $\Re^4$ where the $q_0$ scalar term follows the $\Re^3$ vector $\bs{q_v}$.
+
+% \eqn{
+% 	\bs{q} = \bs{q_v} + q_0 = \qinline{q_1}{+q_2}{+q_1}{+q_0}
+% }
+
+% \subsection{Equality}
+
+% Two quaternions are equal if all components are equal.  This is not to be confused with their use for rotational quaternions where different quaternions can represent the same attitude \todo{link to section}.
+
+% \eqn{
+% 	\bs{q} = \bs{p} \iff q_1 = p_1,  q_2 = p_2,  q_3 = p_3,  q_0 = p_0
+% }
+
+% \subsection{Sum and Difference}
+
+% The sum and difference of two quaternions is the piecewise combination of their components.
+
+% \eqn{
+% 	\begin{array}{c}
+% 		\bs{q} + \bs{p} = \qinline{(q_1+p_1)}{+(q_2+p_2)}{+(q_3+p_3)}{+(q_0+p_0)} \\
+% 		\bs{q} - \bs{p} = \qinline{(q_1-p_1)}{+(q_2-p_2)}{+(q_3-p_3)}{+(q_0-p_0)}
+% 	\end{array}
+% }
+
+% \subsection{Norm}
+
+% The norm or magnitude of the quaternion is
+
+% \lbleqn{quaternion_norm}{
+% 	\left\| \bs{q} \right\| = \sqrt{\bs{q_v} \cdot \bs{q_v} + q_0^2} = \sqrt{q_1^2+q_2^2+q_3^2+q_0^2}
+% }
+
+% \subsection{Unit Quaternion}
+
+% A unit quaternion is one that has a norm of 1 ($\left\| \bs{q} \right\| = 1$) and has been introduced in the preliminary coverage of the quaternion in chapter \ref{ch:quaternion}.  Chapter \ref{ch:rotations} will cover how to implement a unit quaternion for modelling rotations.
+
+% \subsection{Conjugate}
+
+% The quaternion conjugate is defined as
+
+% \eqn{
+% 	\bs{q}^* = -\bs{q_v} + q_0 = \qinline{-q_1}{-q_2}{-q_3}{+q_0}
+% }
+
+% \subsection{Inverse}
+
+% The quaternion inverse is the value that when multiplied by the original quaternion will yield the identity quaternion of $\bs{q} = \qinline{0}{+0}{+0}{+1}$
+
+% \lbleqn{quaternion_inverse}{
+% 	\bs{q}^{-1} = \frac{\bs{q}*}{\left\| \bs{q} \right\|^2}
+% }
+
+% In the case of a unit quaternion where $\left\| \bs{q} \right\| = 1$, the quaternion inverse $\bs{q}^{-1}$ and conjugate $\bs{q}^*$ are equivalent.
+
+% \subsection{Skew Symetric Cross Product Matrix}
+
+% Useful for matrix manipulation of quaternions, the skew symetric cross product matrix is often used to create part of a transformation matrix based on the vector portion of a quaternion.
+
+% \eqn{
+% 	\Omega(\bs{q}) = \smatrix{
+% 		0    & -q_3 &  q_2 \\
+% 		q_3  &  0   & -q_1 \\
+% 		-q_2 &  q_1 &    0
+% 	}
+% }
+
+% \section{Quaternion Product}
+
+% The attitude quaternion and angular body rates are the two quantities that make up the system state in this thesis.  As such, the use of quaternions and specifically the quaternion product plays a key role in the simulation performance and accuracy.  In chapter \ref{ch:rotations} the use of Euler angles and quaternions are compared with details on why the quaternion approach was chosen.  Before moving into rotation specific quaternions lets first investigate the general definition of the quaternion product.
+
+% Let two quaternions $\bs{q_a}$ and $\bs{q_b}$ be defined as:
+% \subeqn{
+% 	\bs{q_a} &= \bs{q_{av}} + q_{a0} = \qinline{q_{a1}}{+q_{a2}}{+q_{a3}}{+q_{a0}}\\
+% 	\bs{q_b} &= \bs{q_{bv}} + q_{b0} = \qinline{q_{b1}}{+q_{b2}}{+q_{b3}}{+q_{b0}}
+% }
+
+% The quaternion product of $\bs{q_a} \otimes \bs{q_b}$ is expressed as
+% \lbleqn{quaternion_product}{
+%   \bs{q_a} \otimes \bs{q_b}
+%   =
+%   \bs{q_{av}} q_{b0} + \bs{q_{bv}} q_{a0} + \bs{q_{av}} \times \bs{q_{bv}} + q_{a0} q_{b0} - \bs{q_{av}} \cdot \bs{q_{bv}}
+% }
+
+% Exansion of equation \ref{eqn:quaternion_product} yields two sets of expressions.  One group evaluates to scalar values in $\Re$ and the other evaluates to vectors in $\Re^3$.
+% \subeqn{
+% 	\bs{q_v} &=
+% 		\smatrix{q_{a1}\\q_{a2}\\q_{a3}} q_{b0} + \smatrix{q_{b1}\\q_{b2}\\q_{b3}} q_{a0} + \smatrix{q_{a1}\\q_{a2}\\q_{a3}} \times \smatrix{q_{b1}\\q_{b2}\\q_{b3}} \\
+% 	q_0 &= q_{a0} q_{b0} - \bs{q_{av}} \cdot \bs{q_{bv}}
+% }
+
+% Evaluating the dot and cross products
+% \subeqn{
+% 	\bs{q_v} &=
+% 		\smatrix{q_{a1}\\q_{a2}\\q_{a3}} q_{b0} + \smatrix{q_{b1}\\q_{b2}\\q_{b3}} q_{a0} + \smatrix{q_{a2}q_{b3}-q_{a3}q_{b2} \\
+% 			q_{a3}q_{b1}-q_{a1}q_{b3} \\
+% 			q_{a1}q_{b2}-q_{a2}q_{b1}
+% 		} \\
+% 	q_0 &= q_{a0}q_{b0}-(q_{a1}q_{b1}+q_{a2}q_{b2}+q_{a3}q_{b3})
+% }
+
+% \subeqn{
+% 	\bs{q_v} &=
+% 		\smatrix{
+% 			q_{a1}q_{b0}+q_{b1}q_{a0}+q_{a2}q_{b3}-q_{a3}q_{b2} \\
+% 			q_{a2}q_{b0}+q_{b2}q_{a0}+q_{a3}q_{b1}-q_{a1}q_{b3} \\
+% 			q_{a3}q_{b0}+q_{b3}q_{a0}+q_{a1}q_{b2}-q_{a2}q_{b1}
+% 		} \\
+% 	q_0 &= q_{a0}q_{b0}-q_{a1}q_{b1}-q_{a2}q_{b2}-q_{a3}q_{b3}
+% }
+
+% Combining equations and ordering by $q_b$ components
+% \eqn{
+% 	\smatrix{\bs{q_v} \\ q_0} =
+% 		\smatrix{
+% 			 q_{b1}q_{a0}-q_{a3}q_{b2}+q_{a2}q_{b3}+q_{a1}q_{b0} \\
+% 			 q_{a3}q_{b1}+q_{b2}q_{a0}-q_{a1}q_{b3}+q_{a2}q_{b0} \\
+% 			-q_{a2}q_{b1}+q_{a1}q_{b2}+q_{b3}q_{a0}+q_{a3}q_{b0} \\
+% 			-q_{a1}q_{b1}-q_{a2}q_{b2}-q_{a3}q_{b3}+q_{a0}q_{b0}
+% 		}
+% }
+
+% Factoring out the $q_{b}$ quaternion
+% \eqn{
+% 	\smatrix{\bs{q_v} \\ q_0} =
+% 		\smatrix{
+% 			 q_{a0} & -q_{a3} &  q_{a2} & q_{a1} \\
+% 			 q_{a3} &  q_{a0} & -q_{a1} & q_{a2} \\
+% 			-q_{a2} &  q_{a1} &  q_{a0} & q_{a3} \\
+% 			-q_{a1} & -q_{a2} & -q_{a3} & q_{a0}
+% 		}
+% 		\smatrix{q_{b1}\\q_{b2}\\q_{b3}\\q_{b0}}
+% }
+
+% From here the square matrix can be broken into a combination of quternion vector and scalar components along with a skew symetric matrix to generate a matrix version of the quaternion multiplication equation \ref{eqn:quaternion_product}.
+% \eqn{
+% 	\smatrix{\bs{q_v} \\ q_0} =
+% 		\smatrix{
+% 			\bs{\Omega}(\bs{q_{av}}) + \bs{I} q_{a0} & \bs{q_{av}} \\
+% 			\bs{q_{av}}^T & q_{a0}
+% 		}
+% 		\smatrix{\bs{q_{bv}}\\q_{b0}}
+% }
+
+% The advantage to this notation is that is much easier to run in a matlab or other scripting language, but its layout is specific to our definition of the matrix where the scalar value follows the vector.  There is not clear consensus from the boader community on whether the vector or scalar should come first.  This can cause large issues when implementing a system using a externally provided library since both implementations expect a 4x4 matrix, and combining the logic from the two systems would require either rewritting of systems or spending extra cycles on the interface between the two systems converting the matrices from a scalar first to a scalar last layout and vice versa.
+
+% The object oriented nature of the code written for this thesis reduces or eliminates the confusion.  When an instance of a quaternion class is created, the vector and scalar values are set as separate parameters on the object regardless of order.  So when used in computation the $\Re^3$ and $\Re^1$ values can be referenced directly through the vector and scalar properties respectively.  Chapter \ref{ch:object_oriented} will cover the structure of the code developed for the thesis in greater detail.  The specific code that governs interactions between quaternions in the model is in section \ref{code:lib/@quaternion/quaternion.m}.
+
+
+% \chapter{Rotations}\label{ch:rotations}
+
+% This chapter will focus on the computations required in order to represent a rotating body.  Section \ref{sec:euler_rotations} will cover the mathematics behind the standard Euler angle representation followed by an common implementation issues.  Section \ref{sec:quaternion_rotations} will detail the use of the unit quaternion and it's advantages over Euler angles in software implementations.
+
+% \section{Euler Angle Rotations}\label{sec:euler_rotations}
+
+% A Euler angle rotation matrix that requires a specified combination of rotations such as the common 3-1-3 transformation. To convert between the reference X, Y, and Z axes to the body's x, y, and z axis using the 3-1-3 transformation with angles $\psi$, $\theta$, $\phi$ respectively
+
+
+% \lbleqn{euler_matrices}{
+% 	\delta = \smatrix{\cos \psi & \sin \psi & 0 \\ -\sin \psi & \cos \psi & 0 \\ 0 & 0 & 1 }
+% 	\gamma = \smatrix{ 1 & 0 & 0 \\ 0 & \cos \theta & \sin \theta \\ 0 &  -\sin \theta & \cos \theta }
+% 	\beta = \smatrix{\cos \phi & \sin \phi & 0 \\ -\sin \phi & \cos \phi & 0 \\ 0 & 0 & 1 }
+% }
+
+% \eqn{
+% 	\smatrix{x \\ y \\ z} = \beta \cdot \gamma \cdot \delta \smatrix{X \\ Y \\ Z}
+% }
+
+% where $\beta \gamma \delta$ expands to:
+
+% \lbleqn{euler_rotation_matrix}{
+% \smatrix{
+% \cos \phi \cos \psi - \sin \phi \cos \theta \sin \psi &
+% \cos \phi \sin \psi + \sin \phi \cos \theta \cos \psi &
+% \sin \phi \sin \theta \\
+
+% -\sin \phi \cos \psi - \cos \phi \cos \theta \sin \psi &
+% -\sin \phi \sin \psi + \cos \phi \cos \theta \cos \psi &
+% \cos \phi \sin \theta \\
+
+% \sin \theta \sin \psi & -\sin \theta \cos \psi & \cos \theta \\
+% }
+% }
+
+% There are three main issues with this approach.  First is that it is not unique.  While the 3-1-3 rotation shown above is the most common, twelve valid permutations exists (1-2-3, 1-3-2, 2-1-3, 2-3-1, 3-1-2, 3-2-1, 1-2-1, 1-3-1, 2-1-2, 2-3-2, 3-1-3, and 3-2-3) \todo{cite}.  The second issues is in the evaluation of the equations.  Their large dependency on trigonometric functions $\sin$ and $\cos$ make them both computationally more complex and prone to numerical drift as each trigonometric evaluation is an approximation whose accuracy depends on the library in use.  In the rotation matrix \ref{eqn:euler_rotation_matrix}, 29 trigonometric evaluations are required.  The third is the lack of expressiveness of the rotation matrix.  It is very difficult to determine what type of a rotation the matrix represents through visual inspection.
+
+% Other issues develop when implementing a Euler angle based attitude system.  Evaluation of the system's Euler rates has its own set of issues.
+
+% \lbleqn{euler_rate}{
+% 	\smatrix{\dot{\psi} \\ \dot{\theta} \\ \dot{\phi}} = \frac{1}{\sin \theta}
+% \smatrix{
+% 	\sin \phi & \cos \phi & 0 \\
+% 	\cos \phi \sin \theta & -\sin \phi \sin \theta & 0 \\
+% 	-\sin \phi  \cos \theta & -\cos \phi \cos \theta & \sin \theta
+% }
+% \smatrix{\omega_x \\ \omega_y \\ \omega_z }
+% }
+
+% While \ref{eqn:euler_rate} has fewer trigonometric evaluations that in \ref{eqn:euler_rotation_matrix}, they can still contribute to numerical drift over time.  The most troublesome situation is known as a Gimbal lock where the Euler angle values can result in a loss of of a degree of freedom.  From \ref{eqn:euler_matrices} if $\theta=0$, the matrix $\gamma$ evaluates to the identity matrix which reduces the equation to two degrees of freedom.
+
+% \eqn{
+% 	\gamma
+% = \smatrix{ 1 & 0 & 0 \\ 0 & \cos \theta & \sin \theta \\ 0 &  -\sin \theta & \cos \theta }
+% = \smatrix{ 1 & 0 & 0 \\ 0 & 1 & 0 \\ 0 &  0 & 1 }
+% }
+
+% The Gimbal lock's effect is most evident in the Euler rate equations \ref{eqn:euler_rate} where $\theta = 0$ results in both a rank reduction of the matrix from three to two as well as a scalar multiplier that approaches infinity.
+
+% \eqn{
+% 	\smatrix{\dot{\psi} \\ \dot{\theta} \\ \dot{\phi}} = \frac{1}{0}
+% \smatrix{
+% 	\sin \phi & \cos \phi & 0 \\
+% 	0 & 0 & 0 \\
+% 	-\sin \phi  & -\cos \phi & 0
+% }
+% \smatrix{\omega_x \\ \omega_y \\ \omega_z }
+% }
+
+
+
+% \section{Quaternion Rotation}\label{sec:quaternion_rotations}
+
+% The following section will describe the method required to perform a rotation of a body using the unit quaternion.  The unit quaternion is used since a full quaternion has four parameters and a rotation can be described in three parameters, typically roll/pitch/yaw.  The additional restriction that rotational quaternions have a norm of one $\left\| \bs{q} \right\| = 1$ reduces the free parameters to three.
+
+% \subsection{Definition of a Rotational Quaternion}
+
+% For the general quaternion in $\Re^4$ compared to the Euler angle representation described in section \ref{sec:euler_rotations}, the quaternion value has an extra degree of freedom.  To remove a degree of freedom from the quaternion to allow it to accurately represent the rotation in three degrees of freedom while containing the the information for a three dimensional vector and an angle of rotation.
+
+% Rotational quaternion is defined as
+% \lbleqn{quaternion_rotation_def}{
+% 	\bs{q} = \bs{q_v} + q_0 = \bs{\hat{v}} \sin (-\theta/2) + \cos (-\theta/2)
+% }
+
+% where $\ds \bs{\hat{v}} = \frac{\bs{u}}{\left\| \bs{u} \right\|}$ and $\bs{u} \in \Re^3$, such that $\bs{q}$ can be interpreted as a rotation of $\theta$ radians about the axis of rotation $\bs{u}$.  Rotational quaternions are generally defined with a $+\theta/2$, but as will be demonstrated in \ref{subsec:q_rotate_a_point}, the negative sign allow us to rotate the points around a fixed coordinate plane instead of rotating the axes.  Combining equation \ref{eqn:quaternion_rotation_def} with the quaternion norm \ref{eqn:quaternion_norm} gives
+% \eqntabular{rl}{
+% 	\left\| \bs{q} \right\| &= \sqrt{q_1^2+q_2^2+q_3^2+q_0^2} \\
+% 	&= \bs{\hat{v}_i}^2 \sin^2 (-\theta/2) + \bs{\hat{v}_j}^2 \sin^2 (-\theta/2) + \bs{\hat{v}_k}^2 \sin^2 (-\theta/2) + \cos^2 (-\theta/2) \\
+% 	&= (\bs{\hat{v}_i}^2 + \bs{\hat{v}_j}^2 + \bs{\hat{v}_k}^2) \sin^2 (-\theta/2) + \cos^2 (-\theta/2) \\
+% 	&= \sin^2 (-\theta/2) + \cos^2 (-\theta/2) \\
+% 	&= 1 \\
+% }
+% which makes any rotational quaternion a unit quaternion and keeps an aditional restriction to reduce the degrees of freedom down to three.
+
+% While this definition resolves the issue of an extra degree of freedom, there is still the issue of multiple representations of the same attitude.  In table \ref{eqn:multiple_rotations_quaternion}, multiple rotations about axis $\bs{\hat{v}} = 0\bs{i} + 0\bs{j} + 1\bs{k}$ are converted to their quternion representation.
+% \eqntable{Multiple Rotation Angles and their Quaternion}{multiple_rotations_quaternion}{|c|c|}{ \hline
+% 	\theta & \bs{q}(\bs{\hat{v}}, \theta) \\ \hline
+% 	\pi / 2 - 4 \pi & \qinline{0}{+0}{+\frac{1}{\sqrt{2}}}{+\frac{1}{\sqrt{2}}} \\ \hline
+% 	\pi / 2 - 2 \pi & \qinline{0}{+0}{-\frac{1}{\sqrt{2}}}{-\frac{1}{\sqrt{2}}} \\ \hline
+% 	\pi / 2         & \qinline{0}{+0}{+\frac{1}{\sqrt{2}}}{+\frac{1}{\sqrt{2}}} \\ \hline
+% 	\pi / 2 + 2 \pi & \qinline{0}{+0}{-\frac{1}{\sqrt{2}}}{-\frac{1}{\sqrt{2}}} \\ \hline
+% 	\pi / 2 + 4 \pi & \qinline{0}{+0}{+\frac{1}{\sqrt{2}}}{+\frac{1}{\sqrt{2}}} \\ \hline
+% }
+
+% As with \ref{sec:euler_rotations}, there are multiple quaternion values that can represent the same orientation.  In the case of the quaternion though there are two representations for the rotation rather than the twelve Euler angle combinations.  During the development of the estimator and controller code, this duplicate representation of the same attitude caused trouble for most linear controllers.  For a constant body rate the angle of rotation would continually increase.  In this case, linear controllers models would not be able to identify that an attitude resulted from a rotation of $9\pi$ radians is the same a desired attitude from resulted from a $1\pi$ radian rotation and the controller would attempt to unwind the rotations.  If the controller was updated to keep the attitude angle restricted to a range of $0 \leq \theta < 2\pi$, this would remove the duplicate angle issue but introduce a new issue when the rotation traverses the $0, 2\pi$ boundary.  An estimate rotation of $\delta$ radians compared
+% against a measured value of $2\pi - \delta$ where $\delta \ll 2\pi$ would almost max out the control effort since the error of $(2\pi - \delta) - (\delta) \approx 2\pi$ radians instead of the actual error of $2\delta$ radians.
+
+% \subsection{Rotating a Point Using Quaternions}\label{subsec:q_rotate_a_point}
+
+% In order to use the quaternions to visualize the rotation of the TableSat, we'll start with the rotation of a single point.  The implementation of this method can be reviewed in quaternion class in section \ref{code:lib/@quaternion/quaternion.m}.  The operation of the class will be covered in chapter \ref{ch:object_oriented}.
+
+% A 3x3 rotational matrix is required to perform a rotation of a point in $\Re^3$ based on a rotational quaternion as it was with the 3-1-3 Euler angle rotational matrix noted in equation \ref{eqn:euler_rotation_matrix}.  The quternion based rotational matrix is created through
+% \lbleqn{quaternion_rotation_matrix}{
+% 	\bs{R_q} = (q_0^2 - \bs{q_v}^T\bs{q_v}) \bs{I} + 2 \bs{q_v} \bs{q_v}^T - 2 q_0 \bs{\Omega}(\bs{q_v})
+% }
+
+
+% To demonstate the usage of the $-\theta$ in equation \ref{eqn:quaternion_rotation_def}, the following example will rotate a point $A = (2, 4, -1)$ by $\pi/2$ radians about $\bs{\hat{v}} = 0\bs{i}+0\bs{j}+1\bs{k}$.  Substituting the rotation axis and the angle into equation \ref{eqn:quaternion_rotation_def} yeilds the rotational quaternion
+% \eqn{
+% 	\ds \bs{q} = \qinline{0}{+0}{-\frac{1}{\sqrt{2}}}{+\frac{1}{\sqrt{2}}}
+% }
+
+% Combining with \ref{eqn:quaternion_rotation_matrix} will produce the specific rotational matrix
+% \eqn{
+% 	\bs{R_q} = \left[\left(\frac{1}{\sqrt{2}}\right)^2 - \left(\frac{1}{\sqrt{2}}^2\right)\right] \bs{I} + 2 \smatrix{0&0&0\\0&0&0\\0&0&\frac{1}{\sqrt{2}}} - 2 \frac{1}{\sqrt{2}} \smatrix{
+% 		0 & \frac{1}{\sqrt{2}} &  0 \\
+% 		-\frac{1}{\sqrt{2}}  &  0   & 0 \\
+% 		0 & 0 &    0
+% 	}
+% }
+% \eqn{
+% 	\bs{R_q} =  \smatrix{
+% 		0 & -1 & 0 \\
+% 		1 &  0 & 0 \\
+% 		0 &  0 & 1
+% 	}
+% }
+
+% Mapping the initial position of $A$ to the new position of $A'$ is completed through
+% \eqn{\bs{A}' = \bs{R_q} \bs{A}}
+% \eqn{
+% 	\bs{A}' = \smatrix{
+% 		0 & -1 & 0 \\
+% 		1 &  0 & 0 \\
+% 		0 &  0 & 1
+% 	} \smatrix{2 \\ 4 \\ -1} = \smatrix{-4\\2\\-1}
+% }
+% which corresponds to the expected location for the rotated point with fixed axes rather than a fixed point with rotated axes that would have resulted in mapping to the location of $A' = (4, -2, -1)$.
+
+% \subsection{Visualizing System Behavior}
+
+% One of the largest challenges with running both simulations and live control models is having access to meaningful representations of how the system is performing.  Matlab simulations are generally performed through either running of m-file scripts and analyzing logged data in a batch format after the run, or using Matlab Simulink to produce line plots of values tracked during the simulation run.
+
+
+% Now that we have a method for rotating a point in space according to a defined quaternion, the rotation can be applied to a set of points and used to create 3D visualizations in realtime for how the system is performing.  The code in section \ref{code:lib/@tsatModel/tsatModel.m} defines a set of points that create a wireframe model of the TableSat.    Updated quaternions can be used to create a rotation matrix and then used to map the initial model of the TableSat to its updated position.  In the case of the post-batch processing, a long time can be wasted waiting for the full run to complete and then generating the plots.  In the case of the Simulink simulation, the plots available are generally limited to separate line graphs.
+
+% Ideally, generating and updating a rendered model of the system at simulation time can improve the ability to attain the desired system behavior.
+
+% \subsubsection{System Rendering}\label{subsec:system_rendering}
+
+% To illustrate the effectiveness of the strategy, the following example will render the rotation of TableSat by a single rotational quaternion transformation.
+% TableSat is initialized with the identity quaternion of $\bs{q_i} = \qinline{0}{+0}{+0}{+1}$ where the body's axes are aligned with the global reference frame axes.  It is assumed that the center of rotation for the TableSat is at the origin.
+% This exercise will rotate the quaternion by 161 degrees about the axis $\bs{\hat{v}} = 0.38\bs{i}+0.07\bs{j}-0.92{k}$.  The rotational quaternion is constructed through equation \ref{eqn:quaternion_rotation_def} to be $\bs{q_r} = \qinline{-0.38}{-0.07}{+0.92}{+0.16}$.  Since the initial state is the identity quaternion, the expected final state $\bs{q_f}$ is the same as the rotational quaternion.
+% \eqn{
+% 	\bs{q_r} = \bs{q_f}
+% }
+
+% Figure \ref{fig:q_rotation} (left) displays the initial rendering of the TableSat model where $\bs{q} = \qinline{0}{+0}{+0}{+1}$.  For the single transofmation, the red dotted line was incorporated to represents the fixed-axis of rotation.  As the transformation progressed, the model would step through the rotation updating the wireframe model and the displayed text without redrawing the entire instance providing essentially a live video of the transformation.  Since the rendering is just updated instead of redrawn, the user has the ability to spin the model to attain a better vantage point as the transformation occurs.  This logic is handled by the tsatModel class in section \ref{code:lib/@tsatModel/tsatModel.m} that defines the wireframe instance of the TableSat, and the code in section \ref{code:lib/@tPlot/tPlot.m} that is a general plotting utility created to handle these ``real-time'' plots.  Figure \ref{fig:q_rotation} (right) displays the final location of the transformed system with updated
+% parameters and a trace of the path that the body +x axis travelled.
+% \begin{figure}[H]
+% 	\centering
+% 	\munpngsubfig{0.4}{quaternion/q_rotation_start}
+% 	~
+% 	\munpngsubfig{0.4}{quaternion/q_rotation_end}
+% 	\caption{Performing a quaternion rotation inital (left) and final(right)}\label{fig:q_rotation}
+% \end{figure}
+
+
+% \subsection{Composite Quaternion Rotation}
+
+% Section \ref{subsec:system_rendering} covered how a single transformation could be visualized through the use of the tPlot, tsatModel and quaternion code classes (\ref{code:lib/@tPlot/tPlot.m}, \ref{code:lib/@tsatModel/tsatModel.m}, and \ref{code:lib/@quaternion/quaternion.m} respectively).  While it provided an overview of how the transformation could be visualized, it was restricted to a large rotation over a fixed axis with initial position of the identity quaternion.  In order to be of use during a full simulation or during live testing, the updates would need to occur on smaller time intervals and handle persistance of the existing state.
+% The core of this issue returns to the quaternion multiplication defined in equation \ref{eqn:quaternion_multiplication}.  Assuming we have a known current state of the system $\bs{q_k}$ where $\bs{q_k} \neq \bs{q_I}$ and a desired transformation in the form of a rotational quaternion $\bs{q_r}$, the calculation to find the attitude of the system at step $k+1$ is
+% \eqn{
+% 	\bs{q_{k+1}} = \bs{q_r} \otimes \bs{q_k}
+% }
+% Where the rotational quaternion is left multipled by the current state.  Calculating the rotational quaternion from either measurements of the live model or a simulated system are described in chapter \ref{ch:system_model}.
+
+% The system is initialized to an system attitude of $\bs{q_k} = \qinline{0}{+0}{+0.98481}{+0.17365}$ which represents a $-160$ degree rotation about the global reference frame's $z$-axis.  The update to the system state is performed through $\bs{q_r} = \qinline{0}{-0.38268}{+0}{+0.92388}$ which represents a 45 degree rotation about the global reference frame's $y$-axis.
+% \eqntabular{rl}{
+% 	\bs{q_{k+1}} &= \bs{q_r} \otimes \bs{q_k}\\
+% 	 &= (\qinline{0}{-0.38268}{+0}{+0.92388}) \otimes (\qinline{0}{+0}{+0.98481}{+0.17365})\\
+% 	 &= \qinline{-0.37687}{-0.06645}{+0.90984}{+0.16043}
+% }
+% \begin{figure}[H]
+% 	\centering
+% 	\munpngsubfig{0.4}{quaternion/q_composite_1}
+% 	~
+% 	\munpngsubfig{0.4}{quaternion/q_composite_2}
+% 	\caption{Updating the systems quaternion state current (left) and updated (right)}
+% 	\label{fig:q_composite}
+% \end{figure}
+% The final orientation of the system is the quaternion state of $\bs{q_{k+1}} = \qinline{-0.37687}{-0.06645}{+0.90984}{+0.16043}$ which if worked backwards through equation \ref{eqn:quaternion_rotation_def} would resolve to a rotation of about $161.5$ degrees about the axis $\bs{\hat{v}} = -0.382\bs{i}-0.067\bs{j}+0.921{k}$ from the quaternion identity position.
+
+% \todo{insert image here of quaternion visuzalization for $q_{k+1}$}
+
+
+% \chapter{Variable Step and Asynchronous Simulations}\label{ch:variable_step_async}
+
+% In most cases of simulated systems dynamics, the continuous non-linear model is linearized and discritized in order to be processed in a loop in Matlab Simulink.  The distinct disadvantage of this setup is the inability to control the timing and interactions of events.  In an initial development process similar to that of Melissa Vess \cite{vess}, the communitcation to and from the TableSat were passed in and out of a Matlab Simulink diagram.  Once attempted, the main limitation to this implementation was the serial nature of the code path.  In order to start the control loop a sensor reading was required to be read from the instrument.  Once read, the updates would follow one at a time through the estimator and controller then produce a set of desired actuator voltages which were relayed to the TableSat.  Since the communication was based on a UDP protocol, a dropped packet would break the serial sequence and it would need to wait for the next reading to reinitialize the loop.  Updates in this process were
+% one-to-one as they passed down the chain.  In an actual implementation of a control loop we would likely want to run our measurement, estimator, and control loops at varied frequencies in order to maintain adequate control but minimize the control effort and
+
+% \chapter{System Model and Dynamics}\label{ch:system_model}
+
+% Chapter \ref{ch:rotations} covered how rotations of the system were modeled and/or tracked through the use of quaternions and quaternion multiplcation.  This provides a basis for representing a static model, but TableSat and the associates NASA MMS spacecraft are designed to be spin-stabilized.  This chapter will cover what is needed
+
+% \section{Euler Rate Equations}\label{sec:body_rate_dynamics}
+
+% Generating an accurate model for the NASA MMS flexible body dynamics have proven difficult \cite{mushaweh} although characteristics of the boom dynamics and specifically how they influence attitude determination and control is a key factor in developing an effective Attitude Determination and Control (ADC) system.  For the purpose of this research, the system will be assumed to follow rigid body dynamics and variations in system characteristics and behavior off the predicted state propagation will be attributed to either normal noise and distrubances as well as from the additional dynamics of the system booms.  Since it's expected that the natural frequency and dynamics of the boom will be significantly different from the noise and disturbance characteristics,
+
+% The system dynamics are originally based on the Euler Moment Equations \cite{kaplan}.
+% \eqntabular{rl}{
+% 	\dot{w}_x &= I_{xx}^{-1}(\sum{M_x} - (I_{zz} - I_{yy})\omega_y\omega_z) \\
+% 	\dot{w}_y &= I_{yy}^{-1}(\sum{M_y} - (I_{xx} - I_{zz})\omega_x\omega_z) \\
+% 	\dot{w}_z &= I_{zz}^{-1}(\sum{M_z} - (I_{yy} - I_{xx})\omega_x\omega_y)
+% }
+
+% \todo{cover nonlinearities in boom dynamics}
+
+% \section{Quaternion Dynamics}\label{sec:quaternion_dynamics}
+
+% \todo{detail out quaternion dynamics}
+
+% \section{Body Rate to Quaternions}\label{sec:body_rate_to_quaternion}
+
+% \todo{for use in truth models and simulations}
+
+% \section{Quaternion to Body Rate}\label{sec:quaternion_to_body_rate}
+
+% \todo{for use in estimator and live runs to convert attitudes to body rates}
+
+% \chapter{State Determination}\label{ch:state_determination}
+
+% The system's state was determined by the set of calibration parameters and the array of sensor voltages being relayed back from the physical system on demand.
+
+% \eqn{x = f(voltages, calibration)}
+
+% \eqn{x = [x_q x_\omega]^T = [f(css_V, TAM_V, calibration) f(state propagation)]^T}
+
+% for the limited three degree of freedom (3-DOF) TSat 1 system, the range of the system's roll and pitch were significantly smaller than the full range of it's yaw.
+
+% \section{Course Sun Sensors}
+
+% The course sun sensors were attached to a hexagonal mount along the body's z-axis.  This arrangement allowed for tracking of a light source as the system rotated.  Since the voltages only determined if there was light present, of the full system attitude state $(\theta \phi \psi)$ the course sun sensors observations were limited to rotations about the z-axis$(0 0 \psi)$.
+
+% To calculate the angle of rotation from the photodiodes, an algorithm similar to the resultant force calculation was used.  The photo diodes were attached to a hexagonal mount giving each a 60 degree spacing.  As the photo diode rotated into view of the light source, the voltage would climb from the base level of ambient light to a peak as it directly faced the light source and then sink back to it's base level as it rotated away from the light source.
+
+% \todo{Add plot of CSS voltages in a steady rotation}
+
+% $CSS_1$ is mounted with it's face along the body's x-axis.  The set of six voltages are pulled in from the incoming message buffer and decomposed into x and y components according to the placement of the corresponding photo diode.  The decomposed values are combined according by:
+
+% \eqn{
+% 	V_{css\_x} = \sum^{N=6}_{i=1} (V_{css\_i} - V_{css\_ base}) cos \left(\frac{2\pi}{6} (i - 1) \right)
+% }
+% \eqn{
+% 	V_{css\_y} = \sum^{N=6}_{i=1} (V_{css\_i} - V_{css\_ base}) sin \left(\frac{2\pi}{6} (i - 1) \right)
+% }
+% \lbleqn{css_resultant_force}{
+% 	\psi = tan^{-1} \frac{V_{css\_y}}{V_{css\_x}}
+% }
+
+% There are some limitations to this implementation.  First is that the photo diodes can saturate fairly easily with ambient light leaving little to no difference between voltage readings face away and toward the light source.  This can be mitigated by either performing tests in a dark room with a low level light source or by shielding the sensors with a translucent material to attenuate the intensity of the light passing through.
+
+% \todo{add images of voltage values through a rotation with ambient light or full saturation}
+
+% This algorithm also assumes that the voltage to lumen ratio is consistent for all sensors and that the base ambient level for the sensors are all the same.  If this were not the case and one sensor had a higher voltage to lumen ratio, the resultant $\psi$ value would bias the direction of that photo diode.
+
+% The result of this implementation was surprisingly stable.  Each individual sensor contained a fairly significant level of noise. \todo{calculate SNR of logs} When combining the CSS voltages through the algorithm described in \ref{eqn:css_resultant_force}, the noise was significantly reduced \todo{by how much?}.
+
+% \todo{insert graph of calculated angle with a constant body rate}
+
+% The quaternion representation of the CSS attitude measurement is
+% \eqn{q_{css} =  \smatrix{ q_{css\_v} \\ q_{css\_s}} }
+
+% where
+% \eqn{ q_{css\_v} = \smatrix{ 0\\ 0\\ 1 } sin \left( -\frac{\psi}{2} \right)}
+
+% and
+% \eqn{q_{css\_s} = cos \left( - \frac{\psi}{2} \right) }
+
+% The use of $-\psi$ in these equations and future ones is to represent the rotation of the points around a fixed coordinate axes rather than the rotation of the axes.
+
+% \chapter{Estimators}\label{estimators}
+
+% \todo{Insert image of control loop here}
+
+% \section{Variable Step Code} % (fold)
+% \label{sec:variable_step_blocks}
+
+% In order to complete a more accurate simulation, removing the restriction of a fixed step simulation.
+
+% \subsection{Discrete System Clock} % (fold)
+% \label{sub:discrete_system_clock}
+
+
+
+
+
+% % subsection discrete_system_clock (end)
+
+% \subsection{Variable Step Discrete Integrator} % (fold)
+% \label{sub:variable_step_discrete_integrator}
+
+
+% % subsection variable_step_discrete_integrator (end)
+
+% % section variable_step_blocks (end)
+
+% \section{Luenberger Gain Estimator}\label{sec:luenberger_estimator}
+% \eqn{\dot{\hat{x}}  = A\hat{x} +Bu+G(y -C\hat{x})}
+
+% \subsection{Discritized Model}
+
+% Error quaternion =
+% \begin{verbatim}
+% 	qe = q.conj * q_hat;
+
+% 	% Normalize here ??
+% 	qe.normalize();
+
+% 	if (qe.scalar < 0)
+% 		q_adj = quaternion();
+% 		q_adj.vector = [0 0 0]';
+% 		q_adj.scalar = -1;
+% 		qe = q_adj * qe;
+% 	end
+
+% \end{verbatim}
+
+
+% Code for update step
+% \begin{verbatim}
+% 	args = struct; args.q = s.q; args.q_hat = self.state.q;
+% 	q_e = quaternionError(args);
+
+% 	q_adj = self.Kq * q_e;
+% 	q_adj.normalize();
+
+% 	q = p_s.q * q_adj.conj;
+
+% 	w_e = s.w - self.state.w;
+% 	w_adj = self.Kw * w_e;
+
+% 	w = p_s.w + self.state.w + w_adj;
+
+% 	args = struct; args.q = q; args.w = w;
+% 	s = state(args);
+% \end{verbatim}
+
+
+
+
+% \section{Kalman Filter Estimator}\label{sec:kalman_filter_estimator}
+% \eqn{\dot{\hat{x}}  = A\hat{x} +Bu+K(y -C\hat{x})}
+% where
+% $K =$
+% and
+% $P = $
+
+% \section{Extended Kalman Filter Estimator}\label{sec:ekf_estimator}
+% \eqn{\dot{\hat{x}}  = f(\hat{x}) +Bu+K(y -C\hat{x})}
+% where
+% $K =$
+% and
+% $P = $
+
+% \section{Sliding Mode Observer}\label{sec:sliding_mode_observer}
+% \eqn{\dot{\hat{x}}  = f(\hat{x}) +Bu+S(y -C\hat{x})}
+% where
+% $S = sat(\phi)$
+
+% \section{PID Estimator}\label{sec:pid_estimator}
+% \eqn{\dot{\hat{x}} = A\hat{x} + Bu + K_P e + K_I \int e dt + K_D \dot{e}}
+% where $e = y - C \hat{x}$
+
+
+% \chapter{Controllers}
+
+% \section{PID Controller}\label{sec:pid_controller}
+
+% \eqn{ u = K_P x_e + K_I \int x_e dt + K_D x_e}
+% where $x_e = x_d - \hat{x}$
+
+% \section{Sliding Mode Controller}\label{sec:sliding_mode_controller}
+
+% \eqn{ u = S(x_e)}
+% where $S = sat(\phi)$
+
+
+% %\include{Introduction}
+% %\include{notes/notes}
+% %\include{appendices/appendices}
+
+% %\include{appendices/bib}
+
+
+
+% %\chapter{Equations}
+
+% %\textbf{=============NOTES=============}
+% %\include{equations/euler_body_rate}
+% %\include{equations/quaternion_dynamics}
+% %\include{equations/quaternion_body_rate}
+% %\include{equations/quaternion_multiplication}
+% %\include{equations/decompose_quaternion}
+% %\include{quaternion/basics}
+% %\textbf{=============NOTES=============}
+% %\include{control/control_error}
+% %\include{control/pid}
+
+% %\include{Ch_TSat_Construction}
+
+% % How is data aquired
+% %\include{Ch_Data_aquisition}
+
+
+% %Prior Versions - Matlab Code
+% %\include{Ch_Prior_Versions}
+
+
+
+% %Matlab Code
+% %\include{Ch_Matlab_code}
+
+
+
+
+% %Observer methods
+% %\include{Ch_Observer_models}
+
+
+% %\include{Ch_Controller_models}
+
+
+% %\include{Ch_Observer_Control}
+
+
+% %\chapter{Experimental Verification}
+% %\label{chap:experimental}
+% %\include{Ch_Experimental}
+
+
+
+% %\chapter{Discussion of Results}
+% %\label{chap:results}
+% %\include{Ch_Results}
+
+% %\chapter{Conclusions and Future Work}
+% %\label{chap:conclusions}
+% %\include{Ch_Conclustions}
+
+
+% %\include{Appendix_Source_Code}
+% %Matlab files
+% %\chapter{Matlab Source Code}\label{ch:matlab_source}
+% %\include{Matlab_Source_Code}
+
+% \include{Bibliography}
+
+
+% \newpage
+
+% % \munfig{Credit: Southwest Research Institute}{mms_spacecraft_formation}{pretty/mms_spacecraft_formation.jpg}{0.4}
+
+% % \munfig{Credit: http://earthobservatory.nasa.gov}{northern_lights_iss}{pretty/Northern-lights-ISS.jpg}{0.4}
+
+% % \munfig{Credit: http://mms.gsfc.nasa.gov}{tetrahedron}{pretty/mms_dayside_tetrahedral_thumb.png}{0.4}
+
+% % \munfig{Credit: http://mms.gsfc.nasa.gov}{2d_field_lines}{pretty/2d_earth_mag_field_lines.png}{0.4}
+% % \munfig{Credit: http://mms.gsfc.nasa.gov}{instrument_deck_webview}{pretty/instrument_deck_webview.jpg}{0.4}
+% % \munfig{Credit: http://mms.gsfc.nasa.gov}{observatory_dimensions1_webview}{pretty/observatory_dimensions1_webview.jpg}{0.4}
+% % \munfig{Credit: http://mms.gsfc.nasa.gov}{observatory_interfaces_webview}{pretty/observatory_interfaces_webview.jpg}{0.4}
+% % \munfig{Credit: http://mms.gsfc.nasa.gov}{observatory_webview}{pretty/observatory_webview.jpg}{0.4}
+
+% % \munfig{Credits: ASRC Research and Technology/Barbara Lambert}{assembly}{pretty/713494main2_MMS-Observatory2-assembled-670.jpg}{0.4}
+
+\end{document}

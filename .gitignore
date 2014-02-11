@@ -39,3 +39,8 @@ nosetests.xml
 .mr.developer.cfg
 .project
 .pydevproject
+
+# LaTeX
+*.aux
+thesis/CoutureThesis.log
+*.dvi
