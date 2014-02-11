@@ -12,6 +12,30 @@ import State
 from Clock import Metronome
 
 
+
+from twisted.internet.protocol import DatagramProtocol
+from twisted.internet import reactor
+
+
+class TSatComm(DatagramProtocol):
+
+    def __init__(self, msg_handlers):
+        self.msg_handlers = msg_handlers
+
+    def datagramReceived(self, msg, (host, port)):
+        print "received %r from %s:%d" % (msg, host, port)
+
+
+        msg_num, msg_data = msg.split('\t')
+        handle = self.msg_handlers[int(msg_num)][1]
+
+        if handle is None:
+            return
+
+        handle(self.msg_handlers[msg_num][0], msg_data)
+        # self.transport.write(data, (host, port))
+
+
 class TSatController(object):
     """
     Create an instance of the TSat controller
@@ -32,6 +56,9 @@ class TSatController(object):
 
     def propagate_plant_state(self):
         self.plant.propagate([0, 0, 0])
+
+    def voltage_in(self, message):
+        print "voltage in: %s" % message
 
 
 class TSatPyAPI(resource.Resource):
