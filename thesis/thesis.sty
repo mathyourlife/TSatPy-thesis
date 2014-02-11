@@ -1,0 +1,325 @@
+% ============= REQUIRED PACKAGES =============
+\usepackage{graphicx}   % support the \includegraphics command and options
+\usepackage{subfigure}
+\usepackage{wrapfig}    % support wrapping figures
+\usepackage{amsmath}    % boldsymbol
+\usepackage{float}      % used for placing images with [H] tag
+%\usepackage{subcaption} % side by side figures
+\usepackage{enumitem}
+
+% for matlab published files
+\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+
+% for displaying a directory tree file structure
+% \usepackage{dirtree}
+
+% ============= PAGE FORMATTING =============
+\oddsidemargin = .5in
+\textwidth = 6in
+
+\headheight = 0in
+\headsep = 0in
+\topmargin = .25in
+\textheight = 8.5in
+
+\floatsep = .29in
+\textfloatsep = \floatsep
+\intextsep = \floatsep
+
+% Almost everything is double spaced.
+\newcommand{\spacing}{2}
+\renewcommand{\baselinestretch}{\spacing}
+
+% ============= TITLE PAGE =============
+
+% Command for creating the thesis title page in accordance with the
+% requirements of the School of Graduate Studies.
+% For usage example, see thesis.tex.
+%
+\newcommand{\thesistitle}[6]{%
+\thispagestyle{empty}
+\begin{center}
+%\vspace*{14mm}
+%title
+#1\\
+\vspace{\fill}
+BY \\
+\vspace{\fill}
+%Name
+#2\\
+%Previous Degrees
+#3\\
+\vspace{\fill}
+THESIS\\
+\vspace{\fill}
+Submitted to the University of New Hampshire\\
+in partial fulfillment of\\
+the requirements for the degree of\\
+\vspace{\fill}
+%Masters program
+#4 \\
+\vspace{\fill}
+#5
+\newpage
+\thispagestyle{empty}
+\vspace*{7in}
+ALL RIGHTS RESERVED \\
+\copyright #6 \\
+#2
+\end{center}
+\newpage
+}
+
+% ============= CHAPTER/SECTION settings =============
+
+%use the next three lines to eliminate the margin above chapters so they can be 1.5in below the top of the page
+\usepackage{titlesec}
+\titlespacing*{\chapter}{0pt}{-50pt}{20pt}
+\titleformat{\chapter}[display]{\center\normalfont\large\bfseries}{\chaptertitlename\ \thechapter}{20pt}{\large}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+% ============= CUSTOM COMMANDS =============
+
+% ************* Equations
+
+\newcommand{\ds}{%
+	\displaystyle
+}
+
+\newcommand{\smatrix}[1]{%
+	\begin{bmatrix}
+		#1
+	\end{bmatrix}
+}
+
+\newcommand{\bs}[1]{%
+	\boldsymbol{#1}
+}
+
+\newcommand{\qinline}[4]{%
+	\qvinline{#1}{#2}{#3} #4
+}
+
+\newcommand{\qvinline}[3]{%
+	#1\bs{i} #2\bs{j} #3\bs{k}
+}
+
+%
+% The \muneqn command is used to add an equation to the thesis.
+% Usage is
+%
+%	\muneqn{label}{equation_body}
+%
+\newcommand{\muneqn}[2]{%
+	\begin{equation}
+	\centering
+	\label{eqn:#1}
+	#2
+	\end{equation}
+}
+
+%
+% The \lbleqn command is used to add an equation to the thesis
+% a designated label.
+% Usage is
+%
+%	\lbleqn{label}{equation_body}
+% Label will be eqn:{label}
+%
+\newcommand{\lbleqn}[2]{%
+	\begin{equation}
+	\centering
+	\label{eqn:#1}
+	#2
+	\end{equation}
+}
+
+%
+% The \eqn command is used to add an equation to the thesis
+% without a label.
+% Usage is
+%
+%	\eqn{equation_body}
+%
+\newcommand{\eqn}[1]{%
+	\begin{equation}
+	\centering
+	\displaystyle #1
+	\end{equation}
+}
+
+%
+% The \subeqn command is used to add a block of subequations.
+% Usage is
+%
+%	\subeqn{
+%	   1 &= 1 + 0i + 0j + 0k \\
+%	   i &= 0 + 1i + 0j + 0k \\
+%	   j &= 0 + 0i + 1j + 0k \\
+%	   k &= 0 + 0i + 0j + 1k
+%	}
+%
+\newcommand{\subeqn}[1]{%
+	\begin{subequations}
+	\begin{align}
+	#1
+	\end{align}
+	\end{subequations}
+}
+
+
+%
+% The \eqntabular command is used to produce a table whose
+% cells are all equations.
+% Usage is
+%
+%	\eqntabular{|c|c|c|}{
+%		\times & 1 &  i \\ \hline
+%		1      & 1 &  i \\ \hline
+%		i      & i & -1 \\ \hline
+%	}
+%
+\newcommand{\eqntabular}[2]{%
+	\[\begin{array}{#1}
+	#2
+	\end{array}\]
+}
+
+
+%
+% The \eqntable command is used to produce a table whose
+% cells are all equations.
+% Usage is
+%
+%	\eqntable{caption}{label}{|c|c|c|}{
+%		\times & 1 &  i \\ \hline
+%		1      & 1 &  i \\ \hline
+%		i      & i & -1 \\ \hline
+%	}
+%
+\newcommand{\eqntable}[4]{%
+	\begin{table}[H]
+		\centering
+		\caption{#1}
+		\label{eqn:#2}
+		\vspace{2mm}
+		\eqntabular{#3}{
+			#4
+		}
+	\end{table}
+}
+
+% ************* Tables
+
+%
+% The \muntab command is used to insert a new table into our document.
+% Usage is:
+%
+%	\muntab{table_format}{label}{caption}{table_contents}
+%
+% Note that we could have created a \newenvironment, but opted for
+% a \newcommand so as to be consistent with the \munepsfig command.
+%
+\newcommand{\muntab}[4]{%
+	\begin{table}[!htbp]
+	\centering
+	\caption{#3}
+	\label{tab:#2}
+	\vspace{2mm}
+	\begin{tabular}{#1}
+	#4
+	\end{tabular}
+	\end{table}
+}
+
+% ************* Images
+
+%
+% The \munepsfig command is used to insert a new EPS figure
+% into our document.  Usage is:
+%
+%	\munepsfig[scale]{filename}{caption}
+%
+% Note:
+%	- scale is optional (defaults to 1.0)
+%	- Assumes that the EPS file is in the 'figures' directory.
+% 	- 'filename' should not include the filename extension.
+%	- 'filename' also serves as the label for the figure.
+%	- Ideally, we'd want to create a \newenvironment to do this
+%	  but because the caption must appear below the figure, this
+%	  doesn't appear to be possible.
+%
+\newcommand{\munepsfig}[3][1.0]{%
+	\begin{figure}[!htbp]
+	\centering
+	\vspace{2mm}
+	\scalebox{#1}{\includegraphics{figures/#2.eps}}
+	\caption{#3}
+	\label{fig:#2}
+	\end{figure}
+}
+
+\newcommand{\munpngfig}[3][1.0]{%
+	\begin{figure}[!htbp]
+	\centering
+	\vspace{2mm}
+	\scalebox{#1}{\includegraphics{figures/#2.png}}
+	\caption{#3}
+	\label{fig:#2}
+	\end{figure}
+}
+
+\newcommand{\munpngsubfig}[2]{%
+	\begin{subfigure}
+		\centering
+		\includegraphics[width=#1\textwidth]{figures/#2}
+		\label{fig:#2}
+	\end{subfigure}
+}
+
+%
+% The \munfig command is used to insert 'textual' figures
+% into our document.  Usage is:
+%
+%	\munfig{caption}{label}{content}{size}
+%
+\newcommand{\munfig}[4]{%
+	\begin{figure}[H]
+		\centering
+		\vspace{2mm}
+		\includegraphics[width=#4\textwidth]{figures/#3}
+		\caption{#1}
+		\label{fig:#2}
+	\end{figure}
+}
+
+% ************* Misc
+
+
+% Footnotes are to be single spaced.
+%
+\newcommand{\munfootnote}[1]{%
+	\renewcommand{\baselinestretch}{1.0}%
+	\footnote{#1}%
+	\renewcommand{\baselinestretch}{\spacing}%
+}
+
+% Lengthy quotes must also be single spaced.
+% We provide a parameter for the citation label too.
+%
+\newcommand{\munquote}[2]{%
+	\renewcommand{\baselinestretch}{1.0}%
+	\normalsize
+	\begin{quote}{``\textsl{#1}''~\cite{#2}}\end{quote}
+	\renewcommand{\baselinestretch}{\spacing}%
+	\normalsize
+}
+
+%
+% For theorems and corollaries.
+%
+\newtheorem{cor}{Corollary}
+\newtheorem{thm}{Theorem}
