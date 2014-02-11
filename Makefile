@@ -23,3 +23,7 @@ ipython:
 clean:
 	rm -r $(DIR)/docs/*
 	rm -r $(DIR)/coverage_report/*
+
+pdf:
+	make -C "$(DIR)/thesis" main
+	make -C "$(DIR)/thesis" view
