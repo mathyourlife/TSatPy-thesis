@@ -2,23 +2,27 @@
 import struct
 from twisted.application import service, internet
 from twisted.internet.protocol import DatagramProtocol
+from io import BytesIO
 
 
 class TSatComm(DatagramProtocol):
+
+    HEADER_FMT = '!5B'
 
     def __init__(self, msg_handlers):
         self.msg_handlers = msg_handlers
 
     def datagramReceived(self, msg, (host, port)):
         print "received %r from %s:%d" % (msg, host, port)
+        msgio = BytesIO(msg)
 
-        msg_num, f1, f2, size, f3 = [ord(i) for i in msg[:5]]
+        msg_num, f1, f2, size, f3 = struct.unpack(fmt, msgio.read(5))
         print msg_num, f1, f2, size, f3
 
         fmt = self.msg_handlers[msg_num][0]
         print fmt
         # msg_data = struct.unpack_from('dddd', payload[1:])
-        data = struct.unpack_from(fmt, msg[5:])
+        data = struct.unpack_from(fmt, msgio.read())
         print data
 
         args = [104, 0, 0, 1, 0, 1]

@@ -87,7 +87,6 @@ def new(api_host, api_port, log_file):
 
     bsize = 1
     dsize = 8
-    vsize = 32767
     msg_handlers = {
         2:   [bsize, TSatPy.Comm.ReadAckMsg, 'Set run mode'],
         4:   [bsize, None, 'Set run mode'],
