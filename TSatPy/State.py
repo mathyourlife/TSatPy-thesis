@@ -38,15 +38,32 @@ class Quaternion(object):
             self.vector = self.vector.T
 
     def __eq__(self, q):
+        """
+        Equality fits under 2 camps.  General equality where the components
+        for both quaternions have identical values, and rotational equality
+        where the twe quaternions represent the same orientation.
 
-        qi = self * q.conj()
+        :param q: Quaternion to compare to the current instance
+        :type  q: Quaternion
+        :return: equal status
+        :rtype: bool
+        """
 
-        return np.sum(np.abs(qi.vector) + np.abs(qi.scalar)
-                      - np.power(self.mag(), 2)) < Quaternion.float_threshold
+        # Compare for strict equality
+        test = (np.all(self.vector == q.vector) and self.scalar == q.scalar)
+        if test:
+            return True
+
+        # Compare for rotational equality
+        qe = QuaternionError(self, q)
+
+        return (np.sum(np.abs(qe.vector)) < Quaternion.float_threshold and
+         np.abs(qe.scalar - 1) < Quaternion.float_threshold)
 
     def __ne__(self, q):
         return not self.__eq__(q)
 
+    @property
     def mag(self):
         """
         Calculate the magnitude of the quaternion by finding its euclidean norm.
@@ -61,7 +78,7 @@ class Quaternion(object):
         Normalize this quaternion instance.
         """
 
-        mag = self.mag()
+        mag = self.mag
         self.vector /= mag
         self.scalar /= mag
 
@@ -70,8 +87,9 @@ class Quaternion(object):
         Is this quaternion a unit quaternion with magnitude 1
         """
 
-        return np.abs(self.mag() - 1) < self.float_threshold
+        return np.abs(self.mag - 1) < self.float_threshold
 
+    @property
     def conj(self):
         """
         Create a conjugate quaternion with the same scalar and the negative vector.
@@ -128,7 +146,10 @@ class Quaternion(object):
         """
 
         v = np.matrix(vector, dtype=np.float)
-        v = v / np.sqrt((v*v.T)[0, 0])
+        if v.shape == (1, 3):
+            v = v.T
+
+        v = v / np.sqrt((v.T * v)[0, 0])
 
         self.vector = v * np.sin(-radians/2)
         self.scalar = np.cos(-radians/2)
@@ -221,13 +242,56 @@ class Quaternion(object):
     __repr__ = __str__
 
 
-class Identity(Quaternion):
+def Identity():
     """
-    The identity quaternion [0, 0, 0], 1
+    Helper method to create an identity quaternion [0, 0, 0], 1
+    """
+    return Quaternion([0, 0, 0], 1)
+
+
+def QuaternionError(q_hat, q):
+    """
+    Create an error quaternion that could be used to move a onto b.
+
+    :param q_hat: The estimated attitude quaternion
+    :type  q_hat: Quaternion
+    :param q: The measured/actual attitude quaternion
+    :type  q: Quaternion
+    :returns: The error quaternion
+    :rtype: Quaternion
+
+    Usage::
+
+        q_hat = Quaternion([0, 0, 1], radians=3*np.pi/6)
+        q = Quaternion([0, 0, 1], radians=4*np.pi/6)
+        print('q_hat = %s' % q_hat)
+        print('q = %s' % q))
+        qe = QuaternionError(q_hat, q)
+        print('qe = %s' % qe)
+        print('qe * q_hat = %s' % (qe * q_hat))
+        # q_hat = <Quaternion [-0 -0 -0.707107], 0.707107>
+        # q = <Quaternion [-0 -0 -0.866025], 0.5>
+        # qe = <Quaternion [0 0 -0.258819], 0.965926>
+        # qe * q_hat = <Quaternion [0 0 -0.866025], 0.5>
+
+    The quaternion error will return a rotational quaternion < 180 deg::
+
+        v = [1, -2, 4]
+        q_hat = Quaternion(v, radians=3 * np.pi / 10.0)
+        q = Quaternion(v, radians=18 * np.pi / 10.0)
+        qe = QuaternionError(q_hat, q)
+        # The shorter quaternion is actually going backwards
+        qe == Quaternion(v, radians=-5 * np.pi / 10.0)
+
     """
 
-    def __init__(self):
-        super(Identity, self).__init__([0, 0, 0], 1)
+    qe = q_hat.conj * q;
+
+    # To keep error signals from trying to turn > 180 degrees
+    # Keep the scalar value for the error quaternion positive.
+    if qe.scalar < 0:
+        return -qe
+    return qe
 
 
 class QuaternionDynamics(object):
@@ -244,19 +308,15 @@ class QuaternionDynamics(object):
         try:
             dt = t - self.last_update
         except TypeError:
+            self.w = w
             self.last_update = t
             return self.q
 
         omega2 = self._omega(-w.w)
-        try:
-            omega1 = self._omega(-self.w.w)
-            omega_bar = (omega1 + omega2) / 2
-        except AttributeError:
-            omega1 = omega2
-            omega_bar = omega2
+        omega1 = self._omega(-self.w.w)
+        omega_bar = (omega1 + omega2) / 2
 
         phi = expm(0.5 * omega_bar * dt) + 1/48 * (omega2 * omega1 - omega1 * omega2) * dt**2
-
         q2mat = phi * self.q.mat
         q2 = Quaternion(q2mat[0:3, 0], q2mat[3, 0])
         q2.normalize()
@@ -271,6 +331,7 @@ class QuaternionDynamics(object):
         self.q = q2
 
         self.w = w
+        self.last_update = t
         return self.q
 
     def _omega(self, w):
@@ -293,7 +354,10 @@ class BodyRate(object):
     :param w: Body rates (3x1) [wx, wy, wz]
     :type  w: list
     """
-    def __init__(self, w):
+    def __init__(self, w=None):
+
+        if w is None:
+            w = [0, 0, 0]
 
         self.w = np.mat(w, dtype=np.float)
 
@@ -402,14 +466,47 @@ class EulerMomentEquations(object):
         return self.w
 
 
+class State(object):
+    """
+    A full state object.
+
+    :param q: Attitude portion of the state
+    :type  q: Quaternion
+    :param w: Body rate portion of the state
+    :type  w: BodyRate
+    """
+
+    def __init__(self, q=None, w=None):
+        if q is None:
+            q = Identity()
+        if w is None:
+            w = BodyRate()
+        self.q = q
+        self.w = w
+
+    def __eq__(self, x):
+        """
+        Determine if two states are equivalent.  Body rates must be
+        equal and quaternions must represent the same orientation.
+        """
+        return self.w == x.w and self.q == x.q
+
+    def __str__(self):
+        """
+        See the current state
+        """
+        return "%s, %s" % (self.q, self.w)
+
+
 class Plant(object):
     """
     Tracks the full system state of the TableSat
     """
 
-    def __init__(self, I, q, w, clock):
-        self.pos = QuaternionDynamics(q, clock)
-        self.vel = EulerMomentEquations(I, w, clock)
+    def __init__(self, I, x, clock):
+        self.x = x
+        self.pos = QuaternionDynamics(self.x.q, clock)
+        self.vel = EulerMomentEquations(I, self.x.w, clock)
 
     def propagate(self, M):
         """

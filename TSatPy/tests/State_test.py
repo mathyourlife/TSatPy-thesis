@@ -17,7 +17,7 @@ class TestQuaternionBasics(unittest.TestCase):
     def test_mag(self):
         vec = [1, 2, 3]
         q = State.Quaternion(vec,  4)
-        self.assertEquals(np.sqrt(30), q.mag())
+        self.assertEquals(np.sqrt(30), q.mag)
 
     def test_normalize(self):
         vec = [1, 2, 3]
@@ -33,7 +33,7 @@ class TestQuaternionBasics(unittest.TestCase):
         vec = [1, 2, 3]
         q = State.Quaternion(vec,  4)
 
-        r = q.conj()
+        r = q.conj
         self.assertTrue(np.all(np.matrix([-1, -2, -3]).T == r.vector))
         self.assertEquals(4, r.scalar)
 
@@ -65,7 +65,7 @@ class TestQuaternionBasics(unittest.TestCase):
 
 
 def within_threshold(a, b):
-    return (a-b).mag() < State.Quaternion.float_threshold
+    return (a-b).mag < State.Quaternion.float_threshold
 
 
 class TestQuaternionOperations(unittest.TestCase):
@@ -75,12 +75,12 @@ class TestQuaternionOperations(unittest.TestCase):
         b = State.Quaternion([1, 2, -3], 0.4)
         self.assertEquals(a, b)
 
-        a = State.Quaternion([1, 2, -3], 0.4)
-        b = State.Quaternion([-1, -2, 3], -0.4)
+        a = State.Quaternion([1, 2, -3], radians=0.1)
+        b = State.Quaternion([-1, -2, 3], radians=-0.1)
         self.assertEquals(a, b)
 
-        a = State.Quaternion([1, 2, -3], -0.4)
-        b = State.Quaternion([-1, -2, 3], -0.4)
+        a = State.Quaternion([1, 2, -3], radians=0.1)
+        b = State.Quaternion([-1, -2, 3], radians=0.1)
         self.assertFalse(a == b)
 
     def test_neq(self):
@@ -272,6 +272,31 @@ class TestQuaternionAngles(unittest.TestCase):
         self.assertEquals(qr, qr_check)
 
 
+class TestQuaternionError(unittest.TestCase):
+
+    def test_small_error(self):
+        v = [1, -2, 4]
+
+        q_hat = State.Quaternion(v, radians=3 * np.pi / 10.0)
+        q = State.Quaternion(v, radians=4 * np.pi / 10.0)
+        qe_expected = State.Quaternion(v, radians=1 * np.pi / 10.0)
+        qe = State.QuaternionError(q_hat, q)
+
+        self.assertEquals(qe, qe_expected)
+
+    def test_large_error(self):
+        v = [1, -2, 4]
+
+        q_hat = State.Quaternion(v, radians=3 * np.pi / 10.0)
+        q = State.Quaternion(v, radians=18 * np.pi / 10.0)
+
+        # The shorter quaternion is actually going backwards
+        qe_expected = State.Quaternion(v, radians=-5 * np.pi / 10.0)
+        qe = State.QuaternionError(q_hat, q)
+
+        self.assertEquals(qe, qe_expected)
+
+
 class TestIdentityQuaternion(unittest.TestCase):
 
     def test_identity(self):
@@ -318,32 +343,36 @@ class TestQuaternionDynamics(unittest.TestCase):
         # Initialize the system clock
         clock = Metronome()
 
+        inc = np.pi / 10
+
         # Setup for 1/4 turn each sec about the +z axis
-        q = State.Quaternion([0, 0, 1], radians=np.pi/2)
+        q = State.Quaternion([0, 0, 1], radians=inc * 3)
         qd = State.QuaternionDynamics(q, clock)
-        w = State.BodyRate([0, 0, np.pi/2])
+        w = State.BodyRate([0, 0, inc])
 
         # First propagation is a gimmie since last time is not set
         # no dt know since the initialization time of the instance may
         # not be trustworthy for simulations
         MockTime.return_value = 13
         q = qd.propagate(w)
-        self.assertEquals(q, State.Quaternion([0, 0, 1], radians=np.pi/2))
+        self.assertEquals(q, State.Quaternion([0, 0, 1], radians=inc * 3))
 
         # First quater turn happens on the second propagation call
         MockTime.return_value = 14
         q = qd.propagate(w)
-        self.assertEquals(q, State.Quaternion([0, 0, 1], radians=np.pi))
+        self.assertEquals(q, State.Quaternion([0, 0, 1], radians=inc * 4))
 
     @patch('time.time', return_value=12)
     def test_propagate_linearinterpolate_body_rate(self, MockTime):
         # Initialize the system clock
         clock = Metronome()
 
+        inc = np.pi / 10
+
         # Setup for 1/4 turn each sec about the +z axis
-        q = State.Quaternion([0, 0, 1], radians=np.pi/2)
+        q = State.Quaternion([0, 0, 1], radians=inc * 3)
         qd = State.QuaternionDynamics(q, clock)
-        w = State.BodyRate([0, 0, np.pi/2])
+        w = State.BodyRate([0, 0, inc])
 
         MockTime.return_value = 13
         q = qd.propagate(w)
@@ -351,8 +380,8 @@ class TestQuaternionDynamics(unittest.TestCase):
         q = qd.propagate(w)
         MockTime.return_value = 15
         q = qd.propagate(w)
-
-        self.assertEquals(q, State.Quaternion([0, 0, 1], radians=1.5 * np.pi))
+        q_check = State.Quaternion([0, 0, 1], radians=inc * 5)
+        self.assertEquals(q, q_check)
 
     @patch('time.time', return_value=12)
     def test_zero_dt(self, MockTime):
@@ -434,23 +463,43 @@ class TestEulerMomentEquations(unittest.TestCase):
         self.assertLess(np.sum(np.abs(w.w - w_check.w)), 1e-14)
 
 
+class TestState(unittest.TestCase):
+
+    def test_state_init(self):
+        x1 = State.State()
+        q = State.Quaternion([0,0,0],1)
+        w = State.BodyRate([0,0,0])
+        x2 = State.State(q,w)
+
+        self.assertEquals(x1, x2)
+
+    def test_str(self):
+        q = State.Quaternion([1,2,3],4)
+        w = State.BodyRate([5,6,7])
+        x = State.State(q, w)
+        x_str = '<Quaternion [1 2 3], 4>, <BodyRate [5 6 7]>'
+        self.assertEquals(x_str, str(x))
+
+
 class TestPlant(unittest.TestCase):
 
     def test_plant_init(self):
         clock = Metronome()
         q = State.Quaternion([0, 0, 1], radians=np.pi/2)
         w = State.BodyRate([0, 0, np.pi/4])
+        x = State.State(q, w)
         I = [[4, 0, 0], [0, 4, 0], [0, 0, 4]]
 
-        p = State.Plant(I, q, w, clock)
+        p = State.Plant(I, x, clock)
 
     def test_str(self):
         clock = Metronome()
         q = State.Quaternion([-0.5, -2.5, 1], -3)
         w = State.BodyRate([0, 0, -2])
+        x = State.State(q, w)
         I = [[4, 0, 0], [0, 4, 0], [0, 0, 4]]
 
-        p = State.Plant(I, q, w, clock)
+        p = State.Plant(I, x, clock)
         expected = '<Plant <Quaternion [-0.5 -2.5 1], -3>, <BodyRate [0 0 -2]>>'
         self.assertEquals(str(p), expected)
 
@@ -458,9 +507,10 @@ class TestPlant(unittest.TestCase):
         clock = Metronome()
         q = State.Quaternion([-0.5, -2.5, 1], -3)
         w = State.BodyRate([0, 0, -2])
+        x = State.State(q, w)
         I = [[4, 0, 0], [0, 4, 0], [0, 0, 4]]
 
-        p = State.Plant(I, q, w, clock)
+        p = State.Plant(I, x, clock)
         expected = {
             'q': '-0.5 \\textbf{i} -2.5 \\textbf{j} +1 \\textbf{k} -3',
             'w': '0 \\textbf{i} +0 \\textbf{j} -2 \\textbf{k}',
@@ -477,9 +527,10 @@ class TestPlant(unittest.TestCase):
 
         q = State.Quaternion([0, 0, 1], radians=0)
         w = State.BodyRate([0, 0, 0])
+        x = State.State(q, w)
         I = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
 
-        p = State.Plant(I, q, w, clock)
+        p = State.Plant(I, x, clock)
 
         while clock.tick() <= end_time:
             MockTime.return_value += dt
