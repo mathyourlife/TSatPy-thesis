@@ -50,10 +50,21 @@ class BodyRateGain(object):
         return str(self.K)
 
 
-class QuaternionRotationGain(object):
+class QuaternionGain(object):
     """
     Gain instance to scale a quaternion rotational matrix.  Gain values
     will scale out the magnitude of the rotation.
+
+    Usage::
+
+        q = State.Quaternion([0,0,1], radians=np.pi/10)
+        print 'np.pi/10 = %s' % q
+        qg = QuaternionGain(0.25)
+        print 'qg * q = %s' % (qg * q)
+        print 'np.pi/10 = %s' % State.Quaternion([0,0,1], radians=np.pi/40)
+        # np.pi/10 = <Quaternion [-0 -0 -0.156434], 0.987688>
+        # qg * q = <Quaternion [-0 -0 -0.0392598], 0.999229>
+        # np.pi/40 = <Quaternion [-0 -0 -0.0392598], 0.999229>
 
     """
     def __init__(self, K):
@@ -77,13 +88,9 @@ class QuaternionRotationGain(object):
         """
 
         s = q.scalar
-        print(np.arccos(s) / np.pi * 180 )
         s = np.cos(np.arccos(q.scalar) * self.K)
-        print(np.arccos(s) / np.pi * 180)
 
-        print (q.vector.T * q.vector)[0,0]
-        c = (q.vector.T * q.vector)[0,0] / np.sqrt(1 - s**2)
-        print c
+        c = np.sqrt((q.vector.T * q.vector)[0,0] / (1 - s**2))
 
         return State.Quaternion(q.vector / c, s)
 
@@ -95,15 +102,3 @@ class QuaternionRotationGain(object):
         :rtype: str
         """
         return str(self.K)
-
-def main():
-    q = State.Quaternion([0,0,1], radians=np.pi/10)
-    print q
-    qg = QuaternionRotationGain(0.5)
-    print qg * q
-    print State.Quaternion([0,0,1], radians=np.pi/20)
-
-    print 'aoeu'
-
-if __name__ == '__main__':
-    main()
