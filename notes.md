@@ -1,7 +1,6 @@
 
 
 
-
 ## UNH Links
 
 * ![Thesis checklist](http://www.gradschool.unh.edu/pdf/td_checklist.pdf)
@@ -14,15 +13,15 @@
 ### Commencement Schedule
 
 *Friday, May 16*
-11 a.m. - Commencement rehearsal, Memorial Field
-3 p.m. - Graduates assemble for Honors Convocation, Whittemore Center
-4-6 p.m. - Honors Convocation, Whittemore Center
+* 11 a.m. - Commencement rehearsal, Memorial Field
+* 3 p.m. - Graduates assemble for Honors Convocation, Whittemore Center
+* 4-6 p.m. - Honors Convocation, Whittemore Center
 
 *Saturday, May 17*
-9 a.m. - Graduates assemble for Commencement
-9:45 a.m. - Procession begins
-10 a.m. - Ceremony begins
-12:30 p.m. - Ceremony concludes
+* 9 a.m. - Graduates assemble for Commencement
+* 9:45 a.m. - Procession begins
+* 10 a.m. - Ceremony begins
+* 12:30 p.m. - Ceremony concludes
 
 
 ## Masters Student Thesis Binding Checklist
