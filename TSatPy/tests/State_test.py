@@ -481,6 +481,22 @@ class TestState(unittest.TestCase):
         self.assertEquals(x_str, str(x))
 
 
+class TestStateError(unittest.TestCase):
+    def test_state_error(self):
+        x_hat = State.State(
+            State.Quaternion([0,0,1],radians=np.pi/10),
+            State.BodyRate([1,-2,3]))
+        x = State.State(
+            State.Quaternion([0,0,1],radians=np.pi/15),
+            State.BodyRate([0.1,2,3]))
+        x_err = State.State(
+            State.Quaternion([0,0,1],radians=np.pi/30),
+            State.BodyRate([0.9,-4,0]))
+
+        self.assertEquals(x_err, State.StateError(x_hat, x))
+
+
+
 class TestPlant(unittest.TestCase):
 
     def test_plant_init(self):

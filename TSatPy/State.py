@@ -370,6 +370,12 @@ class BodyRate(object):
         """
         return BodyRate(self.w + w.w)
 
+    def __sub__(self, w):
+        """
+        Diff of two BodyRate instances
+        """
+        return BodyRate(self.w - w.w)
+
     def __iadd__(self, w):
         """
         Useful if adding deltas to an existing BodyRate instead of creating
@@ -498,6 +504,21 @@ class State(object):
         return "%s, %s" % (self.q, self.w)
 
 
+def StateError(x_hat, x):
+    """
+    Create an error representation between two full states.
+
+    :param x_hat: Estimated state
+    :type  x_hat: State
+    :param x_hat: Actual/Measured state
+    :type  x_hat: State
+    :returns: error generated from a quaternion multiplicative error and body rate diff
+    :rtype: State
+    """
+    return State(
+        QuaternionError(x_hat.q, x.q),
+        x_hat.w - x.w)
+
 class Plant(object):
     """
     Tracks the full system state of the TableSat
@@ -520,7 +541,6 @@ class Plant(object):
         """
         w = self.vel.propagate(M)
         q = self.pos.propagate(w)
-
         return q, w
 
     def latex(self):
