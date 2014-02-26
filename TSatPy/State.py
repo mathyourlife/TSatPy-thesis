@@ -198,19 +198,27 @@ class Quaternion(object):
                        [self.scalar]])
 
     def __neg__(self):
-
         return Quaternion(-self.vector, -self.scalar)
 
     def __add__(self, q):
+        return self * q
 
-        return Quaternion(self.vector + q.vector, self.scalar + q.scalar)
+    def __iadd__(self, q):
+        q_new = q * self
+        self.vector = q_new.vector
+        self.scalar = q_new.scalar
+        return self
 
     def __sub__(self, q):
+        return q.conj * self
 
-        return Quaternion(self.vector - q.vector, self.scalar - q.scalar)
+    def __isub__(self, q):
+        q_new = q.conj * self
+        self.vector = q_new.vector
+        self.scalar = q_new.scalar
+        return self
 
     def __mul__(self, q):
-        #here
         s = self.scalar * q.scalar - (self.vector.T * q.vector)[0, 0]
         v = self.vector * q.scalar + q.vector * self.scalar + np.cross(self.vector.T, q.vector.T).T
         return Quaternion(v.T, s)
@@ -265,14 +273,16 @@ def QuaternionError(q_hat, q):
         q_hat = Quaternion([0, 0, 1], radians=3*np.pi/6)
         q = Quaternion([0, 0, 1], radians=4*np.pi/6)
         print('q_hat = %s' % q_hat)
-        print('q = %s' % q))
+        print('q = %s' % q)
         qe = QuaternionError(q_hat, q)
-        print('qe = %s' % qe)
-        print('qe * q_hat = %s' % (qe * q_hat))
+        print('q_err = %s' % qe)
+        print('Take the error off the estimated quaternion to get the measured q')
+        print('q_err.conj * q_hat = q = %s' % (qe.conj * q_hat))
         # q_hat = <Quaternion [-0 -0 -0.707107], 0.707107>
         # q = <Quaternion [-0 -0 -0.866025], 0.5>
-        # qe = <Quaternion [0 0 -0.258819], 0.965926>
-        # qe * q_hat = <Quaternion [0 0 -0.866025], 0.5>
+        # q_err = <Quaternion [0 0 0.258819], 0.965926>
+        # Take the error off the estimated quaternion to get the measured q
+        # q_err.conj * q_hat = q = <Quaternion [0 0 -0.866025], 0.5>
 
     The quaternion error will return a rotational quaternion < 180 deg::
 
@@ -280,12 +290,19 @@ def QuaternionError(q_hat, q):
         q_hat = Quaternion(v, radians=3 * np.pi / 10.0)
         q = Quaternion(v, radians=18 * np.pi / 10.0)
         qe = QuaternionError(q_hat, q)
-        # The shorter quaternion is actually going backwards
-        qe == Quaternion(v, radians=-5 * np.pi / 10.0)
+        # The shorter quaternion is rotating through the 360
+        print('q_hat(3pi/10) = %s' % q_hat)
+        print('q(18pi/10) = %s' % q)
+        print('q_err   = %s' % qe)
+        print('q(pi/2) = %s' % Quaternion(v, radians=5 * np.pi / 10.0))
+        # q_hat(3pi/10) = <Quaternion [-0.0990688 0.198138 -0.396275], 0.891007>
+        # q(18pi/10) = <Quaternion [-0.067433 0.134866 -0.269732], -0.951057>
+        # q_err   = <Quaternion [-0.154303 0.308607 -0.617213], 0.707107>
+        # q(pi/2) = <Quaternion [-0.154303 0.308607 -0.617213], 0.707107>
 
     """
 
-    qe = q_hat.conj * q;
+    qe = q.conj * q_hat;
 
     # To keep error signals from trying to turn > 180 degrees
     # Keep the scalar value for the error quaternion positive.
@@ -502,6 +519,26 @@ class State(object):
         See the current state
         """
         return "%s, %s" % (self.q, self.w)
+
+    def __add__(self, x):
+        q_new = self.q + x.q
+        w_new = self.w + x.w
+        return State(q_new, w_new)
+
+    def __iadd__(self, x):
+        self.q += x.q
+        self.w += x.w
+        return self
+
+    def __sub__(self, x):
+        q_new = self.q - x.q
+        w_new = self.w - x.w
+        return State(q_new, w_new)
+
+    def __isub__(self, x):
+        self.q -= x.q
+        self.w -= x.w
+        return self
 
 
 def StateError(x_hat, x):

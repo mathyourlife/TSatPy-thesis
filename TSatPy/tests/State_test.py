@@ -89,37 +89,46 @@ class TestQuaternionOperations(unittest.TestCase):
         self.assertNotEquals(a, b)
 
     def test_add(self):
-        a = State.Quaternion([1, 0.2, -3], 0.3)
-        b = State.Quaternion([2, 0.1, -2], 0.8)
+        a = State.Quaternion([0, 0, 1], radians=2*np.pi/10)
+        b = State.Quaternion([0, 0, 1], radians=3*np.pi/10)
 
-        self.assertTrue(
-            within_threshold(
-                a + b,
-                State.Quaternion([3.0, 0.3, -5.0], 1.1)
-            ))
+        self.assertEquals(
+            a + b,
+            State.Quaternion([0, 0, 1], radians=5*np.pi/10)
+        )
+
+    def test_iadd(self):
+        a = State.Quaternion([0, 0, 1], radians=2*np.pi/10)
+        pre_id = id(a)
+        b = State.Quaternion([0, 0, 1], radians=3*np.pi/10)
 
         a += b
-        self.assertTrue(
-            within_threshold(
-                a,
-                State.Quaternion([3.0, 0.3, -5.0], 1.1)
-            ))
+        self.assertEquals(
+            a,
+            State.Quaternion([0, 0, 1], radians=5*np.pi/10)
+        )
+        self.assertEquals(pre_id, id(a))
 
     def test_sub(self):
-        a = State.Quaternion([1, 0.2, -3], 0.3)
-        b = State.Quaternion([2, 0.1, -2], 0.8)
-        self.assertTrue(
-            within_threshold(
-                a - b,
-                State.Quaternion([-1, 0.1, -1], -0.5)
-            ))
+        a = State.Quaternion([0, 0, 1], radians=5*np.pi/10)
+        b = State.Quaternion([0, 0, 1], radians=3*np.pi/10)
+
+        self.assertEquals(
+            a - b,
+            State.Quaternion([0, 0, 1], radians=2*np.pi/10)
+        )
+
+    def test_isub(self):
+        a = State.Quaternion([0, 0, 1], radians=5*np.pi/10)
+        pre_id = id(a)
+        b = State.Quaternion([0, 0, 1], radians=3*np.pi/10)
 
         a -= b
-        self.assertTrue(
-            within_threshold(
-                a,
-                State.Quaternion([-1, 0.1, -1], -0.5)
-            ))
+        self.assertEquals(
+            a,
+            State.Quaternion([0, 0, 1], radians=2*np.pi/10)
+        )
+        self.assertEquals(pre_id, id(a))
 
     def test_mul(self):
         a = State.Quaternion([1, 2, -3], 4)
@@ -152,10 +161,7 @@ class TestQuaternionAngles(unittest.TestCase):
     def test_partial_turn(self):
         q1 = State.Quaternion([0, 0, 1], radians=np.pi/2)
         q2 = State.Quaternion([0, 0, 1], radians=np.pi/2 + np.pi * 2)
-
-        self.assertTrue(
-            within_threshold(q1, -q2)
-        )
+        self.assertEquals(q1, -q2)
 
     def test_is_unit(self):
         units = [
@@ -277,8 +283,8 @@ class TestQuaternionError(unittest.TestCase):
     def test_small_error(self):
         v = [1, -2, 4]
 
-        q_hat = State.Quaternion(v, radians=3 * np.pi / 10.0)
-        q = State.Quaternion(v, radians=4 * np.pi / 10.0)
+        q_hat = State.Quaternion(v, radians=4 * np.pi / 10.0)
+        q = State.Quaternion(v, radians=3 * np.pi / 10.0)
         qe_expected = State.Quaternion(v, radians=1 * np.pi / 10.0)
         qe = State.QuaternionError(q_hat, q)
 
@@ -291,7 +297,7 @@ class TestQuaternionError(unittest.TestCase):
         q = State.Quaternion(v, radians=18 * np.pi / 10.0)
 
         # The shorter quaternion is actually going backwards
-        qe_expected = State.Quaternion(v, radians=-5 * np.pi / 10.0)
+        qe_expected = State.Quaternion(v, radians=5 * np.pi / 10.0)
         qe = State.QuaternionError(q_hat, q)
 
         self.assertEquals(qe, qe_expected)
@@ -480,6 +486,70 @@ class TestState(unittest.TestCase):
         x_str = '<Quaternion [1 2 3], 4>, <BodyRate [5 6 7]>'
         self.assertEquals(x_str, str(x))
 
+    def test_add(self):
+        q1 = State.Quaternion([0,0,1],radians=2*np.pi/10)
+        w1 = State.BodyRate([5,6,7])
+        x1 = State.State(q1, w1)
+        q2 = State.Quaternion([0,0,1],radians=3*np.pi/10)
+        w2 = State.BodyRate([-3,1,0])
+        x2 = State.State(q2, w2)
+
+        q = State.Quaternion([0,0,1],radians=5*np.pi/10)
+        w = State.BodyRate([2,7,7])
+        x = State.State(q, w)
+
+        self.assertEquals(x, x1 + x2)
+
+    def test_iadd(self):
+        q1 = State.Quaternion([0,0,1],radians=2*np.pi/10)
+        w1 = State.BodyRate([5,6,7])
+        x1 = State.State(q1, w1)
+        pre_id = id(x1)
+        q2 = State.Quaternion([0,0,1],radians=3*np.pi/10)
+        w2 = State.BodyRate([-3,1,0])
+        x2 = State.State(q2, w2)
+
+        x1 += x2
+
+        q = State.Quaternion([0,0,1],radians=5*np.pi/10)
+        w = State.BodyRate([2,7,7])
+        x = State.State(q, w)
+
+        self.assertEquals(x, x1)
+        self.assertEquals(pre_id, id(x1))
+
+    def test_sub(self):
+        q1 = State.Quaternion([0,0,1],radians=5*np.pi/10)
+        w1 = State.BodyRate([2,7,7])
+        x1 = State.State(q1, w1)
+        q2 = State.Quaternion([0,0,1],radians=3*np.pi/10)
+        w2 = State.BodyRate([-3,1,0])
+        x2 = State.State(q2, w2)
+
+        q = State.Quaternion([0,0,1],radians=2*np.pi/10)
+        w = State.BodyRate([5,6,7])
+        x = State.State(q, w)
+
+        self.assertEquals(x, x1 - x2)
+
+    def test_isub(self):
+        q1 = State.Quaternion([0,0,1],radians=5*np.pi/10)
+        w1 = State.BodyRate([2,7,7])
+        x1 = State.State(q1, w1)
+        pre_id = id(x1)
+        q2 = State.Quaternion([0,0,1],radians=3*np.pi/10)
+        w2 = State.BodyRate([-3,1,0])
+        x2 = State.State(q2, w2)
+
+        x1 -= x2
+
+        q = State.Quaternion([0,0,1],radians=2*np.pi/10)
+        w = State.BodyRate([5,6,7])
+        x = State.State(q, w)
+
+        self.assertEquals(x, x1)
+        self.assertEquals(pre_id, id(x1))
+
 
 class TestStateError(unittest.TestCase):
     def test_state_error(self):
@@ -489,11 +559,12 @@ class TestStateError(unittest.TestCase):
         x = State.State(
             State.Quaternion([0,0,1],radians=np.pi/15),
             State.BodyRate([0.1,2,3]))
-        x_err = State.State(
+        x_err_expected = State.State(
             State.Quaternion([0,0,1],radians=np.pi/30),
             State.BodyRate([0.9,-4,0]))
+        x_err = State.StateError(x_hat, x)
 
-        self.assertEquals(x_err, State.StateError(x_hat, x))
+        self.assertEquals(x_err_expected, x_err)
 
 
 
