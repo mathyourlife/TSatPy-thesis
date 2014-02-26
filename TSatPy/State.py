@@ -57,8 +57,8 @@ class Quaternion(object):
         # Compare for rotational equality
         qe = QuaternionError(self, q)
 
-        return (np.sum(np.abs(qe.vector)) < Quaternion.float_threshold and
-         np.abs(qe.scalar - 1) < Quaternion.float_threshold)
+        return (np.sum(np.abs(qe.vector)) < self.float_threshold and
+         np.abs(qe.scalar - 1) < self.float_threshold)
 
     def __ne__(self, q):
         return not self.__eq__(q)
@@ -371,6 +371,9 @@ class BodyRate(object):
     :param w: Body rates (3x1) [wx, wy, wz]
     :type  w: list
     """
+
+    float_threshold = 1e-13
+
     def __init__(self, w=None):
 
         if w is None:
@@ -405,7 +408,7 @@ class BodyRate(object):
         """
         Body rates are equivalent if their vectors are identical
         """
-        return np.all(self.w == w.w)
+        return np.sum(np.abs(self.w - w.w)) < self.float_threshold
 
     @property
     def x(self):
