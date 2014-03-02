@@ -51,7 +51,10 @@ class BodyRateGain(object):
         :return: gain matrix representation
         :rtype: str
         """
-        return str(self.K).replace('\n', ' ')
+        Kw_str = str(self.K).replace('\n', ' ')
+        while '  ' in Kw_str:
+            Kw_str = Kw_str.replace('  ', ' ')
+        return Kw_str
 
 
 class QuaternionGain(object):
@@ -107,7 +110,7 @@ class QuaternionGain(object):
         :return: gain matrix representation
         :rtype: str
         """
-        return str(self.K).replace('\n', ' ')
+        return str(self.K)
 
 
 class StateGain(object):

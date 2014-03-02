@@ -11,7 +11,7 @@ class TestBodyRateGain(unittest.TestCase):
 
     def test_str(self):
         G = StateOperators.BodyRateGain([[1,0],[0,1]])
-        g_str = '[[1 0]  [0 1]]'
+        g_str = '[[1 0] [0 1]]'
         self.assertEquals(g_str, str(G))
 
     def test_mul(self):
@@ -52,7 +52,7 @@ class TestStateGain(unittest.TestCase):
         Kq = StateOperators.QuaternionGain(0.5)
         Kw = StateOperators.BodyRateGain([[1,0],[0,1]])
         Kx = StateOperators.StateGain(Kq, Kw)
-        g_str = '<StateGain <Kq 0.5>, <Kw = [[1 0]  [0 1]]>>'
+        g_str = '<StateGain <Kq 0.5>, <Kw = [[1 0] [0 1]]>>'
         self.assertEquals(g_str, str(Kx))
 
     def test_gain(self):
