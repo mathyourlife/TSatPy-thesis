@@ -18,11 +18,14 @@ class Estimator(object):
 
 class EstimatorBase(object):
 
-    def __init__(self, clock, propagate_every=None, I=None):
+    def __init__(self, clock, propagate_every=None, I=None, ic=None):
         self.clock = clock
         self.last_update = None
         self.I = [[4, 0, 0], [0, 4, 0], [0, 0, 4]]
-        self.x_hat = State.State()
+        if ic is None:
+            self.x_hat = State.State()
+        else:
+            self.x_hat = ic
         self.plant = State.Plant(self.I, self.x_hat, self.clock)
         self.propagate_every = propagate_every
 
@@ -45,8 +48,9 @@ class EstimatorBase(object):
 
 class PID(EstimatorBase):
 
-    def __init__(self, clock, propagate_every=None, I=None):
-        EstimatorBase.__init__(self, clock, propagate_every, I)
+    def __init__(self, clock, propagate_every=None, I=None, ic=None):
+        EstimatorBase.__init__(self, clock, propagate_every, I, ic)
+        self.x_i = State.State()
         self.K = {
             'p': None,
             'i': None,
@@ -56,6 +60,9 @@ class PID(EstimatorBase):
     def set_Kp(self, K):
         self.K['p'] = K
 
+    def set_Ki(self, K):
+        self.K['i'] = K
+
     def update(self, x, M=None):
         t = self.clock.tick()
         try:
@@ -64,7 +71,22 @@ class PID(EstimatorBase):
             dt = 0
 
         x_err = State.StateError(self.x_hat, x)
-        x_adj = self.K['p'] * x_err
+        x_adj = State.State()
+
+        if self.K['p'] is not None:
+            x_kp = self.K['p'] * x_err
+            x_adj += x_kp
+
+        if dt and self.K['i'] is not None:
+            Kq = StateOperators.QuaternionGain(dt)
+            Kw = StateOperators.BodyRateGain([[dt,0,0],[0,dt,0],[0,0,dt]])
+            Kt = StateOperators.StateGain(Kq, Kw)
+
+            x_i_err = Kt * x_err
+            self.x_i += x_i_err
+
+            x_ki = self.K['i'] * self.x_i
+            x_adj += x_ki
 
         self.x_hat -= x_adj
         self.last_update = t
@@ -75,35 +97,3 @@ class PID(EstimatorBase):
         for G in self.K.iteritems():
             gains.append(' K%s %s' % G)
         return '\n'.join(gains)
-
-
-def main():
-    from TSatPy.Clock import Metronome
-    from twisted.internet import reactor
-    import numpy as np
-    c = Metronome()
-    k = 0.2
-    Kq = StateOperators.QuaternionGain(k)
-    Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
-    Kp = StateOperators.StateGain(Kq, Kw)
-
-    pid = PID(c)
-    pid.set_Kp(Kp)
-    print('Initial Condition\n%s' % pid)
-
-    x = State.State(
-        State.Quaternion([0,0,1],radians=np.pi/15),
-        State.BodyRate([0.1,2,3])
-    )
-    print('Measured State: %s' % x)
-    x_hat = pid.update(x)
-    print('Updated State:  %s' % x_hat)
-    print('Expected State: %s' % State.State(
-        State.Quaternion([0,0,1],radians=np.pi/75),
-        State.BodyRate([0.02,0.4,0.6])))
-
-    # reactor.run()
-
-
-if __name__ == '__main__':
-    main()
