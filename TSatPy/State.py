@@ -372,7 +372,7 @@ class BodyRate(object):
     :type  w: list
     """
 
-    float_threshold = 1e-13
+    float_threshold = 1e-12
 
     def __init__(self, w=None):
 
@@ -522,6 +522,8 @@ class State(object):
         See the current state
         """
         return "%s, %s" % (self.q, self.w)
+
+    __repr__ = __str__
 
     def __add__(self, x):
         q_new = self.q + x.q

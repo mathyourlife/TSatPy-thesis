@@ -51,6 +51,7 @@ class PID(EstimatorBase):
     def __init__(self, clock, propagate_every=None, I=None, ic=None):
         EstimatorBase.__init__(self, clock, propagate_every, I, ic)
         self.x_i = State.State()
+        self.last_err = None
         self.K = {
             'p': None,
             'i': None,
@@ -62,6 +63,9 @@ class PID(EstimatorBase):
 
     def set_Ki(self, K):
         self.K['i'] = K
+
+    def set_Kd(self, K):
+        self.K['d'] = K
 
     def update(self, x, M=None):
         t = self.clock.tick()
@@ -88,8 +92,19 @@ class PID(EstimatorBase):
             x_ki = self.K['i'] * self.x_i
             x_adj += x_ki
 
+        if dt and self.K['d'] is not None:
+            Kq = StateOperators.QuaternionGain(1/dt)
+            Kw = StateOperators.BodyRateGain([[1/dt,0,0],[0,1/dt,0],[0,0,1/dt]])
+            Kt = StateOperators.StateGain(Kq, Kw)
+
+            x_diff = x_err - self.last_err
+            x_d_err = Kt * x_diff
+            x_kd = self.K['d'] * x_d_err
+            x_adj += x_kd
+
         self.x_hat -= x_adj
         self.last_update = t
+        self.last_err = x_err
         return self.x_hat
 
     def __str__(self):
@@ -97,3 +112,4 @@ class PID(EstimatorBase):
         for G in self.K.iteritems():
             gains.append(' K%s %s' % G)
         return '\n'.join(gains)
+

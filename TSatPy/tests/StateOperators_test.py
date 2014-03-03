@@ -39,6 +39,13 @@ class TestQuaternionGain(unittest.TestCase):
         q_expected = State.Quaternion([0,0,1], radians=np.pi/40)
         self.assertEquals(q_new, q_expected)
 
+    def test_identity(self):
+        q = State.Identity()
+        qg = StateOperators.QuaternionGain(0.25)
+        q_new = (qg * q)
+        q_expected = State.Identity()
+        self.assertEquals(q_new, q_expected)
+
 
 class TestStateGain(unittest.TestCase):
     def test_init(self):

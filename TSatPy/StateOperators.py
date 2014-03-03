@@ -3,6 +3,9 @@ import numpy as np
 from TSatPy import State
 
 
+class OperatorError(Exception):
+    pass
+
 class BodyRateGain(object):
     """
     Gain matrices for BodyRate instances
@@ -95,12 +98,14 @@ class QuaternionGain(object):
         :param w: BodyRate instance to be multiplied
         :type  w: BodyRate
         """
+        qi = State.Identity()
+        if q == qi:
+            return qi
 
         s = q.scalar
         s = np.cos(np.arccos(q.scalar) * self.K)
 
-        c = np.sqrt((q.vector.T * q.vector)[0,0] / (1 - s**2))
-
+        c = np.sqrt((q.vector.T * q.vector)[0,0] / float(1 - s**2))
         return State.Quaternion(q.vector / c, s)
 
     def __str__(self):

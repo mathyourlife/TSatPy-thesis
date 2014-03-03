@@ -113,3 +113,71 @@ class TestPID(unittest.TestCase):
             ])
         )
         self.assertEquals(x_hat, x_hat_expected)
+
+    @patch('time.time')
+    def test_d_estimator(self, mock_time):
+
+        mock_time.return_value = 1234
+
+        c = Metronome()
+
+        k = 4
+        Kq = StateOperators.QuaternionGain(k)
+        Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
+        Kd = StateOperators.StateGain(Kq, Kw)
+
+        pid = Estimator.PID(c)
+        pid.set_Kd(Kd)
+
+        x = State.State(
+            State.Quaternion([0,0,1],radians=np.pi/15),
+            State.BodyRate([0.1,2,3])
+        )
+
+        x_hat = pid.update(x)
+        self.assertEquals(State.State(), x_hat)
+        x_hat = pid.update(x)
+        self.assertEquals(State.State(), x_hat)
+
+    @patch('time.time')
+    def test_d_estimator(self, mock_time):
+
+        mock_time.return_value = 1234
+
+        c = Metronome()
+        k = 3
+        Kq = StateOperators.QuaternionGain(k)
+        Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
+        Kd = StateOperators.StateGain(Kq, Kw)
+
+        pid = Estimator.PID(c)
+        pid.set_Kd(Kd)
+
+        mock_time.return_value = 1235
+
+        x = State.State(
+            State.Quaternion([0,0,1],radians=0.4),
+            State.BodyRate([0.1,2,3])
+        )
+        x_hat = pid.update(x)
+
+        x = State.State(
+            State.Quaternion([0,0,1],radians=0.6),
+            State.BodyRate([0.2,2.2,2.5])
+        )
+        mock_time.return_value = 1235.5
+
+        x_hat = pid.update(x)
+
+        x_hat_expected = State.State(
+            State.Quaternion(
+                [0,0,1],
+                radians=0.2 * 3 / 0.5
+            ),
+            State.BodyRate([
+                0.1 * 3 / 0.5,
+                0.2 * 3 / 0.5,
+                -0.5  * 3 / 0.5,
+            ])
+        )
+        self.assertEquals(x_hat, x_hat_expected)
