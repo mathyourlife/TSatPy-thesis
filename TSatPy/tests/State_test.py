@@ -578,6 +578,7 @@ class TestPlant(unittest.TestCase):
         I = [[4, 0, 0], [0, 4, 0], [0, 0, 4]]
 
         p = State.Plant(I, x, clock)
+        self.assertEquals(p.x, x)
 
     def test_str(self):
         clock = Metronome()

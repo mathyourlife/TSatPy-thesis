@@ -567,9 +567,12 @@ class Plant(object):
     """
 
     def __init__(self, I, x, clock):
-        self.x = x
-        self.pos = QuaternionDynamics(self.x.q, clock)
-        self.vel = EulerMomentEquations(I, self.x.w, clock)
+        self.pos = QuaternionDynamics(x.q, clock)
+        self.vel = EulerMomentEquations(I, x.w, clock)
+
+    @property
+    def x(self):
+        return State(self.pos.q, self.vel.w)
 
     def propagate(self, M):
         """
