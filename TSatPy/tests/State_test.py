@@ -266,12 +266,18 @@ class TestQuaternionAngles(unittest.TestCase):
             )
 
     def test_decompose(self):
-
         qr = State.Quaternion([0, 0, 1], radians=np.pi/4)
         qn = State.Quaternion([3, 1, 0], radians=np.pi/10)
-
         q = qn * qr
+        qr_check, qn_check = q.decompose()
 
+        self.assertEquals(qn, qn_check)
+        self.assertEquals(qr, qr_check)
+
+    def test_decompose_rotation_only(self):
+        qr = State.Quaternion([0, 0, 1], radians=np.pi/4)
+        qn = State.Identity()
+        q = qn * qr
         qr_check, qn_check = q.decompose()
 
         self.assertEquals(qn, qn_check)

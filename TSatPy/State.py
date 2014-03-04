@@ -166,16 +166,22 @@ class Quaternion(object):
         :rtype: (quaternion, quaternion)
         """
 
-        Q = (
-            self.scalar * self.vector[0, 0]
-            - self.vector[1, 0] * self.vector[2, 0]
-        )/float(
-            self.scalar * self.vector[1, 0]
-            + self.vector[0, 0] * self.vector[2, 0]
-        )
         n0 = np.sqrt(self.scalar**2 + self.vector[2, 0]**2)
         r0 = self.scalar / n0
         r3 = self.vector[2, 0] / n0
+
+        divisor = float(self.scalar * self.vector[1, 0]
+            + self.vector[0, 0] * self.vector[2, 0])
+
+        if divisor == 0.0:
+            q_r = Quaternion([0, 0, r3], r0)
+            return q_r, Identity()
+
+        Q = (
+            self.scalar * self.vector[0, 0]
+            - self.vector[1, 0] * self.vector[2, 0]
+        )/divisor
+
         n2 = np.sqrt((1 - n0**2) / (Q**2 + 1))
         n1 = Q * n2
 
@@ -339,12 +345,12 @@ class QuaternionDynamics(object):
         q2.normalize()
 
         q_dot = q2 - self.q
-        try:
+
+        if dt > 0:
             q_dot.vector /= dt
             q_dot.scalar /= dt
             self.q_dot = q_dot
-        except ZeroDivisionError:
-            pass
+
         self.q = q2
 
         self.w = w
