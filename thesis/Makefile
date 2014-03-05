@@ -8,3 +8,4 @@ view:
 
 main:
 	$(TEX) CoutureThesis.tex
+	makeindex CoutureThesis.nlo -s nomencl.ist -o CoutureThesis.nls
