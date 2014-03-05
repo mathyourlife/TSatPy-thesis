@@ -1,0 +1,86 @@
+\pagebreak
+\addcontentsline{toc}{chapter}{Nomenclature}
+
+
+\nomenclature{$\bs{q}$}{quaternion where $\bs{q} = q_1\bs{i}+q_2\bs{j}+q_3\bs{k}+q_0$}
+\nomenclature{$\bs{q_k}$}{quaternion state at discrete step $k$}
+\nomenclature{$\bs{q_r}$}{rotational quaternion}
+\nomenclature{$\bs{q_I}$}{identity quaternion where $\bs{q_I} = 0\bs{i}+0\bs{j}+0\bs{k}+1$}
+\nomenclature{$\bs{\Omega}$}{skew symmetric matrix}
+
+\printnomenclature
+
+
+
+% \begin{tabular}{|l|c|c|}
+%   \hline
+%   % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
+%  \T \B \bf{Variable Name} & \bf{Symbol} & \bf{Units} \\ \hline
+%  \T \B   Full quaternion & $\bf{\bar{q}}$ & -  \\ \hline
+%  \T \B Quaternion imaginary vector & $\bf{q}$ & -  \\ \hline
+%  \T \B Quaternion scalar component & $\bf{q_0}$ & -  \\ \hline
+%  \T \B Spacecraft angular rates & $\boldsymbol{\omega}$ & $rad/s$  \\ \hline
+%  \T \B Time derivative of full quaternion & $\bf{\dot{\bar{q}}}$ & -   \\ \hline
+%  \T \B Time derivative of spacecraft angular rates & $\boldsymbol{\dot{\omega}}$ & $rad/s^2$   \\ \hline
+% \multirow{2}{*} \T \B Angular rate augmented with zero for quaternion& $\boldsymbol{\bar{\omega}_{b/o}}$ & $rad/s^2$   \\
+%      operators  & &  \\  \hline
+% % \T \B Acceleration at expected location of accelerometer & $\bf{a}_{nom}$ & $m/s^2$  \\ \hline
+%  \T \B True acceleration at location of accelerometer & $\boldsymbol{a}_{true}$ &  $m/s^2$   \\ \hline
+% \multirow{2}{*} \T \B Acceleration where accelerometer is thought  & {$\boldsymbol{a_{nom}}$} &  $m/s^2$ \\
+%     to be and oriented & & \\ \hline
+%  \T \B Measured acceleration ($a_{true}$ + noise) & $\boldsymbol{a_m}$ & $m/s^2$  \\ \hline
+% \multirow{2}{*} \T \B Acceleration at true accelerometer location,  & $\boldsymbol{a_{shift}}$ & $m/s^2$  \\
+%    aligned to body axis & & \\ \hline
+% \multirow{2}{*} \T \B Acceleration at true accelerometer location, & $\boldsymbol{a_{mis}}$ & $m/s^2$  \\
+%      aligned to accelerometer axis & & \\ \hline
+%  \T \B Accelerometer sensor bias & $\boldsymbol{a_b}$ & $m/s^2$  \\ \hline
+% \multirow{2}{*} \T \B Shift in accelerometer location from measured & $\boldsymbol{\delta r}$  & $m$  \\
+%    location   & &  \\ \hline
+% \multirow{2}{*} \T \B accelerometer axes orthogonal rotation defined & $\boldsymbol{\delta}$  & $rad$  \\
+%     by a small angle 1-2-3 Euler angle sequence & & \\ \hline
+% \multirow{2}{*} \T \B Rotation matrix defining accelerometer axes  & $\boldsymbol{\Delta}$  & -  \\
+%     orthogonal rotation & & \\  \hline
+%  \T \B Lumped bias correction term & $\boldsymbol{a}_{LB}$  & $m/s^2$  \\ \hline
+%  \T \B Spacecraft true inertia tensor & $\boldsymbol{J}$ & $kg-m^2$  \\ \hline
+%  \T \B Nominal (model) spacecraft inertia tensor & $\boldsymbol{\hat{J}}$ & $kg-m^2$  \\ \hline
+%  \T \B Measured accelerometer location prior to launch &  $\boldsymbol{r}$ & $m$  \\ \hline
+%  \T \B Accelerometer white noise & $\boldsymbol{\nu}_{accelerometer}$ & $m/s^2$  \\ \hline
+%  \T \B Torques on spacecraft & $\boldsymbol{T}$ & $N-m$  \\ \hline
+%  \T \B State covariance matrix & $\boldsymbol{Q}$ & -  \\ \hline
+%  \T \B Sensor noise covariance matrix & $\boldsymbol{R}$ & - \\ \hline
+
+%   \hline
+% \end{tabular}
+
+
+
+%\section{Nomenclature}
+%\begin{description}
+%  \item[$\bf{\bar{q}}$] Full quaternion
+%  \item[$\bf{q}$] Quaternion imaginary vector
+%  \item[$\bf{q_0}$] Quaternion scalar component
+%  \item[$\boldsymbol{\omega}$] Spacecraft angular rates
+%  \item[$\bf{\dot{\bar{q}}}$] Time derivative of full quaternion
+%  \item[$\boldsymbol{\dot{\omega}}$] Time derivative of spacecraft angular rates
+%  \item[$\boldsymbol{\bar{\omega}_{b/o}}$] Angular rate augmented with zero for quaternion operators
+%  \item[$\boldsymbol{a_{true}}$] True acceleration at location of accelerometer
+%  \item[$\boldsymbol{a_{typ}}$] Acceleration where accelerometer is thought to be and oriented
+%  \item[$\boldsymbol{a_m}$] Measured acceleration ($a_{true}$ + noise)
+%  \item[$\boldsymbol{a_{shift}}$] Acceleration at true accelerometer location, aligned to body axis
+%  \item[$\boldsymbol{a_{mis}}$] Acceleration at true accelerometer location, aligned to accelerometer axis
+%  \item[$\boldsymbol{a_b}$] Accelerometer sensor bias
+%  \item[$\boldsymbol{\delta r}$] Shift in accelerometer location from measured location
+%  \item[$\boldsymbol{\delta}$] 1-2-3 small angle Euler rotation defining accelerometer axes orthogonal rotation
+%  \item[$\Delta$] Rotation matrix defining accelerometer axes orthogonal rotation
+%  \item[$a_{LB}$] Lumped bias correction term
+%  \item[$J$] Spacecraft inertia tensor
+%  \item[$\hat{J}$] Expected spacecraft inertia tensor
+%  \item[$r$] Measured accelerometer location prior to launch
+%  \item[$\nu_{accelerometer}$] Accelerometer white noise
+%  \item[$T$] Torques on spacecraft
+%  \item[$Q$] State covariance matrix
+%  \item[$R$] Sensor noise covariance matrix
+%\end{description}
+
+
+\pagebreak
