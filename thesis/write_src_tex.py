@@ -19,5 +19,12 @@ with open(src_tex, 'w') as tex:
     for f in sorted(glob.glob('%s/*.py' % tsat_dir)):
         fn = f[len(tsat_dir)+1:]
         tex.write('\n')
-        tex.write('\section{File TSatPy/%s}\label{code:TSatPy/%s}' % (fn.replace('_', '\_'), fn))
+        tex.write('\section{TSatPy/%s}\label{code:TSatPy/%s}' % (fn.replace('_', '\_'), fn))
         tex.write('\inputminted[linenos,fontsize=\scriptsize]{python}{%s}\n' % f)
+
+    for f in sorted(glob.glob('%s/tests/*.py' % tsat_dir)):
+        fn = f[len(tsat_dir)+1:]
+        tex.write('\n')
+        tex.write('\section{TSatPy/%s}\label{code:TSatPy/%s}' % (fn.replace('_', '\_'), fn))
+        tex.write('\inputminted[linenos,fontsize=\scriptsize]{python}{%s}\n' % f)
+
