@@ -42,14 +42,14 @@ nosetests.xml
 
 # LaTeX
 *.aux
-thesis/CoutureThesis.ilg
-thesis/CoutureThesis.lof
-thesis/CoutureThesis.lot
-thesis/CoutureThesis.nlo
-thesis/CoutureThesis.nls
-thesis/CoutureThesis.pdf
-thesis/CoutureThesis.pyg
-thesis/CoutureThesis.toc
-thesis/CoutureThesis.log
+tex/CoutureThesis.ilg
+tex/CoutureThesis.lof
+tex/CoutureThesis.lot
+tex/CoutureThesis.nlo
+tex/CoutureThesis.nls
+tex/CoutureThesis.pdf
+tex/CoutureThesis.pyg
+tex/CoutureThesis.toc
+tex/CoutureThesis.log
 *.dvi
 

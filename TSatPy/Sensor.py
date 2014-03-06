@@ -21,7 +21,7 @@ class Sensors(object):
         self.sensors['css'].update_state(v[:6])
         # Accelerometer data comes in the next 4 entries
         self.sensors['accel'].update_state(v[6:10])
-        # Then a lonly single voltage from the gyro
+        # Then a only single voltage from the gyro
         self.sensors['gyro'].update_state(v[10])
         # Then the triple threat from the magnetometer
         self.sensors['mag'].update_state(v[11:14])
@@ -77,6 +77,7 @@ class PhotoDiodeArray(SensorBase):
             dtype=np.float)
         self.angles_x = np.cos(self.angles)
         self.angles_y = np.sin(self.angles)
+        self.theta = None
 
     def update_state(self, v):
         self.v = np.array(v, dtype=np.float)
@@ -90,5 +91,4 @@ class PhotoDiodeArray(SensorBase):
             css_theta += 2* np.pi
 
         self.theta = css_theta
-
         self.x.q.from_rotation([0, 0, 1], radians=self.theta)

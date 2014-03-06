@@ -6,6 +6,6 @@ VIEW := evince
 view:
 	$(VIEW) CoutureThesis.pdf &
 
-main:
+thesis:
 	$(TEX) CoutureThesis.tex
 	makeindex CoutureThesis.nlo -s nomencl.ist -o CoutureThesis.nls
