@@ -13,8 +13,6 @@ from TSatPy.Clock import Metronome
 from TSatPy.Sensor import Sensors
 from TSatPy.Estimator import Estimator
 
-
-
 from twisted.internet.protocol import DatagramProtocol
 from twisted.internet import reactor
 
@@ -26,7 +24,6 @@ class TSatComm(DatagramProtocol):
 
     def datagramReceived(self, msg, (host, port)):
         print "received %r from %s:%d" % (msg, host, port)
-
 
         msg_num, msg_data = msg.split('\t')
         handle = self.msg_handlers[int(msg_num)][1]
@@ -91,12 +88,12 @@ class TSatPyAPI(resource.Resource):
 if __name__ == '__main__':
     c = TSatController()
 
-    v = range(1,15)
+    v = range(1, 15)
     # css = PhotoDiodeArray()
     # css.update_state(v)
     # print css
     # c.sensors.
     # s = Sensors()
     c.v_to_x(v)
-    print '-'*100
+    print '-' * 100
     print c.sensor

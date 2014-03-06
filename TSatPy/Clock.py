@@ -28,7 +28,8 @@ class Metronome(object):
         :rtype:  float
         """
 
-        return (time.time() - self.start_marker) * self.speed + self.speed_changed
+        return (time.time() - self.start_marker
+            ) * self.speed + self.speed_changed
 
     def set_speed(self, speed):
         """

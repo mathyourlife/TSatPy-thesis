@@ -16,9 +16,10 @@ from twisted.pair import rawudp
 import TSatPy.Server
 import TSatPy.Comm
 
+
 def system_controller():
     """
-    Define the parsing service that will be scrubbing incoming postfix log lines
+
 
     :param host: interface the service will run on (localhost)
     :type  host: str
@@ -38,9 +39,8 @@ def api_service(tsat, host, port):
     """
     Define the api interface service that can report parsing stats
 
-    :param parse_factory: A constructed parsing factory from parsing_service
-                          used to pull parsed stats for reporting
-    :type  parse_factory: PostfixMonitor.Server.ParseFactory
+    :param tsat:
+    :type  tsat:
     :param host: interface the service will run on (localhost)
     :type  host: str
     :param port: port the service will listen on
@@ -57,14 +57,7 @@ def api_service(tsat, host, port):
 
 def new(api_host, api_port, log_file):
     """
-    Construct the postfix-monitor service with defined parsing, api, and logging
-    configurations.
 
-
-    :param parse_host: interface the parsing service will run on (localhost)
-    :type  parse_host: str
-    :param parse_port: port the parsing service will listen on
-    :type  parse_port: int
     :param api_host: interface the api service will run on (localhost)
     :type  api_host: str
     :param api_port: port the api service will listen on
@@ -90,14 +83,14 @@ def new(api_host, api_port, log_file):
     msg_handlers = {
         2:   [bsize, TSatPy.Comm.ReadAckMsg, 'Set run mode'],
         4:   [bsize, None, 'Set run mode'],
-        18:  [4*dsize, None, 'Set fan speed'],
+        18:  [4 * dsize, None, 'Set fan speed'],
         19:  [bsize, None, 'Set log record mode'],
         20:  [bsize, None, 'Request sensor reading'],
         22:  [bsize, TSatPy.Comm.EndDataMsg, 'End of sensor log'],
         23:  [dsize, None, 'Request sensor log data'],
         33:  [dsize, None, 'Set log sample rate'],
-        63:  [15*dsize, TSatPy.Comm.ReadRawData, 'Sensor readings'],
-        64:  [16*dsize, TSatPy.Comm.ReadRawData, 'Sensor log entry'],
+        63:  [15 * dsize, TSatPy.Comm.ReadRawData, 'Sensor readings'],
+        64:  [16 * dsize, TSatPy.Comm.ReadRawData, 'Sensor log entry'],
         65:  [dsize, TSatPy.Comm.ReadRawData, 'Sensor log size'],
         104: [bsize, TSatPy.Comm.ReadAckMsg, 'Ack run mode'],
         118: [bsize, TSatPy.Comm.ReadAckMsg, 'Ack fan volt'],

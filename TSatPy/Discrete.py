@@ -27,7 +27,8 @@ class Derivative(object):
 
         :param val: New value
         :type  val: Numeric
-        :param epoch: Epoch timestamp for the new value.  If none, current timestamp is used.
+        :param epoch: Epoch timestamp for the new value.
+                      If none, current timestamp is used.
         :type  epoch: float
         """
 
@@ -78,12 +79,13 @@ class Integral(object):
     def update(self, val, epoch=None):
         """
         Update the running sum with the new value.  Assumed a first order hold
-        where the signal value is a linear interpolation between the last update and
-        the current one.
+        where the signal value is a linear interpolation between the last
+        update and the current one.
 
         :param val: New value
         :type  val: Numeric
-        :param epoch: Epoch timestamp for the new value.  If none, current timestamp is used.
+        :param epoch: Epoch timestamp for the new value.
+                      If none, current timestamp is used.
         :type  epoch: float
         """
 
@@ -91,7 +93,8 @@ class Integral(object):
             epoch = time.time()
 
         try:
-            self.sum += (val + self.last_value) * float(epoch - self.last_time) / 2
+            self.sum += (val + self.last_value
+                ) * float(epoch - self.last_time) / 2
         except TypeError:
             self.sum = 0
 

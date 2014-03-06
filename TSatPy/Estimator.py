@@ -83,7 +83,8 @@ class PID(EstimatorBase):
 
         if dt and self.K['i'] is not None:
             Kq = StateOperators.QuaternionGain(dt)
-            Kw = StateOperators.BodyRateGain([[dt, 0, 0], [0, dt, 0], [0, 0, dt]])
+            Kw = StateOperators.BodyRateGain(
+                [[dt, 0, 0], [0, dt, 0], [0, 0, dt]])
             Kt = StateOperators.StateGain(Kq, Kw)
 
             x_i_err = Kt * x_err
@@ -94,7 +95,8 @@ class PID(EstimatorBase):
 
         if dt and self.K['d'] is not None:
             Kq = StateOperators.QuaternionGain(1 / dt)
-            Kw = StateOperators.BodyRateGain([[1 / dt, 0, 0], [0, 1 / dt, 0], [0, 0, 1 / dt]])
+            Kw = StateOperators.BodyRateGain(
+                [[1 / dt, 0, 0], [0, 1 / dt, 0], [0, 0, 1 / dt]])
             Kt = StateOperators.StateGain(Kq, Kw)
 
             x_diff = x_err - self.last_err

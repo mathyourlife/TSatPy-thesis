@@ -141,15 +141,15 @@ class StateGain(object):
         print('Kw = %s' % Kw)
         print('Kw * w = %s' % (Kw * w))
         Kx = StateGain(Kq, Kw)
-        print('Kx = %s' % Kx)
-        print('Kx * x = %s' % (Kx * x))
-        x = <Quaternion [-0 -0 -0.156434], 0.987688>, <BodyRate [1 -1 0]>
-        Kq = 0.25
-        Kq * q = <Quaternion [-0 -0 -0.0392598], 0.999229>
-        Kw = [[ 1  2  3]  [ 4  5  6]  [10  8  9]]
-        Kw * w = <BodyRate [-1 -1 2]>
-        Kx = <StateGain <Kq 0.25>, <Kw = [[ 1  2  3]  [ 4  5  6]  [10  8  9]]>>
-        Kx * x = <Quaternion [-0 -0 -0.0392598], 0.999229>, <BodyRate [-1 -1 2]>
+        print('Kx=%s' % Kx)
+        print('Kx*x=%s' % (Kx * x))
+        # x = <Quaternion [-0 -0 -0.156434], 0.987688>, <BodyRate [1 -1 0]>
+        # Kq = 0.25
+        # Kq * q = <Quaternion [-0 -0 -0.0392598], 0.999229>
+        # Kw = [[ 1  2  3]  [ 4  5  6]  [10  8  9]]
+        # Kw * w = <BodyRate [-1 -1 2]>
+        # Kx=<StateGain <Kq 0.25>, <Kw = [[ 1  2  3]  [ 4  5  6]  [10  8  9]]>>
+        # Kx*x=<Quaternion [-0 -0 -0.0392598], 0.999229>, <BodyRate [-1 -1 2]>
 
     """
 

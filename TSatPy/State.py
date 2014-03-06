@@ -66,7 +66,7 @@ class Quaternion(object):
     @property
     def mag(self):
         """
-        Calculate the magnitude of the quaternion by finding its euclidean norm.
+        Calculate the magnitude of the quaternion by finding its euclidean norm
 
         :return: Magnitude of the quaternion
         :rtype:  float
@@ -92,7 +92,8 @@ class Quaternion(object):
     @property
     def conj(self):
         """
-        Create a conjugate quaternion with the same scalar and the negative vector.
+        Create a conjugate quaternion with the same scalar and the
+        negative vector.
         """
         return Quaternion(-self.vector, self.scalar)
 
@@ -136,8 +137,8 @@ class Quaternion(object):
 
     def from_rotation(self, vector, radians):
         """
-        Define an instance of the rotational quaternion with an axis of rotation
-        and the angle of rotation.
+        Define an instance of the rotational quaternion with an axis of
+        rotation and the angle of rotation.
 
         :param vector: axis of rotation 3x1
         :type  vector: np.mat
@@ -186,11 +187,12 @@ class Quaternion(object):
         n1 = Q * n2
 
         q_r = Quaternion([0, 0, r3], r0)
-
         q_n = Quaternion([n1, n2, 0], n0)
         q_check = q_n * q_r
 
-        if not (np.sum(np.sign(q_check.vector[0:2, 0]) == np.sign(self.vector[0:2, 0])) > 0):
+        if not (np.sum(np.sign(q_check.vector[0:2, 0]) ==
+                np.sign(self.vector[0:2, 0])) > 0):
+
             q_n.vector = -q_n.vector
 
         return q_r, q_n
@@ -226,7 +228,8 @@ class Quaternion(object):
 
     def __mul__(self, q):
         s = self.scalar * q.scalar - (self.vector.T * q.vector)[0, 0]
-        v = self.vector * q.scalar + q.vector * self.scalar + np.cross(self.vector.T, q.vector.T).T
+        v = self.vector * q.scalar + q.vector * self.scalar + np.cross(
+            self.vector.T, q.vector.T).T
         return Quaternion(v.T, s)
 
     def latex(self):
@@ -282,12 +285,12 @@ def QuaternionError(q_hat, q):
         print('q = %s' % q)
         qe = QuaternionError(q_hat, q)
         print('q_err = %s' % qe)
-        print('Take the error off the estimated quaternion to get the measured q')
+        print('Take error off the estimated quaternion to get the measured q')
         print('q_err.conj * q_hat = q = %s' % (qe.conj * q_hat))
         # q_hat = <Quaternion [-0 -0 -0.707107], 0.707107>
         # q = <Quaternion [-0 -0 -0.866025], 0.5>
         # q_err = <Quaternion [0 0 0.258819], 0.965926>
-        # Take the error off the estimated quaternion to get the measured q
+        # Take error off the estimated quaternion to get the measured q
         # q_err.conj * q_hat = q = <Quaternion [0 0 -0.866025], 0.5>
 
     The quaternion error will return a rotational quaternion < 180 deg::
@@ -297,11 +300,11 @@ def QuaternionError(q_hat, q):
         q = Quaternion(v, radians=18 * np.pi / 10.0)
         qe = QuaternionError(q_hat, q)
         # The shorter quaternion is rotating through the 360
-        print('q_hat(3pi/10) = %s' % q_hat)
+        print('q_hat(3pi/10) =%s' % q_hat)
         print('q(18pi/10) = %s' % q)
         print('q_err   = %s' % qe)
         print('q(pi/2) = %s' % Quaternion(v, radians=5 * np.pi / 10.0))
-        # q_hat(3pi/10) = <Quaternion [-0.0990688 0.198138 -0.396275], 0.891007>
+        # q_hat(3pi/10) =<Quaternion [-0.0990688 0.198138 -0.396275], 0.891007>
         # q(18pi/10) = <Quaternion [-0.067433 0.134866 -0.269732], -0.951057>
         # q_err   = <Quaternion [-0.154303 0.308607 -0.617213], 0.707107>
         # q(pi/2) = <Quaternion [-0.154303 0.308607 -0.617213], 0.707107>
@@ -339,7 +342,8 @@ class QuaternionDynamics(object):
         omega1 = self._omega(-self.w.w)
         omega_bar = (omega1 + omega2) / 2
 
-        phi = expm(0.5 * omega_bar * dt) + 1 / 48 * (omega2 * omega1 - omega1 * omega2) * dt ** 2
+        phi = expm(0.5 * omega_bar * dt) + 1 / 48 * (
+            omega2 * omega1 - omega1 * omega2) * dt ** 2
         q2mat = phi * self.q.mat
         q2 = Quaternion(q2mat[0:3, 0], q2mat[3, 0])
         q2.normalize()
@@ -467,7 +471,8 @@ class EulerMomentEquations(object):
 
     def propagate(self, M):
         """
-        Propagate a rigid body's angular rates based on Euler's Moment Equations.
+        Propagate a rigid body's angular rates based on Euler's
+        Moment Equations.
 
         :param M: Applied moment about the rigid body's principal axes (3x1)
         :type  M: 3 element list
@@ -563,7 +568,8 @@ def StateError(x_hat, x):
     :type  x_hat: State
     :param x_hat: Actual/Measured state
     :type  x_hat: State
-    :returns: error generated from a quaternion multiplicative error and body rate diff
+    :returns: error generated from a quaternion multiplicative error
+              and body rate diff
     :rtype: State
     """
     return State(
