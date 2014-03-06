@@ -8,8 +8,10 @@ import json
 from twisted.internet.task import LoopingCall
 from twisted.web import resource
 
-import State
-from Clock import Metronome
+from TSatPy import State
+from TSatPy.Clock import Metronome
+from TSatPy.Sensor import Sensors
+from TSatPy.Estimator import Estimator
 
 
 
@@ -41,24 +43,18 @@ class TSatController(object):
     Create an instance of the TSat controller
     """
 
-    def __init__(self, loop=0.1):
+    def __init__(self):
         self.clock = Metronome()
-        self.timers = {}
-        self.init_plant(loop)
+        self.sensor = None
+        self.estimator = None
+        self.setup()
 
-    def init_plant(self, loop):
-        q = State.Identity()
-        w = State.BodyRate([0, 0, 0.00001])
-        I = [[4, 0, 0], [0, 4, 0], [0, 0, 4]]
-        self.plant = State.Plant(I, q, w, self.clock)
-        self.timers['plant'] = LoopingCall(self.propagate_plant_state)
-        self.timers['plant'].start(loop)
+    def setup(self):
+        self.sensor = Sensors()
+        self.estimator = Estimator()
 
-    def propagate_plant_state(self):
-        self.plant.propagate([0, 0, 0])
-
-    def voltage_in(self, message):
-        print "voltage in: %s" % message
+    def v_to_x(self, v):
+        self.sensor.v_to_x(v)
 
 
 class TSatPyAPI(resource.Resource):
@@ -74,6 +70,12 @@ class TSatPyAPI(resource.Resource):
         """
 
         uri = request.uri.lower()
+        if '?' in request.uri:
+            uri, _ = request.uri.split('?', 1)
+        else:
+            uri = request.uri
+        uri_path = uri.strip('/').split('/')
+        root_uri = uri_path.pop(0).lower()
 
         if uri.startswith('/plant/state'):
             msg = json.dumps(self.tsat.plant.latex())
@@ -84,3 +86,17 @@ class TSatPyAPI(resource.Resource):
             msg = "OK"
 
         return cgi.escape(msg).encode('ascii', 'xmlcharrefreplace')
+
+
+if __name__ == '__main__':
+    c = TSatController()
+
+    v = range(1,15)
+    # css = PhotoDiodeArray()
+    # css.update_state(v)
+    # print css
+    # c.sensors.
+    # s = Sensors()
+    c.v_to_x(v)
+    print '-'*100
+    print c.sensor
