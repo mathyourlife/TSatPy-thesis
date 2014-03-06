@@ -58,7 +58,7 @@ class Quaternion(object):
         qe = QuaternionError(self, q)
 
         return (np.sum(np.abs(qe.vector)) < self.float_threshold and
-         np.abs(qe.scalar - 1) < self.float_threshold)
+            np.abs(qe.scalar - 1) < self.float_threshold)
 
     def __ne__(self, q):
         return not self.__eq__(q)
@@ -71,7 +71,7 @@ class Quaternion(object):
         :return: Magnitude of the quaternion
         :rtype:  float
         """
-        return np.sqrt(np.sum(self.vector.T * self.vector) + self.scalar**2)
+        return np.sqrt(np.sum(self.vector.T * self.vector) + self.scalar ** 2)
 
     def normalize(self):
         """
@@ -115,7 +115,7 @@ class Quaternion(object):
 
         s = self.scalar
         v = self.vector
-        x1 = (s**2 - (v.T * v)[0, 0]) * np.eye(3)
+        x1 = (s ** 2 - (v.T * v)[0, 0]) * np.eye(3)
         x2 = 2 * self.vector * self.vector.T
         x3 = 2 * s * self.x
 
@@ -151,8 +151,8 @@ class Quaternion(object):
 
         v = v / np.sqrt((v.T * v)[0, 0])
 
-        self.vector = v * np.sin(-radians/2)
-        self.scalar = np.cos(-radians/2)
+        self.vector = v * np.sin(-radians / 2)
+        self.scalar = np.cos(-radians / 2)
 
     def decompose(self):
         """
@@ -166,7 +166,7 @@ class Quaternion(object):
         :rtype: (quaternion, quaternion)
         """
 
-        n0 = np.sqrt(self.scalar**2 + self.vector[2, 0]**2)
+        n0 = np.sqrt(self.scalar ** 2 + self.vector[2, 0] ** 2)
         r0 = self.scalar / n0
         r3 = self.vector[2, 0] / n0
 
@@ -180,9 +180,9 @@ class Quaternion(object):
         Q = (
             self.scalar * self.vector[0, 0]
             - self.vector[1, 0] * self.vector[2, 0]
-        )/divisor
+        ) / divisor
 
-        n2 = np.sqrt((1 - n0**2) / (Q**2 + 1))
+        n2 = np.sqrt((1 - n0 ** 2) / (Q ** 2 + 1))
         n1 = Q * n2
 
         q_r = Quaternion([0, 0, r3], r0)
@@ -239,7 +239,7 @@ class Quaternion(object):
         msg = '%g \\textbf{i} %+g \\textbf{j} %+g \\textbf{k} %+g' % (
             self.vector[0, 0], self.vector[1, 0], self.vector[2, 0],
             self.scalar
-            )
+        )
         return msg
 
     def __str__(self):
@@ -308,7 +308,7 @@ def QuaternionError(q_hat, q):
 
     """
 
-    qe = q.conj * q_hat;
+    qe = q.conj * q_hat
 
     # To keep error signals from trying to turn > 180 degrees
     # Keep the scalar value for the error quaternion positive.
@@ -339,7 +339,7 @@ class QuaternionDynamics(object):
         omega1 = self._omega(-self.w.w)
         omega_bar = (omega1 + omega2) / 2
 
-        phi = expm(0.5 * omega_bar * dt) + 1/48 * (omega2 * omega1 - omega1 * omega2) * dt**2
+        phi = expm(0.5 * omega_bar * dt) + 1 / 48 * (omega2 * omega1 - omega1 * omega2) * dt ** 2
         q2mat = phi * self.q.mat
         q2 = Quaternion(q2mat[0:3, 0], q2mat[3, 0])
         q2.normalize()
@@ -436,7 +436,7 @@ class BodyRate(object):
         """
         msg = '%g \\textbf{i} %+g \\textbf{j} %+g \\textbf{k}' % (
             self.w[0, 0], self.w[1, 0], self.w[2, 0],
-            )
+        )
         return msg
 
     def __str__(self):
@@ -482,9 +482,12 @@ class EulerMomentEquations(object):
             return self.w
 
         w_dot = BodyRate([
-            M[0] / self.I[0, 0] - (self.I[2, 2] - self.I[1, 1]) * self.w.w[1, 0] * self.w.w[2, 0] / self.I[0, 0],
-            M[1] / self.I[1, 1] - (self.I[0, 0] - self.I[2, 2]) * self.w.w[0, 0] * self.w.w[2, 0] / self.I[1, 1],
-            M[2] / self.I[2, 2] - (self.I[1, 1] - self.I[0, 0]) * self.w.w[0, 0] * self.w.w[1, 0] / self.I[2, 2],
+            M[0] / self.I[0, 0] - (self.I[2, 2] - self.I[1, 1]) *
+                self.w.w[1, 0] * self.w.w[2, 0] / self.I[0, 0],
+            M[1] / self.I[1, 1] - (self.I[0, 0] - self.I[2, 2]) *
+                self.w.w[0, 0] * self.w.w[2, 0] / self.I[1, 1],
+            M[2] / self.I[2, 2] - (self.I[1, 1] - self.I[0, 0]) *
+                self.w.w[0, 0] * self.w.w[1, 0] / self.I[2, 2],
         ])
 
         # Update body rate rate on the class.
@@ -566,6 +569,7 @@ def StateError(x_hat, x):
     return State(
         QuaternionError(x_hat.q, x.q),
         x_hat.w - x.w)
+
 
 class Plant(object):
     """

@@ -10,7 +10,7 @@ controller:
 	twistd --nodaemon --pidfile $PIDFILE --python $(DIR)/bin/tsat_controller.py
 
 lint:
-	pep8 TSatPy
+	pep8 TSatPy --exclude=TSatPy/tests/* --ignore=E126,E128,E241
 	pylint TSatPy --disable=C0103
 
 doc:

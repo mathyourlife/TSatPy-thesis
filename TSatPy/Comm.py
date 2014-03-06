@@ -20,14 +20,14 @@ def ReadRawData(msg):
 MSG_HANDLERS = {
     2:   ['!B', 1, ReadAckMsg, 'Set run mode'],
     4:   ['!B', 1, None, 'Set run mode'],
-    18:  ['!4d', 4*8, None, 'Set fan speed'],
+    18:  ['!4d', 4 * 8, None, 'Set fan speed'],
     19:  ['!B', 1, None, 'Set log record mode'],
     20:  ['!B', 1, None, 'Request sensor reading'],
     22:  ['!B', 1, EndDataMsg, 'End of sensor log'],
     23:  ['!d', 8, None, 'Request sensor log data'],
     33:  ['!d', 8, None, 'Set log sample rate'],
-    63:  ['!15d', 15*8, ReadRawData, 'Sensor readings'],
-    64:  ['!16d', 16*8, ReadRawData, 'Sensor log entry'],
+    63:  ['!15d', 15 * 8, ReadRawData, 'Sensor readings'],
+    64:  ['!16d', 16 * 8, ReadRawData, 'Sensor log entry'],
     65:  ['!d', 8, ReadRawData, 'Sensor log size'],
     104: ['!B', 1, ReadAckMsg, 'Ack run mode'],
     118: ['!B', 1, ReadAckMsg, 'Ack fan volt'],
@@ -39,8 +39,10 @@ MSG_HANDLERS = {
 class UDP_Err(Exception):
     pass
 
+
 class UDP_Payload_Size(UDP_Err):
     pass
+
 
 class UDP(object):
 
@@ -52,7 +54,7 @@ class UDP(object):
         self.bind_port = bind_port
 
         self.send_to = send_to
-        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP
         self.sock.bind(('0.0.0.0', self.bind_port))
         self.sock.setblocking(0)
 
@@ -138,5 +140,3 @@ class UDP(object):
 # time.sleep(0.1)
 # u.recieve()
 # print u.msg
-
-

@@ -85,10 +85,10 @@ class PhotoDiodeArray(SensorBase):
         css_x = (self.angles_x * self.v).sum()
         css_y = (self.angles_y * self.v).sum()
 
-        css_theta = np.arctan(css_y/css_x)
+        css_theta = np.arctan(css_y / css_x)
 
         if css_theta < 0:
-            css_theta += 2* np.pi
+            css_theta += 2 * np.pi
 
         self.theta = css_theta
         self.x.q.from_rotation([0, 0, 1], radians=self.theta)
