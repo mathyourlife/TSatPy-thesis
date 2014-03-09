@@ -1,0 +1,59 @@
+TICKETS:
+
+**change from showing model to sensor graph
+init
+cmd ?
+start buffer
+cmd start buffer
+cmd start sensor graph
+cmd draw tsat model
+cmd start sensor model
+cmd start sensor graph
+
+TO DO:
+
+Magnetic fields demo
+Moving average for filter
+Command to switch filters
+Display latex
+Print out of object oriented structure
+Add command to set timer interval
+And config debug flag
+Model can turn on and off versions
+Figure display command history
+Figure display text log
+Timer change name to Buffer->Sensor
+Add actuator locations to model
+Organized and verify unit test
+Collect state boys
+Ready to suppress series
+
+
+
+Estimator
+ Correction term
+ qdot = q(n+1) - q(n) / delta t
+ w = 2*(qs * qdotv - qv * qdots) - 2 qx * qdotv
+ wxdot = (Iy-Iz)/Ix) wy wz
+ wydot = (Iz-Ix)/Iy) wx wz
+ wzdot = (Ix-Iy)/Iz) wx wy
+ 
+ Plant
+ qdotv = 1/2 ( qx * w + qs * w)
+ qdots = -1/2 (q^T w)
+
+ wxdot = (Iy-Iz)/Ix) wy wz
+ wydot = (Iz-Ix)/Iy) wx wz
+ wzdot = (Ix-Iy)/Iz) wx wy
+ 
+ update state 
+
+Controller
+ qe = qm * qd^-1
+ 
+
+Linearized Plant Model
+ 
+
+ 
+ 
