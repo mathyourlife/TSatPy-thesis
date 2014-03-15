@@ -17,6 +17,9 @@ doc:
 	sphinx-apidoc -A "Daniel Robert Couture" -V $(VERSION) -F -o docs/ TSatPy/
 	make -C "$(DIR)/docs" html
 
+toc:
+	python $(DIR)/bin/update_readme_toc.py
+
 ipython:
 	make -C "$(DIR)/notebooks" ipython
 
