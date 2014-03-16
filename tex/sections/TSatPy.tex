@@ -13,9 +13,6 @@ The system loaded on the UNH TableSat 1A is the Flight Control System.  This sys
 \subsection{User Data Gram Protocol (UDP) vs Transmission Control Protocol (TCP)}
 \label{subsec:UDPTCP}
 
-\nomenclature[C]{UDP}{User Data Gram Protocol.  Session-less and unverified data transfer.}
-\nomenclature[C]{TCP}{Transmission Control Protocol.  Session based data transfer where all transfers are confirmed on receipt.}
-
 Communication between the controller and the experimental TableSat is
 negotiated over a User Datagram Protocol (UDP) socket.  Both the
 controller and TableSat read and write over port 9877.  UDP is used for

@@ -1,67 +1,53 @@
-\documentclass[12pt]{report}
+\documentclass[11pt,doublespace]{unhthesis}
 
-\usepackage{thesis}
-\usepackage{minted}
-
-\usepackage{nomencl}
-\makenomenclature
-% Set line spacing for the nomenclature entries
-\setlength{\nomitemsep}{-\parsep}
-% Nomenclature group titles
-\renewcommand{\nomgroup}[1]{
-  \ifthenelse{\equal{#1}{Q}}{
-    \item[\large\textbf{\textsf{Quaternion}}]
-  }{
-    \ifthenelse{\equal{#1}{B}}{
-      \item[\large\textbf{\textsf{Body Rate}}]
-    }{
-      \ifthenelse{\equal{#1}{M}}{
-        \item[\large\textbf{\textsf{Matrix Algebra}}]
-      }{
-        \ifthenelse{\equal{#1}{C}}{
-          \item[\large\textbf{\textsf{Computer Science}}]
-        }{
-          \item[\large\textbf{\textsf{Other}}]
-        }
-      }
-    }
-  }
-}
-
-
-% TODO Items
-\newcommand\TODO[1]{\textcolor{red}{[TODO: #1]}}
-
-\usepackage{comment}
+\usepackage{custom}
+\hyphenation{gno-mon-ly}
 
 
 \begin{document}
 
-\renewcommand{\theFancyVerbLine}{
-   \sffamily\textcolor[rgb]{0.5,0.5,0.5}{\scriptsize\arabic{FancyVerbLine}}}
+\title{DEVELOPMENT OF A HIGH-INTEGRITY ANALYTICAL AND EXPERIMENTAL TESTBED FOR OBSERVER-BASED CONTROLLERS FOR NASA's MAGNETOSPHERIC MULTISCALE MISSION SPACECRAFT}
+\author{Daniel R. Couture}
+\prevdegrees{B.S. Mechanical Engineering, University of New Hampshire (2001)}
+\major{Mechanical Engineering}
+\degree{Master of Science}
+\degreemonth{May}
+\degreeyear{2014}
+\thesisdate{March 15, 2014}
+\DOCUMENTtype{THESIS}
+\Documenttype{Thesis}
+\documenttype{thesis}
+\maketitle
 
+\copyrightyear{2014}
+\makecopyright
 
-\pagenumbering{roman}
-
-\thesistitle
-{DEVELOPMENT OF A HIGH-INTEGRITY ANALYTICAL AND EXPERIMENTAL TESTBED FOR OBSERVER-BASED CONTROLLERS FOR NASA's MAGNETOSPHERIC MULTISCALE MISSION SPACECRAFT}
-{Daniel R. Couture}
-{B.S., University of New Hampshire, 2001}
-{Master of Science\\in\\Mechanical Engineering}
-{May, 2014}
-{2014}
+\supervisor{Dr. May-Win L. Thein}{Associate Professor of Mechanical Engineering}
+\committee{Dr. Barry Fussell}{Professor of Mechanical Engineering}
+\committee{Philip J. Hatcher}{Professor of Computer Science}
+\makeapproval
 
 
 \include{sections/Preface}
+
+% Change to arabic page numbers at chapter 1
 \pagenumbering{arabic}
+
 \include{sections/Background}
 \include{sections/State}
 \include{sections/CodeVersions}
 \include{sections/TSatPy}
 \include{sections/Conclusions}
 \include{sections/FutureWork}
-\include{sections/TSatPySource}
-\include{sections/MatlabOOSource}
+
+\include{sections/Biblio}
+
+\appendix
+  \begin{singlespace}
+  % \include{sections/TSatPySource}
+  % \include{sections/MatlabOOSource}
+\end{singlespace}
+
 
 
 

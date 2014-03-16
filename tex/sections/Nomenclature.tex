@@ -1,18 +1,23 @@
-\pagebreak
-\addcontentsline{toc}{chapter}{Nomenclature}
+\vspace*{0.5in}
+    \thispagestyle{plain}
+    \chapter*{Nomenclature}
+    \addcontentsline{toc}{section}{Nomenclature}
 
+\begin{tabular}{ll}
+  $\bs{\omega}$ & Body Rate \\
+  $\bs{\Omega}$ & skew symmetric matrix \\
+  $\bs{q_I}$ & identity quaternion where $\bs{q_I} = 0\bs{i}+0\bs{j}+0\bs{k}+1$ \\
+  $\bs{q_k}$ & quaternion state at discrete step $k$ \\
+  $\bs{q_n}$ & nutation quaternion \\
+  $\bs{q_r}$ & rotational quaternion \\
+  $\bs{q}$ & quaternion where $\bs{q} = q_1\bs{i}+q_2\bs{j}+q_3\bs{k}+q_0$ \\
+\end{tabular}
 
-\nomenclature[Q]{$\bs{q_n}$}{nutation quaternion}
-\nomenclature[Q]{$\bs{q}$}{quaternion where $\bs{q} = q_1\bs{i}+q_2\bs{j}+q_3\bs{k}+q_0$}
-\nomenclature[Q]{$\bs{q_k}$}{quaternion state at discrete step $k$}
-\nomenclature[Q]{$\bs{q_r}$}{rotational quaternion}
-\nomenclature[Q]{$\bs{q_I}$}{identity quaternion where $\bs{q_I} = 0\bs{i}+0\bs{j}+0\bs{k}+1$}
-\nomenclature[M]{$\bs{\Omega}$}{skew symmetric matrix}
-\nomenclature[B]{$\bs{\omega}$}{Body Rate}
+% [C]{UDP}{User Data Gram Protocol.  Session-less and unverified data transfer.}
+% [C]{TCP}{Transmission Control Protocol.  Session based data transfer where all transfers are confirmed on receipt.}
+
 
 \TODO{Are nomenclature listings generally limited to defining mathematical representations or can they also include commonly used acronyms?}
-
-\printnomenclature
 
 
 % \begin{tabular}{|l|c|c|}
@@ -85,5 +90,3 @@
 %  \item[$R$] Sensor noise covariance matrix
 %\end{description}
 
-
-\pagebreak
