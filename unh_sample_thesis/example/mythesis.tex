@@ -1,0 +1,213 @@
+%==============================================================================
+%
+%      File:  UNHTHESIS.TEX  (Stored in TEX$LATEX: as UNHTHESIS.TEMPLATE)
+%  Language:  LaTeX - Document Preparation System
+%      Date:  23/Nov/88
+%    Author:  Bill Costa
+%             USNH Computer Services
+%    Updated: Kelly Black
+%             Dept. of Math & Stat
+%             14 Aug 02
+%
+%   This document shows how to use the UNHTHESIS latex style sheet to
+%   create a thesis.  You will want to make your own copy of this file to
+%   get started.  Here are the basic steps:
+%
+%   Setup LaTeX and the DVI translator.  This makes these programs
+%   available for your use, as well as defining library names such as
+%   TEX$LATEX:.
+%
+%        $ SETUP LATEX                  ! Do these commands at the start of
+%        $ SETUP DVITOPS/RESET          ! every terminal session (or put them
+%        $                              ! in your LOGIN.COM).
+%
+%   Now copy this template file to your own directory, 
+%   Three example chapter files are also included.
+%   This step would normally be done only once.
+%
+%   Follow the instructions below for making the required edits to your
+%   own copy of this file.  Once you have created the document you
+%   must go through several steps. You must first ``latex'' the file,
+%   you view it using xdvi, and when you are done you print it using
+%   dvips.
+%
+%   First to latex your file execute the following command:
+%
+%        % latex mythesis
+%
+%   You should fix any errors that are displayed. To view your
+%   file you use xdvi:
+%
+%   % xdvi mythesis
+%
+%   When you are finally ready to print use dvips:
+%
+%   % dvips mythesis.
+%
+%    Revisions:
+%    -------------------------------------------------------------------------
+%    06-NOV-90 WFC  Uses corrected \documenttype scheme.  See revision notes
+%                   in TEX$LATEX:UNHTHESIS.DOC for more details.
+%
+%------------------------------------------------------------------------------
+
+%    14 Aug 02 Updated document to latex 2e. Also, changed wording 
+%              to be consistent with an X windows system.
+
+%    14 Aug 02 Added \includeonly command in comments.
+
+%------------------------------------------------------------------------------
+%  Preamble  - You may want to add your own \hyphenation commands.
+%------------------------------------------------------------------------------
+
+
+% During the editing process you will not want to view and print the
+% whole document. Uncomment the command below so that only the
+% chapters that you want to work on are visible.
+%\includeonly{chapter1}
+
+\documentclass[11pt,doublespace]{unhthesis}
+
+
+% Extra modules can be added to your document to extend the things
+% the Latex can Do. One of these is psfig which allows you to print
+% postscript files. You tell Latex to read these packages using the
+% \usepackage command:
+
+\usepackage{psfig}
+
+
+\hyphenation{gno-mon-ly}
+
+
+%------------------------------------------------------------------------------
+%  Preliminary Pages - Fill in the `blanks' noted.
+%------------------------------------------------------------------------------
+
+\begin{document}
+                                                        % TITLE PAGE
+                                                        %======================
+\title{Creating a Thesis for Fun and Profit}            % Your title
+\author{William F. Costa}                               % Your name
+\prevdegrees{B.S., Plymouth State College (1976)}       % Your old degree
+\major{Computer Science}                                % Your new major
+\degree{Master of Science}                              % Your new degree
+\degreemonth{May}                                       % When awarded.
+\degreeyear{1990}                                       %
+\thesisdate{January 10, 1989}                           % Date of document.
+\DOCUMENTtype{THESIS}                                   % or DISSERTATION
+\Documenttype{Thesis}                                   % or Dissertation
+\documenttype{thesis}                                   % or dissertation
+\maketitle
+                                                        % COPYRIGHT PAGE
+                                                        %======================
+\copyrightyear{1989}                                    % Delete these
+\makecopyright                                          % if no copyright
+                                                        % page.
+
+                                                        % APPROVAL PAGE
+                                                        %======================
+\supervisor{A. B. Smith}{Associate Professor of xxx}    % <- One of these
+\committee{A. B. Jones}{Associate Professor of xxx}     % <- As many as
+\committee{A. B. Black}{Faculty in Residence in xxx}    %    you need...
+\makeapproval                                           %
+
+                                                        % DEDICATION PAGE
+                                                        %======================
+\begin{dedication}                                      % Delete these
+    To Mom and Dad.                                     % if no dedication
+\end{dedication}                                        % page.
+
+
+                                                        % ACK. PAGE
+                                                        %======================
+\begin{acknowledgments}                                 % Delete these if
+     A number of people have made this paper possible.  % no acknowledg.
+     In particular                                      % page.
+     I wish to thank...                                 %
+\end{acknowledgments}                                   %
+
+                                                        % FOREWORD PAGE
+\begin{foreword}                                        %======================
+     This is the foreword.                              % Delete these if
+\end{foreword}                                          % no foreword page.
+
+                                                        % OTHER PAGES
+                                                        %======================
+\tableofcontents                                        % Always needed...
+\listoftables                                           % Delete if no tables.
+\listoffigures                                          % Delete if no figures.
+
+
+%------------------------------------------------------------------------------
+%  Document body - Place text into individual include files, such as
+%                  as "chap1.tex", or replace each "\include{}" statement
+%                  with your actual document text.
+%------------------------------------------------------------------------------
+
+                                                % ABSTRACT PAGE
+                                                %==============================
+\begin{abstractpage}                            % Creates the abstract page.
+   Thesis and dissertation creation is hard     %   Your text goes here. Just
+   work and a poor graduate student needs all   %   follow the rules given in
+   the help he or she can get.  This thesis     %   the LaTeX manual on how to
+   attempts to show how \LaTeX can be used to   %   enter/format text using
+   make the process just a little bit easier.   %   LaTeX commands.
+\end{abstractpage}                              % This ends the page.
+
+                                                % CHAPTERS
+                                                %==============================
+\include{chapter1}                              % The best way to organize your
+\include{chapter2}                              % document is probably to keep
+                                                % in its own file.  
+
+
+
+%------------------------------------------------------------------------------
+%  Bibliography and Appendix  - Use the "\cite{}" command in your text
+%                               to mark citations, i.e. "\cite{Hans80}".
+%------------------------------------------------------------------------------
+
+                                                % THE BIBLIOGRAPHY
+                                                %==============================
+\begin{thebibliography}{XxxxNN}                 %
+                                                %
+  \bibitem[Hans80]{FirstRef} D. E. Hanson.      % You need one of these for
+      {\em The Title of His/Her Book.}          % each citation.  Use an
+      Some Publisher Name,                      % \include{mybib} instead 
+      Some Big City                             % if you'd rather to keep 
+                                                % these in a separate file.
+  \bibitem[Lamp86]{The-Manual} L. Lamport.      %
+      {\em LaTeX, User's Guide \& Reference     % See the manual to find out
+      Manual}                                   % why we had to use a backslash
+      Addison-Wesley Publish Company            % character (\) in front of the 
+      Reading, Massachusetts                    % ampersand (&).
+                                                %
+
+  \bibitem[Abra90]{abrahams} Abrahams, Paul W., 
+    Karl Berry, and Kathryn A. Hargreaves.  
+    {\em \TeX\ for the Impatient}.  
+    Addison-Wesley Publishing Company, 
+    Reading MA, USA, 1990.
+
+
+  \bibitem[Thom92]{thomas} Thomas, George B. Jr., 
+    and Ross L. Finney. 
+    {\em Calculus and Analytic Geometry}, 
+    8$^{th}$\ ed.  
+    Addison-Wesley Publishing Company, 
+    Reading MA, USA, 1992.
+
+\end{thebibliography}                           %
+
+                                                % THE APPENDIX
+                                                %==============================
+\appendix                                       % Include appendix files as
+  \begin{singlespace}                           % needed or delete this block
+  \include{appendix_a}                          % of lines if no appendix.
+  \include{appendix_b}                          %
+  \include{appendix_c}                          %
+\end{singlespace}                               %
+
+
+\end{document}                                  % Ends the entire document...

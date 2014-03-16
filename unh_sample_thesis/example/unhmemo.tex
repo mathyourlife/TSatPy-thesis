@@ -1,0 +1,138 @@
+\parindent=0pt        % Business letter style
+\voffset=-0.42in
+\vsize=9.32in
+\raggedbottom
+\interlinepenalty=1000 % Try to divide pages at paragraph boundaries
+\nopagenumbers
+
+\def\k{\kern.051em}
+\def\el{\par\kern-2pt}
+\def\pi{3.3em}         % Proper indentation
+
+\font\RomanTwentyfive=cmr10 at 25pt
+\font\RomanTwelve=cmr10 at 12pt
+\font\RomanTen=cmr10
+\font\RomanEight=cmr8
+\font\BoldTwelve=cmbx10 at 12pt
+\font\BoldTen=cmbx10
+\font\SlantTwelve=cmsl10 at 12pt
+\font\SlantTen=cmsl10
+
+\def\today{\ifcase\month\or
+  January\or February\or March\or April\or May\or June\or
+  July\or August\or September\or October\or November\or December\fi
+  \space\number\day, \number\year}
+
+\def\letterhead{
+{\RomanTwentyfive
+\leftskip=0pt
+U\k{}N\k{}I\k{}V\k{}E\k{}R\k{}S\k{}I\k{}T\k{}Y\k\k\k
+\ O\k{}F\k\k\k{} N\k{}E\k{}V\kern-.50emV\k\k\k{} 
+H\k{}A\k{}M\k{}P\k{}S\k{}H\k{}I\k{}R\k{}E}
+\vskip .2in
+\leftskip=.2em
+{\RomanEight
+Department of Computer Science\el
+College of Engineering and Physical Sciences\el
+Kingsbury Hall\el
+Durham, New Hampshire 03824\el
+(603) 862-3778\el}}
+
+\RomanTwelve
+\def\sl{\SlantTwelve}
+\def\bf{\BoldTwelve}
+
+\newif\iflong
+\newif\iflonger
+
+\longfalse
+\longerfalse
+
+\def\longer{
+    \longertrue
+    \RomanTen
+    \baselineskip=10pt
+    \def\sl{\SlantTen}
+    \def\bf{\BoldTen}}
+
+\def\long{
+    \longtrue
+    \baselineskip=11.25pt
+    \voffset=-0.62in}
+
+\def\longermemo{
+    \longertrue
+    \RomanTen
+    \baselineskip=10pt
+    \def\sl{\SlantTen}
+    \def\bf{\BoldTen}}
+
+\def\longmemo{
+    \longtrue
+    \baselineskip=11.25pt
+    \voffset=-0.62in}
+
+\def\to{\letterhead 
+             \iflong 
+		 \vskip .4in
+                 \leftskip=.2em
+                 \vfil\today
+                 \vskip 30pt
+	     \else \iflonger 
+		     \vskip .2in
+		     \leftskip=.2em
+		     \vfil\today
+                     \vskip 20pt
+		   \else 
+			 \vskip .5in
+			 \leftskip=.2em
+			 \vfil\today
+                         \vskip 40pt
+		   \fi
+	     \fi
+	\begingroup \obeylines
+        To:\kern 1.85em \parindent=\pi}
+
+\def\from{\vskip\baselineskip \parindent=0pt
+          From:\kern .7em \parindent=\pi}
+
+\def\re{\vskip\baselineskip \parindent=0pt 
+        Re:\kern 1.82em \parindent=\pi}
+
+\def\body{ \vskip\baselineskip
+	   \endgroup
+	   \begingroup \parindent=0pt 
+           \iflong \parskip=0.75\baselineskip
+	   \else \parskip=\baselineskip
+	   \fi}
+
+\def\cc{\endgroup \vskip\baselineskip \parindent=0pt
+        Cc:\kern 1.82em \parindent=\pi \begingroup \obeylines}
+
+\def\endmemo{\endgroup \vfil\vfil\vfil\eject\dosupereject}
+
+\def\bl{\vskip\parskip}
+
+
+\def\list{\parskip=0pt
+          \parindent=\pi
+          \begingroup
+          \obeylines}
+
+\def\endlist{\endgroup
+             \parindent=0pt
+             \iflong \parskip=0.75\baselineskip
+	     \else \parskip=\baselineskip
+	     \fi}
+
+\def\itemize#1#2{\parindent=\pi \item{#1}#2\par\parindent=0pt}
+
+\def\uncatcodespecials{\def\do##1{\catcode`##1=12 }\dospecials}
+
+\def\setupverbatim{\def\par{\leavevmode\endgraf}
+  \catcode`\`=\active \obeylines \uncatcodespecials \obeyspaces}         
+{\obeyspaces\global\let =\ }
+
+\def\verbatim{\begingroup\setupverbatim\doverbatim}
+
+\def\doverbatim#1{\def\next##1#1{##1\endgroup}\next}

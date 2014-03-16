@@ -1,0 +1,268 @@
+%===================================================================
+%
+%      File:  UNHTHESIS_MARGIN_TEST.TEX
+%  Language:  LaTeX - Document Preparation System
+%      Date:  07-MAY-1990
+%    Author:  Bill Costa
+%             USNH Computer Services
+%
+%   This document is used to determine any fine tuning that might be
+%   required to properly print the UNHTHESIS latex style sheet
+%   on a particular printer.
+%
+%-------------------------------------------------------------------
+
+%-------------------------------------------------------------------
+%  Preamble
+%-------------------------------------------------------------------
+
+%\documentclass[11pt,unhthesis,doublespace]{report}
+%\documentclass[11pt,doublespace]{unhthesis}
+\documentclass[11pt]{unhthesis}
+
+
+%
+%------------------------------------------------------------------------------
+%
+%   For a UNH Thesis, the margins are 1.5" on the left, 1" at the bottom
+%   and right.  The first page of a chapter or major section has a top
+%   margin of 1.5".  On all other pages, the top margin is 1".
+%
+%   The parameters for the UNHTHESIS document style are set to meet the
+%   above requirements.  However, exact placement of the text on the page
+%   can vary from printer to printer, or even from week to week on the same
+%   printer.  To compensate for this, two parameters can be used to shift
+%   the entire text 'box' left to right and top to bottom:
+%
+%
+%                                       |<-->| \hoffset
+%                                       |    |
+%                                       |    |
+%                 +--------------------------+ --------
+%                 |                          |       ^
+%                 |                          |       |  \voffset
+%                 |                          |       v
+%                 |    +----------------+    | --------
+%                 |    |              xx|    |
+%                 |    |                |    |
+%                 |    |  xx xxxxxxx xxx|    |
+%                 |    |xxxx xx x xxx xx|    |
+%                 |    |xxx xxx x xxxx x|    |
+%                 |    |x xxx xxx x xxxx|    |
+%                 |    |xxx xxx xxxx xxx|    |
+%                 |    |x xx xxxx.      |    |
+%                 |    +----------------+    |
+%                 |                          |
+%                 |                          |
+%                 +--------------------------+
+%
+%   Negative values for \hoffset shift the text left on the page.
+%   Negative values for \voffset shift the text up on the page.
+%
+%
+%------------------------------------------------------------------------------
+                                                                              
+%\hoffset        -24mm      % Starting values for the PrintServer 40.
+%\voffset        -24mm      % Values are in millimeters.
+
+%-------------------------------------------------------------------
+%  Document
+%-------------------------------------------------------------------
+
+\begin{document}
+
+\title{Margin Test for Printer Alignment Using UNHTHESIS}
+\author{A. McBump}
+\prevdegrees{B.S., Whatsamatta U. (1988)}
+\major{Phrenology}
+\degree{Master of Science}
+\degreemonth{May}
+\degreeyear{1990}
+\thesisdate{May 10, 1990}
+\Documenttype{THESIS}
+\documenttype{Thesis}
+\maketitle
+
+\copyrightyear{1990}
+\makecopyright
+
+\supervisor{I. M. Shirley Wright}{Professor of Phrenology}
+\committee{Moe Hill}{Associate Professor of Phrenology}
+\committee{Matt R. Horn}{Faculty in Residence in Phrenology}
+\makeapproval
+
+\tableofcontents
+
+\begin{abstractpage}
+    X nkzjfr kg  ckzpktfr hxngkxgfr xns prkgrxmzkng  fnqkrknzfntr wxqf fjfn
+    crfxtfs, fxcw kg wwkcw wxr xbbfzpbfs bk  fncnkrxgf  xns  gxckhkbxbf 
+    bwf  crfxbnkn  kg  pkrbxfhf prkgrxzr. Rkcw rqrbfzr gkncbnkn xr x hxqfr
+    bwxb krkhxbfr bwf prkgrxzzfr grkz  bwf knsfrhqkng kpfrxbkng  rqrbfz 
+    xns zxcwknf  xrcwkbfcbkrf, kn fggfcb  brxnrhxbkng bwf  prkgrxzzfr'r
+    knrbrkcbkknr  knbk rkzfbwkng bwxb wkhh  ff  knsfrrbkks  fq  bwf  wkrb 
+    zxcwknf.  Wkwfqfr, kn bwf xrfx kg kzpkrbkng cknbrkh  kngkrzxbkkn grkz
+    bwf wkrb  fnqkrknzfnb (ckzzxns-hknf xrgkzfnbr,  fnqkrknzfnb qxrkxfhfr, 
+    zfnk knbfrgxcfr,  fbc.), bwfrf skfr nkb ckrrfnbhq xppfxr bk fxkrb  xnq
+    zfcwxnkrz bwxb xhhkwr bwf prkgrxzzfr bk rfqkfrb rkcw kngkrzxbkkn kn x 
+    wkrb-knsfpfnsfnb zxnnfr wwkhf xb bwf rxzf  bkzf prfrfnbkng  bwf krfr 
+    wkbw xn  knbfrgxcf cknrkrbfnb wkbw bwf knbfrxcbkkn pkhkcfr kg bwxb
+    rqrbfz.
+
+    Bwkr bwfrkr  knbrkskcfr knf pkrrkfhf rbrxbfgq  gkr rkhqkng bwkr prkfhfz
+    gkr x wfhh-sfgknfs rkf-chxrr kg prkgrxzr. Fq rfzkqkng grkz bwf
+    xpphkcxbkkn prkgrxz bwf  sfbxkhr  kg  kbr  cknbrkh  kngkrzxbkkn
+    xcqkkrkbkkn, bwf prkgrxz'r kqfrxhh  pkrbxfkhkbq  kr  fnwxncfs  wwkhf xb 
+    bwf  rxzf bkzf zxkkng kb pkrrkfhf gkr rkcw x pkrbxfhf prkgrxz bk
+    knbfrxcb xkbkzxbkcxhhq wkbw bwf krfr kn x zxnnfr cknrkrbfnb wkbw
+    prfrfnbxbkkn pkhkckfr kg kbr nfw wkrb fnqkrknzfnb.  Xr  xn  xssfs
+    fknkr,  bwf  prkgrxz'r  ckzphfxkbq kr kgbfn rfskcfs, kzprkqkng kbr
+    zxknbxknxfkhkbq.
+\end{abstractpage}
+
+
+
+
+\chapter{Introduction}
+\pagenumbering{arabic}
+
+    X nkzjfr kg  ckzpktfr hxngkxgfr xns prkgrxmzkng  fnqkrknzfntr wxqf fjfn
+    crfxtfs, fxcw kg wwkcw wxr xbbfzpbfs bk  fncnkrxgf  xns  gxckhkbxbf 
+    bwf  crfxbnkn  kg  pkrbxfhf prkgrxzr. Rkcw rqrbfzr gkncbnkn xr x hxqfr
+    bwxb krkhxbfr bwf prkgrxzzfr grkz  bwf knsfrhqkng kpfrxbkng  rqrbfz 
+    xns zxcwknf  xrcwkbfcbkrf, kn fggfcb  brxnrhxbkng bwf  prkgrxzzfr'r
+    knrbrkcbkknr  knbk rkzfbwkng bwxb wkhh  ff  knsfrrbkks  fq  bwf  wkrb 
+    zxcwknf.  Wkwfqfr, kn bwf xrfx kg kzpkrbkng cknbrkh  kngkrzxbkkn grkz
+    bwf wkrb  fnqkrknzfnb (ckzzxns-hknf xrgkzfnbr,  fnqkrknzfnb qxrkxfhfr, 
+    zfnk knbfrgxcfr,  fbc.), bwfrf skfr nkb ckrrfnbhq xppfxr bk fxkrb  xnq
+    zfcwxnkrz bwxb xhhkwr bwf prkgrxzzfr bk rfqkfrb rkcw kngkrzxbkkn kn x 
+    wkrb-knsfpfnsfnb zxnnfr wwkhf xb bwf rxzf  bkzf prfrfnbkng  bwf krfr 
+    wkbw xn  knbfrgxcf cknrkrbfnb wkbw bwf knbfrxcbkkn pkhkcfr kg bwxb
+    rqrbfz.
+
+    Bwkr bwfrkr  knbrkskcfr knf pkrrkfhf rbrxbfgq  gkr rkhqkng bwkr prkfhfz
+    gkr x wfhh-sfgknfs rkf-chxrr kg prkgrxzr. Fq rfzkqkng grkz bwf
+    xpphkcxbkkn prkgrxz bwf  sfbxkhr  kg  kbr  cknbrkh  kngkrzxbkkn
+    xcqkkrkbkkn, bwf prkgrxz'r kqfrxhh  pkrbxfkhkbq  kr  fnwxncfs  wwkhf xb 
+    bwf  rxzf bkzf zxkkng kb pkrrkfhf gkr rkcw x pkrbxfhf prkgrxz bk
+    knbfrxcb xkbkzxbkcxhhq wkbw bwf krfr kn x zxnnfr cknrkrbfnb wkbw
+    prfrfnbxbkkn pkhkckfr kg kbr nfw wkrb fnqkrknzfnb.  Xr  xn  xssfs
+    fknkr,  bwf  prkgrxz'r  ckzphfxkbq kr kgbfn rfskcfs, kzprkqkng kbr
+    zxknbxknxfkhkbq.
+
+\section{Background}
+
+    X nkzjfr kg  ckzpktfr hxngkxgfr xns prkgrxmzkng  fnqkrknzfntr wxqf fjfn
+    crfxtfs, fxcw kg wwkcw wxr xbbfzpbfs bk  fncnkrxgf  xns  gxckhkbxbf 
+    bwf  crfxbnkn  kg  pkrbxfhf prkgrxzr. Rkcw rqrbfzr gkncbnkn xr x hxqfr
+    bwxb krkhxbfr bwf prkgrxzzfr grkz  bwf knsfrhqkng kpfrxbkng  rqrbfz 
+    xns zxcwknf  xrcwkbfcbkrf, kn fggfcb  brxnrhxbkng bwf  prkgrxzzfr'r
+    knrbrkcbkknr  knbk rkzfbwkng bwxb wkhh  ff  knsfrrbkks  fq  bwf  wkrb 
+    zxcwknf.  Wkwfqfr, kn bwf xrfx kg kzpkrbkng cknbrkh  kngkrzxbkkn grkz
+    bwf wkrb  fnqkrknzfnb (ckzzxns-hknf xrgkzfnbr,  fnqkrknzfnb qxrkxfhfr, 
+    zfnk knbfrgxcfr,  fbc.), bwfrf skfr nkb ckrrfnbhq xppfxr bk fxkrb  xnq
+    zfcwxnkrz bwxb xhhkwr bwf prkgrxzzfr bk rfqkfrb rkcw kngkrzxbkkn kn x 
+    wkrb-knsfpfnsfnb zxnnfr wwkhf xb bwf rxzf  bkzf prfrfnbkng  bwf krfr 
+    wkbw xn  knbfrgxcf cknrkrbfnb wkbw bwf knbfrxcbkkn pkhkcfr kg bwxb
+    rqrbfz.
+
+    Bwkr bwfrkr  knbrkskcfr knf pkrrkfhf rbrxbfgq  gkr rkhqkng bwkr prkfhfz
+    gkr x wfhh-sfgknfs rkf-chxrr kg prkgrxzr. Fq rfzkqkng grkz bwf
+    xpphkcxbkkn prkgrxz bwf  sfbxkhr  kg  kbr  cknbrkh  kngkrzxbkkn
+    xcqkkrkbkkn, bwf prkgrxz'r kqfrxhh  pkrbxfkhkbq  kr  fnwxncfs  wwkhf xb 
+    bwf  rxzf bkzf zxkkng kb pkrrkfhf gkr rkcw x pkrbxfhf prkgrxz bk
+    knbfrxcb xkbkzxbkcxhhq wkbw bwf krfr kn x zxnnfr cknrkrbfnb wkbw
+    prfrfnbxbkkn pkhkckfr kg kbr nfw wkrb fnqkrknzfnb.  Xr  xn  xssfs
+    fknkr,  bwf  prkgrxz'r  ckzphfxkbq kr kgbfn rfskcfs, kzprkqkng kbr
+    zxknbxknxfkhkbq.
+
+    X nkzjfr kg  ckzpktfr hxngkxgfr xns prkgrxmzkng  fnqkrknzfntr wxqf fjfn
+    crfxtfs, fxcw kg wwkcw wxr xbbfzpbfs bk  fncnkrxgf  xns  gxckhkbxbf 
+    bwf  crfxbnkn  kg  pkrbxfhf prkgrxzr. Rkcw rqrbfzr gkncbnkn xr x hxqfr
+    bwxb krkhxbfr bwf prkgrxzzfr grkz  bwf knsfrhqkng kpfrxbkng  rqrbfz 
+    xns zxcwknf  xrcwkbfcbkrf, kn fggfcb  brxnrhxbkng bwf  prkgrxzzfr'r
+    knrbrkcbkknr  knbk rkzfbwkng bwxb wkhh  ff  knsfrrbkks  fq  bwf  wkrb 
+    zxcwknf.  
+
+    Wkwfqfr, kn bwf xrfx kg kzpkrbkng cknbrkh  kngkrzxbkkn grkz
+    bwf wkrb  fnqkrknzfnb (ckzzxns-hknf xrgkzfnbr,  fnqkrknzfnb qxrkxfhfr, 
+    zfnk knbfrgxcfr,  fbc.), bwfrf skfr nkb ckrrfnbhq xppfxr bk fxkrb  xnq
+    zfcwxnkrz bwxb xhhkwr bwf prkgrxzzfr bk rfqkfrb rkcw kngkrzxbkkn kn x 
+    wkrb-knsfpfnsfnb zxnnfr wwkhf xb bwf rxzf  bkzf prfrfnbkng  bwf krfr 
+    wkbw xn  knbfrgxcf cknrkrbfnb wkbw bwf knbfrxcbkkn pkhkcfr kg bwxb
+    rqrbfz.
+
+    Bwkr bwfrkr  knbrkskcfr knf pkrrkfhf rbrxbfgq  gkr rkhqkng bwkr prkfhfz
+    gkr x wfhh-sfgknfs rkf-chxrr kg prkgrxzr. Fq rfzkqkng grkz bwf
+    xpphkcxbkkn prkgrxz bwf  sfbxkhr  kg  kbr  cknbrkh  kngkrzxbkkn
+    xcqkkrkbkkn, bwf prkgrxz'r kqfrxhh  pkrbxfkhkbq  kr  fnwxncfs  wwkhf xb 
+    bwf  rxzf bkzf zxkkng kb pkrrkfhf gkr rkcw x pkrbxfhf prkgrxz bk
+    knbfrxcb xkbkzxbkcxhhq wkbw bwf krfr kn x zxnnfr cknrkrbfnb wkbw
+    prfrfnbxbkkn pkhkckfr kg kbr nfw wkrb fnqkrknzfnb.  Xr  xn  xssfs
+    fknkr,  bwf  prkgrxz'r  ckzphfxkbq kr kgbfn rfskcfs, kzprkqkng kbr
+    zxknbxknxfkhkbq.  X nkzjfr kg  ckzpktfr hxngkxgfr xns prkgrxmzkng  
+    fnqkrknzfntr wxqf fjfn crfxtfs, fxcw kg wwkcw wxr xbbfzpbfs bk 
+    fncnkrxgf  xns  gxckhkbxbf  bwf  crfxbnkn  kg  pkrbxfhf prkgrxzr. Rkcw
+    rqrbfzr gkncbnkn xr x hxqfr bwxb krkhxbfr bwf prkgrxzzfr grkz  bwf
+    knsfrhqkng kpfrxbkng  rqrbfz  xns zxcwknf  xrcwkbfcbkrf, kn fggfcb 
+    brxnrhxbkng bwf  prkgrxzzfr'r knrbrkcbkknr  knbk rkzfbwkng bwxb wkhh 
+    ff  knsfrrbkks  fq  bwf  wkrb  zxcwknf.  Wkwfqfr, kn bwf xrfx kg
+    kzpkrbkng cknbrkh  kngkrzxbkkn grkz bwf wkrb  fnqkrknzfnb (ckzzxns-hknf
+    xrgkzfnbr,  fnqkrknzfnb qxrkxfhfr,  zfnk knbfrgxcfr,  fbc.), bwfrf skfr
+    nkb ckrrfnbhq xppfxr bk fxkrb\footnote{Kj kjsdk kj jkjd kjsdfk kj
+    kjskdj jsdk jk kjk kj ffjkfjkj fjkf jkjfk jf!}   xnq zfcwxnkrz bwxb
+    xhhkwr bwf prkgrxzzfr bk rfqkfrb rkcw kngkrzxbkkn kn x 
+    wkrb-knsfpfnsfnb zxnnfr wwkhf xb bwf rxzf  bkzf prfrfnbkng  bwf krfr 
+    wkbw xn  knbfrgxcf cknrkrbfnb wkbw bwf knbfrxcbkkn pkhkcfr kg bwxb
+    rqrbfz.
+
+    Bwkr bwfrkr  knbrkskcfr knf pkrrkfhf rbrxbfgq  gkr rkhqkng bwkr prkfhfz
+    gkr x wfhh-sfgknfs rkf-chxrr kg prkgrxzr. Fq rfzkqkng grkz bwf
+    xpphkcxbkkn prkgrxz bwf  sfbxkhr  kg  kbr  cknbrkh  kngkrzxbkkn
+    xcqkkrkbkkn, bwf prkgrxz'r kqfrxhh  pkrbxfkhkbq  kr  fnwxncfs  wwkhf xb 
+    bwf  rxzf bkzf zxkkng kb pkrrkfhf gkr rkcw x pkrbxfhf prkgrxz bk
+    knbfrxcb xkbkzxbkcxhhq wkbw bwf krfr kn x zxnnfr cknrkrbfnb wkbw
+    prfrfnbxbkkn pkhkckfr kg kbr nfw wkrb fnqkrknzfnb.  Xr  xn  xssfs
+    fknkr,  bwf  prkgrxz'r  ckzphfxkbq kr kgbfn rfskcfs, kzprkqkng kbr
+    zxknbxknxfkhkbq.
+
+    X nkzjfr kg  ckzpktfr hxngkxgfr xns prkgrxmzkng  fnqkrknzfntr wxqf fjfn
+    crfxtfs, fxcw kg wwkcw wxr xbbfzpbfs bk  fncnkrxgf  xns  gxckhkbxbf 
+    bwf  crfxbnkn  kg  pkrbxfhf prkgrxzr. Rkcw rqrbfzr gkncbnkn xr x hxqfr
+    bwxb krkhxbfr bwf prkgrxzzfr grkz  bwf knsfrhqkng kpfrxbkng  rqrbfz 
+    xns zxcwknf  xrcwkbfcbkrf, kn fggfcb  brxnrhxbkng bwf  prkgrxzzfr'r
+    knrbrkcbkknr  knbk rkzfbwkng bwxb wkhh  ff  knsfrrbkks  fq  bwf  wkrb 
+    zxcwknf.  Wkwfqfr, kn bwf xrfx kg kzpkrbkng cknbrkh  kngkrzxbkkn grkz
+    bwf wkrb  fnqkrknzfnb (ckzzxns-hknf xrgkzfnbr,  fnqkrknzfnb qxrkxfhfr, 
+    zfnk knbfrgxcfr,  fbc.), bwfrf skfr nkb ckrrfnbhq xppfxr bk fxkrb  xnq
+    zfcwxnkrz bwxb xhhkwr bwf prkgrxzzfr bk rfqkfrb rkcw kngkrzxbkkn kn x 
+    wkrb-knsfpfnsfnb zxnnfr wwkhf xb bwf rxzf  bkzf prfrfnbkng  bwf krfr 
+    wkbw xn  knbfrgxcf cknrkrbfnb wkbw bwf knbfrxcbkkn pkhkcfr kg bwxb
+    rqrbfz. Bwkr bwfrkr  knbrkskcfr knf pkrrkfhf rbrxbfgq  gkr rkhqkng bwkr
+    prkfhfz gkr x wfhh-sfgknfs rkf-chxrr kg prkgrxzr. 
+
+    Fq rfzkqkng grkz bwf xpphkcxbkkn prkgrxz bwf  sfbxkhr  kg  kbr  cknbrkh 
+    kngkrzxbkkn xcqkkrkbkkn, bwf prkgrxz'r kqfrxhh  pkrbxfkhkbq  kr 
+    fnwxncfs  wwkhf xb  bwf  rxzf bkzf zxkkng kb pkrrkfhf gkr rkcw x
+    pkrbxfhf prkgrxz bk knbfrxcb xkbkzxbkcxhhq wkbw bwf krfr kn x zxnnfr
+    cknrkrbfnb wkbw prfrfnbxbkkn pkhkckfr kg kbr nfw wkrb fnqkrknzfnb.  Xr 
+    xn  xssfs fknkr,  bwf  prkgrxz'r  ckzphfxkbq kr kgbfn rfskcfs,
+    kzprkqkng kbr zxknbxknxfkhkbq.
+
+    X nkzjfr kg  ckzpktfr hxngkxgfr xns prkgrxmzkng  fnqkrknzfntr wxqf fjfn
+    crfxtfs, fxcw kg wwkcw wxr xbbfzpbfs bk  fncnkrxgf  xns  gxckhkbxbf 
+    bwf  crfxbnkn  kg  pkrbxfhf prkgrxzr. Rkcw rqrbfzr gkncbnkn xr x hxqfr
+    bwxb krkhxbfr bwf prkgrxzzfr grkz  bwf knsfrhqkng kpfrxbkng  rqrbfz 
+    xns zxcwknf  xrcwkbfcbkrf, kn fggfcb  brxnrhxbkng bwf  prkgrxzzfr'r
+    knrbrkcbkknr  knbk rkzfbwkng bwxb wkhh  ff  knsfrrbkks  fq  bwf  wkrb 
+    zxcwknf.  Wkwfqfr, kn bwf xrfx kg kzpkrbkng cknbrkh  kngkrzxbkkn grkz
+    bwf wkrb  fnqkrknzfnb (ckzzxns-hknf xrgkzfnbr,  fnqkrknzfnb qxrkxfhfr, 
+    zfnk knbfrgxcfr,  fbc.), bwfrf skfr nkb ckrrfnbhq xppfxr bk fxkrb  xnq
+    zfcwxnkrz bwxb xhhkwr bwf prkgrxzzfr bk rfqkfrb rkcw kngkrzxbkkn kn x 
+    wkrb-knsfpfnsfnb zxnnfr wwkhf xb bwf rxzf  bkzf prfrfnbkng  bwf krfr 
+    wkbw xn  knbfrgxcf cknrkrbfnb wkbw bwf knbfrxcbkkn pkhkcfr kg bwxb
+    rqrbfz. Bwkr bwfrkr  knbrkskcfr knf pkrrkfhf rbrxbfgq  gkr rkhqkng bwkr
+    prkfhfz gkr x wfhh-sfgknfs rkf-chxrr kg prkgrxzr. 
+
+\end{document}
+
+

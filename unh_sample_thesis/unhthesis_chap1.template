@@ -1,0 +1,18 @@
+% See UNHTHESIS.TEMPLATE for additional comments about this file.
+%
+\chapter{My First Chapter Title}                % <- Your first chapter title.
+\pagenumbering{arabic}				% <- Do this command only for
+                                                %    the first chapter!
+
+    This is the first chapter of your thesis or dissertation.   Typically
+    the first chapter of the document is an introduction, but follow your
+    school's guide for information on how your document should be
+    organized.  Notice that a LaTeX command was used at the start of this
+    chapter to  change page numbering to arabic.  This is done {\em only\/}
+    in the first chapter --- and only after the chapter title has been
+    defined.  All of your remaining chapters will only need to start with a
+    chapter title definition.
+
+    A chapter keeps on going and going until LaTeX sees another chapter
+    title definition command.  Typically that command is the first line of
+    your next chapter file.

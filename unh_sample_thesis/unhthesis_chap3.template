@@ -1,0 +1,8 @@
+% See UNHTHESIS.TEMPLATE for additional comments about this file.
+%
+\chapter{The Last Chapter}
+
+    The last chapter is no different from the second chapter, or any of the
+    others in between.  LaTeX will know that it is the end of last chapter
+    as soon as it sees the start of another section, such as the
+    bibliography or the appendix, or when it sees the `end-document' command.

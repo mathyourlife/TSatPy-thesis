@@ -1,0 +1,110 @@
+\chapter{Misc. Ramblings}
+
+Like any piece of software \LaTeX has its shares of quirks and little
+odds and ends. Here I will share a few notes on lists and finally add
+some comments on some of the commands that I have found to be useful.
+
+\section{Lists}
+
+I have already given an example of one kind of list using the
+itemize environment.  A complete list is given below \cite{The-Manual}:
+\begin{enumerate}
+\item The itemize list.
+\item An enumerate list.
+\item A description list.
+\end{enumerate}
+The different types of lists are described below 
+\cite[p. 65]{The-Manual}:
+\begin{description}
+\item[itemize]     Lists each item with a $\bullet$.
+\item[enumerate]   Gives a numbered list.
+\item[description] Used to describe the members of a list.
+\end{description}
+
+
+You can also put a list inside a list.  If you use
+enumerate it will even keep track of the numbers for you:
+\begin{enumerate}
+\item Top Five Reasons to take Calculus:
+    \begin{enumerate}
+     \item Annoy roommate when pulling all-nighters.
+     \item At 8:00AM it's too dark for volleyball.
+     \item Three words: The chain rule.
+     \item Can learn how to use $\Sigma$\  without 
+           referring to alcohol.
+     \item Can impress date with knowledge of the limit.
+     \end{enumerate}
+\item Top Five Worst Reasons to take Calculus:
+     \begin{enumerate}
+     \item Would like to learn how to use that spiffy calculator.
+     \item If you have to spend a lot of money on a book it should
+             at least be a really thick book, damnit.
+     \item Would like to learn new French and German names to
+             impress people at parties.
+     \item Satisfies the liberal arts school's requirement
+           for ``class that requires that you know how to  count''.
+     \item Morning class is motivation to go get breakfast 
+           before they run out of those pancakes.
+     \end{enumerate}
+\end{enumerate}
+
+
+\section{Window Dressings}
+Since some of you may actually like having a typesetting
+program around, I thought I might like to share some
+of the little things that help round out the \lat\ program.
+For example, I often use \lat\ for letters.  When I want
+to write one of my colleagues, Einar Ronqui\o st, I need
+to know how to use some extra characters.  Other non-English
+characters include the following: \oe, \OE, \ae,
+\AE, \aa, \AA, \o, \O, \l, \L, \ss,
+?`, !`.
+
+People from foreign lands also like to use accents which
+are not included on the standard keyboard.  To get around
+this \lat\ has some commands for \`{a}ccents.  See Table
+\ref{accents} for a list \cite[p. 40 (blatant rip-off)]{The-Manual}
+and Table \ref{mathaccents} for a list of accents for use
+in math mode \cite[p. 51]{The-Manual}.
+
+\newcommand{\bs}{$\backslash$}
+\begin{table}[hbpt]
+\begin{tabular}{r @{-} l @{\hspace{0.5in}} r @{-} l  @{\hspace{0.5in}}
+                r @{-} l @{\hspace{0.5in}} r @{-} l }
+\`{a} & \bs `\{a\} & 
+\~{a} & \bs \~\{a\} & 
+\v{a} & \bs v\{a\} & 
+\c{o} & \bs c\{o\}  \\
+\'{a} & \bs '\{a\} & 
+\={a} & \bs =\{a\} & 
+\H{a} & \bs H\{a\} & 
+\d{o} & \bs d\{o\}  \\
+\^{a} & \bs \^\{a\} & 
+\.{a} & \bs .\{a\} & 
+\t{aa} & \bs t\{aa\} & 
+\b{o} & \bs b\{o\}  \\
+\"{a} & \bs "\{a\} & 
+\u{a} & \bs u\{a\} 
+\end{tabular}
+\caption{Some accents for you to use.}
+\label{accents}
+\end{table}
+
+\begin{table}[hbpt]
+\begin{tabular}{r @{-} l @{\hspace{0.5in}} r @{-} l  @{\hspace{0.5in}}
+                r @{-} l @{\hspace{0.5in}} r @{-} l }
+$\hat{u}$   & \bs hat\{u\} & 
+$\acute{u}$ & \bs acute\{u\} & 
+$\bar{u}$   & \bs bar\{u\} & 
+$\dot{u}$   & \bs dot\{u\}  \\
+$\check{u}$ & \bs check\{u\} & 
+$\grave{u}$ & \bs grave\{u\} & 
+$\vec{u}$   & \bs vec\{u\} & 
+$\ddot{u}$  & \bs ddot\{u\}  \\
+$\breve{u}$ & \bs breve\{u\} & 
+$\tilde{u}$ & \bs tilde\{u\}
+\end{tabular}
+\caption{Some accents for you to use in math mode.}
+\label{mathaccents}
+\end{table}
+

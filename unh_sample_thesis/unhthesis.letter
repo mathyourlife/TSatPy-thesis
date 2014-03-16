@@ -1,0 +1,51 @@
+From:	UNHB::W_COSTA      "Bill Costa, USNH Computer Srvs" 14-FEB-1991 14:42:20.96
+To:	UNHH::UNHD::jrm
+CC:	W_COSTA
+Subj:	RE: thesis.sty
+
+
+> Do unhthesis.sty and unh11.sty represent the latest and greatest versions
+> of these efforts?  
+
+    Yup - at least on the VMS VAXcluster (Hilbert and friends).
+
+>    Also, to install these for use on the CS workstations,
+> does anything besides those two files need to be moved?  You indicate
+> something about doc_to_sty.  What's that all about?
+
+    Let me give you a run down of all the pieces to this puzzle.  We have
+    the following files available on the VMS VAXcluster. (I don't know what
+    Gina has done to xfer these things to Descartes, but I consider Hilbert
+    to always be the authoritive version - cause that's where I work!)
+
+    UNHH::DISK$SYS_CLUSTER:[TEX.LATEX]UNHTHESIS.TEMPLATE
+
+         This file is an example template that shows how to use the UNH
+         thesis style sheet.  For the most part, I think it should be self
+         explaintory.
+
+    UNHH::DISK$SYS_CLUSTER:[TEX.LATEX]UNHTHESIS.DOC
+
+         This is the fully commented style file.  And I do mean *fully*
+         commented!  This file is filtered through:
+
+    UNHH::DISK$SYS_CLUSTER:[TEX.LATEX]DOC_TO_STY.PAS
+
+         which is a *really* simple-minded program that strips out the
+         LaTeX comments.  There'd be no point in copying it to an U**X
+         system since it is written in a very non-portable fashion.  
+
+    UNHH::DISK$SYS_CLUSTER:[TEX.LATEX]UNH11.DOC and .STY
+
+         The 11pt definitions for use with UNHTHESIS.STY.  This fully
+         commented file also gets filtered into a `.STY' version.
+
+    UNHH::DISK$SYS_CLUSTER:[TEX.LATEX]DOUBLESPACE.DOC and .STY
+
+         This is used to get the double spacing required.  This is a common
+         macro and is probably already part of most TeX/LaTeX libraries.
+
+    At this time, there are references in the comments to a manual for
+    UNHTHESIS - which is a lie. I have not written it yet.  Some day...
+
+    I believe that's the whole ball of wax.  Have fun.....BC
