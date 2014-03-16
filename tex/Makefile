@@ -8,3 +8,4 @@ view:
 
 thesis:
 	$(TEX) CoutureThesis.tex
+	dvips CoutureThesis.dvi
