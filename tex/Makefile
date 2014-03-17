@@ -3,9 +3,13 @@ TEX := latex
 # BIB := bibtex
 VIEW := evince
 
+
 view:
 	$(VIEW) CoutureThesis.ps &
 
 thesis:
 	$(TEX) CoutureThesis.tex
 	dvips CoutureThesis.dvi
+
+pdf:
+	ps2pdf CoutureThesis.ps CoutureThesis.pdf
