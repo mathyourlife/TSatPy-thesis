@@ -46,6 +46,8 @@ tex/CoutureThesis.lof
 tex/CoutureThesis.log
 tex/CoutureThesis.lot
 tex/CoutureThesis.ps
+tex/CoutureThesis.pdf
 tex/CoutureThesis.toc
+tex/tmp/*
 *.dvi
 
