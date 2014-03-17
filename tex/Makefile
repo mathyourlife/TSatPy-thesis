@@ -1,3 +1,4 @@
+DIR := $(shell pwd)
 TEX := latex
 # PRE :=  $(TEX) -ini -job-name="preamble" "&pdflatex preamble.tex\dump"
 # BIB := bibtex
@@ -13,3 +14,7 @@ thesis:
 
 pdf:
 	ps2pdf CoutureThesis.ps CoutureThesis.pdf
+
+pdf-pieces:
+	rm -f $(DIR)/tmp/*
+	pdftk $(DIR)/CoutureThesis.pdf burst output $(DIR)/tmp/CoutureThesis_%02d.pdf
