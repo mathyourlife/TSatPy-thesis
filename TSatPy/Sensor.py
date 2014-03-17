@@ -10,8 +10,6 @@ class Sensors(object):
         self.x = State()
         self.sensors = {
             'css': PhotoDiodeArray(),
-            'accel': AccelerometerArray(),
-            'gyro': Gyroscope(),
             'mag': TripleAxisMagnetometer(),
         }
 
@@ -19,10 +17,6 @@ class Sensors(object):
 
         # Update CSS sensor with 1st 6 voltage readings
         self.sensors['css'].update_state(v[:6])
-        # Accelerometer data comes in the next 4 entries
-        self.sensors['accel'].update_state(v[6:10])
-        # Then a only single voltage from the gyro
-        self.sensors['gyro'].update_state(v[10])
         # Then the triple threat from the magnetometer
         self.sensors['mag'].update_state(v[11:14])
 
@@ -53,14 +47,6 @@ class SensorBase(object):
         return "<%s %s, %s>" % (
             self.__class__.__name__,
             self.x.q, self.x.w)
-
-
-class Gyroscope(SensorBase):
-    pass
-
-
-class AccelerometerArray(SensorBase):
-    pass
 
 
 class TripleAxisMagnetometer(SensorBase):
