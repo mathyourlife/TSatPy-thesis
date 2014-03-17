@@ -4,15 +4,12 @@ TEX := latex
 # BIB := bibtex
 VIEW := evince
 
-
 view:
-	$(VIEW) CoutureThesis.ps &
+	$(VIEW) CoutureThesis.pdf &
 
 thesis:
 	$(TEX) CoutureThesis.tex
 	dvips CoutureThesis.dvi
-
-pdf:
 	ps2pdf CoutureThesis.ps CoutureThesis.pdf
 
 pdf-pieces:
