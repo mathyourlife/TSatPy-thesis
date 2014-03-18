@@ -6,17 +6,27 @@
 \section{NASA Magnetospheric MultiScale Mission}
 \label{sec:NASAMagnetosphericMultiScaleMission}
 
-NASA's Magnetospheric MultiScale (MMS) Mission is classified as a Solar Terrestrial probe mission and is scheduled for launch in October 2014 \cite{mms_website}.  The mission consists of four identical satellites orbiting the Earth in a constellation formation flight.  The satellites are being constructed at NASA's Goddard Space Flight Center with the purpose of studying the microphysics of magnetic reconnection within the Earth's magnetic fields.
+NASA's Magnetospheric MultiScale (MMS) Mission is a Solar Terrestrial probe mission scheduled for launch in October 2014 \cite{mms_website}.  The mission consists of four identical satellites orbiting the Earth in a constellation formation flight.  Construction of the satellites is occurring at NASA's Goddard Space Flight Center where they are being equipped to study the microphysics of magnetic reconnection events within the Earth's magnetic fields.
 
-\TODO{image of MMS}
+\begin{figure}[H]
+\centerline{\psfig{file=figures/mms_spacecraft_formation.eps,height=1.2in}}
+\caption{MMS Spacecraft Formation}
+\label{fig:magneticfields}
+\end{figure}
 
-Reconnection events are caused when electromagnetic energy from the sun interacts with the Earth's magnetosphere causing magnetic field lines to cross.  Adjacent magnetic fields generally have significantly different orientations so when a reconnection event occurs, a large quantity of energy is released in the form of heat and kinetic energy.  The most widely known consequence of a reconnection event is the northern lights.
+A reconnection event occurs when magnetic field lines cross allowing energetic particles to traverse from interstellar space into the Earth's magnetosphere releasing large quantities of heat and kinetic energy.  The diffusion region of a reconnection event starts on the day side magnetopause an quickly folds over to the Earth's magnetotail (Figure \ref{fig:magneticfields}).  This region is only 1-10 km in size but can travel at 10-100 km/hr \cite{swri} making it extremely difficult to measure.  Effects of a reconnection event are regularly experienced via the aurora borealis, interference with spacecraft GPS systems, and disruptions to electrical grids and communication networks.
 
-Despite the clearly visible effects of reconnection events, very little is known about the microphysics inside its the diffusion region.  Magnetometers, spectrometers and other equipment currently in orbit are only able to capture a small fraction of the event's behavior.  Most equipment collect data from a single point or direction in space or some can get a 360 view of space by applying a slow spin to the spacecraft.  In both cases, the reconnection event can pass by at 10-100 km/s which is much too fast for even a spinning satellite to obtain a full view of the diffusion region.
+\begin{figure}[H]
+\centerline{\psfig{file=figures/2d_earth_mag_field_lines.eps,height=1.2in}}
+\caption{Earth's magnetic field}
+\label{fig:magneticfields}
+\end{figure}
 
-MMS's satellites, when deployed, will be equipped with instrumentation mounted at the end of six boom extending out from the spacecraft's body along each major axis.  Four boom are the Spin Plane Double Probes (SDP) and two Axial Double Probes (ADP).  This configuration gives each of the four satellite six distinct points to capture data about the diffusion region as it passes.  That information from all the sensors can then get combined to form a 3D representation of the diffusion region.
+Despite the widely experienced effects of reconnection events, very little about the microphysics inside its the diffusion region has been adequately measured.  Magnetometers, spectrometers, and other equipment currently in orbit are only able to capture a small fraction of the event's behavior.  Most equipment collect data from a single point or direction in space or some can get a 360 view of space by applying a slow spin to the spacecraft.  Both of these measurement methods are insufficient at capturing the structure of the diffusion region as it passes.
 
-Since the satellites are spin stabilized and have these large flexible ADP and SDP booms, tight control on the body's attitude is required.  Inaccuracies in the satellite's attitude can introduce errors in the position of the ADP and SDP instrumentation.
+MMS's four satellites will be equipped with instrumentation mounted at the end of six boom extending out from the spacecraft's body along each major axis.  Four boom are the Spin Plane Double Probes (SDP) and two Axial Double Probes (ADP).  This configuration along with high resolution electron and ion spectrometers gives the constellation a new insight into the internal structure of the diffusion region.  The instrumentation at the ends of the boom are an advantage to the science portion of the mission, but create a unique challenge for the Attitude Determination and Control Systems (ADCS).  The satellites are spin stabilized at a rate of 3 rpm.  Disturbances to the rotation could translate into undesirable boom dynamics and nutations off the spin plane.
+
+
 
 % Science questions to answer \cite{mms_website}
 %     What determines when reconnection starts and how fast it proceeds?
