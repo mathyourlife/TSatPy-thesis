@@ -1,3 +1,9 @@
+Items since last meeting:
+
+* Abstract draft completed
+* Clearer list of work remaining and thesis outline
+
+***
 
 * Find a programming / robotics conference
     * Space flight conference?
@@ -12,12 +18,13 @@
 
 * reference tablesat2 as future platforms
 
+***
 
 Writing TODO:
 
 * Abstract (draft done)
 * Introduction
-    * MMS Mission
+    * MMS Mission (draft done)
     * Previous Work / TableSat outreach purpose
     * Thesis focus
 * Analytical Work
@@ -36,6 +43,7 @@ Writing TODO:
     * Simulations
         * Plant System Dynamics
         * 3D Visualizations
+        * EKF
     * Experimental Validation
         * Course Sun Sensors
         * Triple Axis Magnetometer
@@ -59,6 +67,7 @@ Writing TODO:
 * Conclusion
 * Future Work
 
+***
 
 Python Coding TODO:
 
