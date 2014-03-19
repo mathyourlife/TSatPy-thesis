@@ -9,6 +9,15 @@
 * [commencement dates and deadlines](http://www.unh.edu/universityevents/commencement/dates.html)
 * [2014 Winter Term Schedule ](http://gradschool.unh.edu/pdf/cal201350g.pdf)
 
+# Mechanical Engineering Graduate School Requirements
+
+from: [http://www.unh.edu/mechanical-engineering/grad_students/degree_req_mech_eng](http://www.unh.edu/mechanical-engineering/grad_students/degree_req_mech_eng)
+
+    Each candidate must complete 24 semester hours of coursework, 8 semester hours of ME 899 - Master's Thesis, and defend a thesis.  The coursework must include at least two 900-level courses of 3 or more credits each.  A “B” average (3.00 GPA) with no grade below “B-” is required in all the coursework.  No more than 12 credit hours from UNH graduate courses (8 credit hours from non-UNH graduate courses) taken prior to admission to the Graduate School may be applied to the master's degree.  Note, An oral examination (thesis defense) covering the candidate's graduate work is conducted and a thesis is prepared in accordance with the Graduate School rules (http://www.unh.edu/grad-catalog).
+
+    All full-time graduate students are required to attend a weekly M.E. Graduate Seminar and make one presentation per year.
+
+
 
 # Schedule
 
