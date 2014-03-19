@@ -5,6 +5,8 @@ Python implementation of the TableSat controls platform.  Initial design for Uni
 <!--- start_TOC -->
 
 * [TSatPy](#tsatpy)
+	* [Purpose](#purpose)
+	* [Contributions to Control Theory](#contributions-to-control-theory)
 	* [License](#license)
 	* [Installation](#installation)
 		* [TSatPy Installation](#tsatpy-installation)
@@ -18,6 +20,34 @@ Python implementation of the TableSat controls platform.  Initial design for Uni
 	* [Compile Thesis](#compile-thesis)
 
 <!--- end_TOC -->
+
+## Purpose
+
+The work in this thesis utilizes an experimental tabletop satellite (TableSat) to span three main efforts.
+
+1. Create a physical model of a satellite from NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control (ADC) techniques.  The ADC systems must keep the TableSat rotating at a constant 3 rpm, prevent boom oscillations, and correct for detected nutations off the spin plane.
+2. Produce a software system that can be used to run against both theoretical simulations and experimental models.
+3. Improve TableSat's use as an outreach tool.  The system should provide near ``real-time'' feedback of the system's state, allow for on-the-fly modification to control parameters, and be designed such that a individuals specializing in control systems could customize and extend its functionality without substantial computer science expertise.
+
+## Contributions to Control Theory
+
+* Gyroless observer-based controllers used to detect and eliminate nutations and maintain control of a spin stabilized satellite.
+* Improved capabilities of validating observer-based control methods by keeping identical control systems between analytical simulations and real experiments.
+* Allow clusters of estimators and controllers to all receive the same update for improved side-by-side comparisons of effectiveness.
+* Reduce time required to tune a controller by allowing for gain adjustments and swapping of estimation/control techniques on-the-fly.
+* Decompose quaternion state into separate rotational and nutation quaternions for use in error correction.
+* Use decomposed quaternion and differentiated rotational quaternions to decouple rate and attitude control.
+* Base quaternion state corrections on the representative rotational angle error, not the quaternion's sinusoidal scalar term.
+* Build the application such that the same control laws can be used to drive analytical simulations as well as experimental tests with physical systems.
+* Develop the application in a modular fashion to easily allow for future improvements and additions.
+* Control rates between modules such as sensors to estimators and estimators to controllers are independent and can operate at separate rates.
+* "run-time" feedback is available to visualize how the controller believes the system is responding.
+* A global clock instance is used for the authoritative time which during simulations can be adjusted in runtime to speed up or slow down the simulation to obtain better insight into the system dynamics.
+* Compensations for variable step sizes ($\delta t$) are made where able to protect the numerical integrity of the controller under large changes in control rates.
+* Code covered by proper software unit tests to validate and maintain expected behavior of the system during software upgrades.
+* Provide the combination of "run-time" visualizations and on-the-fly parameter/controller tuning for outreach programs.
+* Write the control application in a high level language to keep it accessible for improvements to control systems engineers with moderate programming experience.
+
 
 ## License
 
