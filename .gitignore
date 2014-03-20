@@ -42,6 +42,8 @@ nosetests.xml
 
 # LaTeX
 *.aux
+tex/CoutureThesis.bbl
+tex/CoutureThesis.blg
 tex/CoutureThesis.lof
 tex/CoutureThesis.log
 tex/CoutureThesis.lot

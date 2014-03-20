@@ -9,6 +9,29 @@
 * [commencement dates and deadlines](http://www.unh.edu/universityevents/commencement/dates.html)
 * [2014 Winter Term Schedule ](http://gradschool.unh.edu/pdf/cal201350g.pdf)
 
+# Mechanical Engineering Graduate School Requirements
+
+from: [http://www.unh.edu/mechanical-engineering/grad_students/degree_req_mech_eng](http://www.unh.edu/mechanical-engineering/grad_students/degree_req_mech_eng)
+
+    Each candidate must complete 24 semester hours of coursework, 8 semester hours of ME 899 - Master's Thesis, and defend a thesis.  The coursework must include at least two 900-level courses of 3 or more credits each.  A “B” average (3.00 GPA) with no grade below “B-” is required in all the coursework.  No more than 12 credit hours from UNH graduate courses (8 credit hours from non-UNH graduate courses) taken prior to admission to the Graduate School may be applied to the master's degree.  Note, An oral examination (thesis defense) covering the candidate's graduate work is conducted and a thesis is prepared in accordance with the Graduate School rules (http://www.unh.edu/grad-catalog).
+
+    All full-time graduate students are required to attend a weekly M.E. Graduate Seminar and make one presentation per year.
+
+## Confirmation
+
+Webcat Transcript
+
+8 credits transferred
+16 credits earned
+8 credits remain in IA ?? (ME 899 Master's Thesis)
+
+3 900 level courses
+
+* ME 995 Top/Nonlin Est Spacecraft Apps
+* ME 952 Advanced Control Systems II
+* ME 955 Estimation and Filtering
+
+
 
 # Schedule
 
@@ -78,6 +101,7 @@ Students are strongly urged to bring thesis drafts to the Graduate School for re
 A thesis is made up of three main parts: preliminary pages, text, and references.
 
 Preliminary Pages
+
 * Title page (roman numeral i assigned but not typed) see appendix for sample
 * Copyright page (if needed, roman numeral assigned, but not typed) see appendix for sample
 * Signature/Approval page (roman numeral assigned not typed) see appendix for sample
@@ -90,15 +114,18 @@ Preliminary Pages
 * Abstract (required for all students) (see appendix for sample)
 
 Text
+
 * These pages are numbered consecutively with Arabic numerals beginning with page 1 and continuing through the last page of the thesis. (Please see Pagination on the next page for more information)
 * Introduction (if any), or Chapter I through the last page of text. Must begin with page 1
 
 Reference
+
 * These pages are numbered consecutively with Arabic numerals beginning with page 1 and continuing through the last page of the thesis. (Please see Pagination on the next page for more information)
 * Bibliography or List of References
 * Separation sheets for Bibliography see p. 9 or List of References or Appendices are optional
 
 Appendix
+
 * These pages are numbered consecutively with Arabic numerals beginning with page 1 and continuing through the last page of the thesis. (Please see Pagination on the next page for more information)
 * Appendix or Appendices (if any) may precede or follow Bibliography or List of References
 * Separation sheets for Bibliography see p. 9 or List of References or Appendices are optional

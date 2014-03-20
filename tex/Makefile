@@ -1,18 +1,16 @@
 DIR := $(shell pwd)
-TEX := latex
-# PRE :=  $(TEX) -ini -job-name="preamble" "&pdflatex preamble.tex\dump"
-# BIB := bibtex
 VIEW := evince
-
+TEX := latex
+BIB := bibtex
 
 view:
-	$(VIEW) CoutureThesis.ps &
+	$(VIEW) CoutureThesis.pdf &
 
 thesis:
 	$(TEX) CoutureThesis.tex
+	$(BIB) CoutureThesis
+	$(TEX) CoutureThesis.tex
 	dvips CoutureThesis.dvi
-
-pdf:
 	ps2pdf CoutureThesis.ps CoutureThesis.pdf
 
 pdf-pieces:

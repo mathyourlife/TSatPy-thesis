@@ -1,3 +1,16 @@
+Items since last meeting:
+
+* Abstract draft completed
+* Intro Chapter draft completed
+* Clearer list of work remaining and thesis outline
+* Registered for commencement ceremony
+* Correspond w/ grad school
+    * Loose deadline
+    * May 2014 is the end
+* Ordered Hood/cap/gown and shipped to home
+
+
+***
 
 * Find a programming / robotics conference
     * Space flight conference?
@@ -12,14 +25,24 @@
 
 * reference tablesat2 as future platforms
 
+***
+
+Commencement info
+
+* [http://www.unh.edu/universityevents/commencement/](http://www.unh.edu/universityevents/commencement/)
+
+***
 
 Writing TODO:
 
 * Abstract (draft done)
-* Introduction
-    * MMS Mission
-    * Previous Work / TableSat outreach purpose
-    * Thesis focus
+* Introduction (draft done)
+    * NASA Magnetospheric MultiScale Mission
+    * Research Objective
+    * Past Work
+    * Analytical and Experimental Test Bed
+    * Thesis Contributions
+    * Thesis Outline
 * Analytical Work
     * State Representation
         * Quaternions
@@ -36,6 +59,7 @@ Writing TODO:
     * Simulations
         * Plant System Dynamics
         * 3D Visualizations
+        * EKF
     * Experimental Validation
         * Course Sun Sensors
         * Triple Axis Magnetometer
@@ -59,6 +83,7 @@ Writing TODO:
 * Conclusion
 * Future Work
 
+***
 
 Python Coding TODO:
 

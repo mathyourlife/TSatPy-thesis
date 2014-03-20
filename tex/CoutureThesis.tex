@@ -6,7 +6,7 @@
 
 \begin{document}
 
-\title{DEVELOPMENT OF A HIGH-INTEGRITY ANALYTICAL AND EXPERIMENTAL TESTBED FOR OBSERVER-BASED CONTROLLERS FOR NASA's MAGNETOSPHERIC MULTISCALE MISSION SPACECRAFT}
+\title{DEVELOPMENT OF A HIGH-INTEGRITY ANALYTICAL AND EXPERIMENTAL TEST BED FOR OBSERVER-BASED CONTROLLERS FOR NASA's MAGNETOSPHERIC MULTISCALE MISSION SPACECRAFT}
 \author{Daniel R. Couture}
 \prevdegrees{B.S. Mechanical Engineering, University of New Hampshire (2001)}
 \major{Mechanical Engineering}
@@ -33,9 +33,11 @@
 % Change to arabic page numbers at chapter 1
 \pagenumbering{arabic}
 
-\include{sections/Background}
-\include{sections/State}
-\include{sections/CodeVersions}
+\include{sections/Introduction}
+\include{sections/TableSat1A}
+\include{sections/Analytical}
+\include{sections/StandardTools}
+\include{sections/ImprovedTools}
 \include{sections/TSatPy}
 \include{sections/Conclusions}
 \include{sections/FutureWork}
@@ -54,15 +56,6 @@
 % \munfig{Credit: http://mms.gsfc.nasa.gov}{2d_field_lines}{pretty/2d_earth_mag_field_lines.png}{0.4}
 
 
-% \section{What is it?}
-% 4 identical satellites
-% consallation formation flight
-% magnetospheric multiscale mission MMS
-% constructed in Goddard Space Flight Center
-% classifies as a Solar Terrestrial probe mission
-
-% \todo{image of MMS}
-
 % \section{Mission}
 
 % Science questions to answer \cite{mms_website}
@@ -74,106 +67,10 @@
 %     How does reconnection lead to the acceleration of particles to high energies?
 
 
-% \todo{image of formation flight}
-% study microphysics of
-% 	magnetic reconnection
-% 	energetic particle acceleration
-% 	turbulence
-% Launch Readiness Date (LRD): October 2014 \cite{mms_website}
-% s/c MMS-1, MMS-2..MMS-4
-% reconnection: Electromagnetic engergy from the sun interacts with Earth's magnetosphere ausing magneti field lines to cross and create a burst of energy \cite{nasa_edge_video_ne_at_mms}
-% magnetic reconnection measured ions and electrons as boundary passes to create 3d model of it passing by
-% Fast plasma investigation
-% probing the electron diffusion region (EDR) (passes too rapidly to get an accurate view with current equipment small (1-10 km) and rapidly moving (10-100 km/s))
-% adjacent magnetic fields generally have significaltly different orientations such that when they intersect, a large amount of energy is dispursed within a small region in the form of heat and kinetic energy.  The region = diffuision region
-% explore magnetic reconnection
-% dynamic regions of magnetosphere
-% orbits planned to pass through the upstream and downstream magnetic reconnection sites
-% 1) day side - solar wind field lines connection
-% 2) down stream -
-% 3) plasma travels down and causes the Arura
-% through magnetospheric reconnection, portals allow energetic particles to traverse from outside to the interior of the magnetosphere
-% predict when solar space weather within the magnetosphere and if they will affect orbiting satellites
-% adverse space weather within the magnetosphere can negatively impace spacecraft system health GPS, induce disruptive current in electrical grids, communictaions, increased radiation exposure on trans-polar flights
 
-% Difficult to understand
-% magnetic boundary passes satellites quickly so has been hard to measure
-% MMS has intsruments to capture measurements
-% Instruments mounted on all sides of the
-% 8 sensors 1/30th sec instead of
 
-% October 2014, Atlas five launch \cite{nasa_edge_video}
 
-% \section{Team}
-% International partnership Japan/US/French
 
-% Marshall space flight Alabama calibrate DIS
-
-% \section{Payload}
-% Octagonal design
-% 3.5 meters wide and 1.2 meters high
-
-% 1,250 kg
-
-% Sensors
-% 	star sensor -> attitude
-% 	accelerometers -> $\Delta V$
-
-% Fast Plasma Instrument (FPI) - controls
-% 	16 Dual Electron spectrometer (DES) Goddary built
-% 	16 Dual Ion Spectrometer (DIS) Japan *** built, hand delivered
-% 	180 degree and +- 22degree measurement
-% 	30 millisec measurement rate 100x faster than previous missions entire view of sky
-% FPI
-% 	despins data
-
-% Instument Data processing Unit (IDPU) - brains of measurements
-% 	collects, compresses, transmits requested measurement data
-% 	configure while on mission
-
-% booms
-% 	eight deployable booms
-% 	two 12.5m axial booms (electric field sensors)
-% 	four 60m wire booms
-% 	two 5m booms in spin plane for magnetometers
-% rigid, wire, top/bottom booms
-% important to keep consistent spin rate to get accurate estimates of boom location
-
-% \todo{image of spectrometers}
-
-% \section{Propulsion}
-
-% types: solid propellents, bi propellents, electro propulsion, cold gas systems
-% chose: mono-propellant blowdown - hydrozene power thrusters \cite{nasa_edge_video_propulsion}
-% 3 rpm
-% radial thrusters - spinning
-% axial thrusters - prevent nutation
-
-% concern:
-% propulsion introduce distrubances
-
-% 20 second pulses
-
-% fuel limits by number of adjustments
-
-% monitor fuel left - via pressure, temperature via ideal gas law
-
-% determine performance characteristics of the thrusters prior to launch, exit velocity
-
-% dry mass, wet mass -> time variant mass
-
-% responsible for maintaining accurate formation flight with interspacecraft separation from 100s of km down to 10 km
-
-% planned orbit adjustment about 1 / 2weeks
-
-% critical to fly in tetrahedron to achieve 3d model
-
-% Earth Moon system influence to target the desired location/time
-
-% \section{performance requirements}
-
-% $\pm 0.5$ deg attitude tollerance
-% 1/10th of a second
 
 
 % \chapter{The Quaternion}\label{ch:quaternion}
