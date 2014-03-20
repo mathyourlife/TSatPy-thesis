@@ -1,7 +1,14 @@
 Items since last meeting:
 
 * Abstract draft completed
+* Intro Chapter draft completed
 * Clearer list of work remaining and thesis outline
+* Registered for commencement ceremony
+* Correspond w/ grad school
+    * Loose deadline
+    * May 2014 is the end
+* Ordered Hood/cap/gown and shipped to home
+
 
 ***
 
@@ -17,6 +24,12 @@ Items since last meeting:
     * IEEE(Control Systems Society)
 
 * reference tablesat2 as future platforms
+
+***
+
+Commencement info
+
+* [http://www.unh.edu/universityevents/commencement/](http://www.unh.edu/universityevents/commencement/)
 
 ***
 
