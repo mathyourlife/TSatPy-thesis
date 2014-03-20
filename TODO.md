@@ -36,10 +36,13 @@ Commencement info
 Writing TODO:
 
 * Abstract (draft done)
-* Introduction
-    * MMS Mission (draft done)
-    * Previous Work / TableSat outreach purpose
-    * Thesis focus
+* Introduction (draft done)
+    * NASA Magnetospheric MultiScale Mission
+    * Research Objective
+    * Past Work
+    * Analytical and Experimental Test Bed
+    * Thesis Contributions
+    * Thesis Outline
 * Analytical Work
     * State Representation
         * Quaternions
