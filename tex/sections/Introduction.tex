@@ -17,7 +17,7 @@ NASA's Magnetospheric MultiScale (MMS) Mission is a Solar Terrestrial probe miss
 A reconnection event occurs when magnetic field lines cross allowing energetic particles to traverse from interstellar space into the Earth's magnetosphere releasing large quantities of heat and kinetic energy.  The diffusion region of a reconnection event starts on the day side magnetopause an quickly folds over to the Earth's magnetotail (Figure \ref{fig:magneticfields}).  This region is only 1-10 km in size but can travel at 10-100 km/hr \cite{swri} making it extremely difficult to measure.  Effects of a reconnection event are regularly experienced via the aurora borealis, interference with spacecraft GPS systems, and disruptions to electrical grids and communication networks.
 
 \begin{figure}[H]
-\centerline{\psfig{file=figures/2d_earth_mag_field_lines.eps,height=1.2in}}
+\centerline{\psfig{file=figures/2d_earth_mag_field_lines.eps,height=2in}}
 \caption{Earth's magnetic field}
 \label{fig:magneticfields}
 \end{figure}
@@ -170,7 +170,7 @@ This research contributes to the field of feedback control, particularly as it r
 The following chapters are organized as follows:
 
 \begin{itemize}
-    \item Chapter \ref{chap:TableSat1A}, \nameref{chap:TableSat1A} - A review of the UNH TableSat 1A design including sensors used, actuator selection, and boom modeling to represent MMS's ADP and SDP booms.
+    \item Chapter \ref{chap:UNHTableSat1A}, \nameref{chap:UNHTableSat1A} - A review of the UNH TableSat 1A design including sensors used, actuator selection, and boom modeling to represent MMS's ADP and SDP booms.
     \item Chapter \ref{chap:Analytical}, \nameref{chap:Analytical} - Observer-based control methods investigated.  State representation selection and how that influenced the base station design.  Simulations and experimental validation of theoretical models.
     \item Chapter \ref{chap:StandardTools}, \nameref{chap:StandardTools} - Details on the first two iterations of the controls application for the base station.  First, an application of Matlab Simulink based on one used by Vess \cite{vessthesis}.  Next, an application based on Matlab m-files for direct control of the messages sent and received from TableSat.
     \item Chapter \ref{chap:SoftwareDevelopmentforExperimentalIntegration}, \nameref{chap:SoftwareDevelopmentforExperimentalIntegration} - Iterations three and four of the control systems application.  First, improved Matlab tooling around ``real-time'' feedback on the controller's view of simulations and experimental tests.  Next, a Matlab object oriented application providing persistent state throughout the controller and helper methods to deal with most of the heavy lifting involved in state manipulation.
