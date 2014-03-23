@@ -1,6 +1,6 @@
 DIR := $(shell pwd)
 VIEW := evince
-TEX := latex
+TEX := latex -shell-escape
 BIB := bibtex
 
 view:
