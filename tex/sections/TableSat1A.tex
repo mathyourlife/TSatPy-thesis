@@ -4,8 +4,6 @@
 
 The UNH TableSat 1A is a limited 3-DOF experimental test bed analog for the NASA MMS satellite (See Figure \ref{fig:TSatFullView}).  All electronics, booms, and actuators are attached to a circular PVC deck.  The aluminum hub at its center has a hollow center which allow it to rest on a center post giving the deck full rotation about its z-axis and limited rotations about its x and y-axes.  Five out of the six booms present on the MMS spacecraft are represented on TableSat 1A.  The four SDP booms extend radially from the deck at 90 degree intervals.  One of the MMS's ADP booms is modeled with a boom attached to the center post of the TableSat.
 
-
-
 \begin{figure}[H]
 \centerline{\psfig{file=figures/tsat_full_view.eps,height=3in}}
 \caption{TableSat 1A Full View}
@@ -206,16 +204,82 @@ print "A %g radian (%d degree) rotation about <%g, %g, %g>" % (
 # Prints out
 # A 3.34585 radian (191 degree) rotation about <-0, -0, -1>
   \end{minted}
-  % \nocite{minted}
+  \nocite{minted}
 \end{singlespace}
 
-\subsubsection{Create Calibration TAM Data}
+\subsubsection{Calculate TAM Nutation Reference Data}
 
-About 1020 data points per calibration set
-Average of 37 data points per degree
+Figure \ref{fig:TAMNutationVoltages} shows that while the TAM readings vary enough to be noticeable for large nutations the signal contain a fair quantity of noise.  In order to use the triple-axis magnetometer to quantify nutation for the observer based controller, the data in Table \ref{tbl:TAMCalibration} needs to be summarized to five data points for a yaw angle of 191 degrees.  When running the estimator, TAM sensor values can be compared to the five reference nutation points of flat, +x down, +y down, -x down, and -y down.
+
+The method chosen for creating the five reference points starts with collecting about 2400 data points with corresponding TAM and course sun sensor voltages.  The voltages for each nutation setting were grouped into 1 degree increments.  Multiple rotations created some overlap in each degree measurements.  The final reference value for each degree was calculated through a weighted average of a specified smoothing window.
+
+Figure \ref{fig:TAMNutationReference} shows the result of the nutation reference values for 5, 15 and 25 degree smoothing windows.  At $\pm 15$ degrees, an adequate level of noise was filtered out without causing over smoothing.  At this level, each of the 191 degree reference values would be a weighted average of about 200 of the original calibration points.
+
+\begin{figure}[H]
+  \begin{subfigure}[h!]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{figures/tam_calibration_ref_5deg_smoothing.eps}
+    \caption{$\pm 5^o$ smoothing}
+    \label{fig:TAM5degCalibration}
+  \end{subfigure}
+  ~
+  \begin{subfigure}[h!]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{figures/tam_calibration_ref_25deg_smoothing.eps}
+    \caption{$\pm 25^o$ smoothing}
+    \label{fig:TAM15degCalibration}
+  \end{subfigure}
+
+  \begin{subfigure}[h!]{0.8\textwidth}
+    \includegraphics[width=\textwidth]{figures/tam_calibration_ref_15deg_smoothing.eps}
+    \caption{$\pm 15^o$ smoothing}
+    \label{fig:TAM15degCalibration}
+  \end{subfigure}
+  \caption{TAM Nutation Reference Values}
+  \label{fig:TAMNutationReference}
+\end{figure}
+
+The cross shown in Figure \ref{fig:TAMRef191} illustrates the difference in the four nutation reference points compared to the stable point for a 191 degree yaw.  Figure \ref{fig:TAMPoints191} shows just how much noise is smoothed out by the calibration process as the original data points are plotted against the reference nutation voltages.
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/tam_calibration_ref_for_yaw_191.eps,height=3in}}
+  \caption{TAM reference voltages for 191 degree yaw}
+  \label{fig:TAMRef191}
+\end{figure}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/tam_calibration_191_degree_pts.eps,height=3in}}
+  \caption{TAM reference voltages for 191 degree yaw}
+  \label{fig:TAMPoints191}
+\end{figure}
+
+\subsubsection{Estimating the Nutation}
+
+Taking one of the points from yneg calibration data to complete the example, Table \ref{tbl:TAMSamplePoints} lists the test point along with the reference values obtained from the calibration algorithm above.  The test point, plotted it Figure \ref{fig:TAMPoint191} is nearest to the reference yneg value, but there is a large gap between the measured value and it associated reference, and other test points as in \ref{fig:TAMPoints191} are far closer to another reference point than its own.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lc}
+    \hline
+    Test Point       & $(2.63, 2.37, 2.32)$ \\ \hline
+    Steady Reference & $(2.63, 2.40, 2.32)$ \\ \hline
+    xpos Reference   & $(2.63, 2.42, 2.31)$ \\ \hline
+    ypos Reference   & $(2.64, 2.42, 2.32)$ \\ \hline
+    xneg Reference   & $(2.64, 2.39, 2.32)$ \\ \hline
+    yneg Reference   & $(2.63, 2.39, 2.32)$ \\ \hline
+  \end{tabular}
+  \caption{TAM sample reference points}
+  \label{tbl:TAMSamplePoints}
+\end{table}
 
 
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/tam_calibration_191_degree_pt.eps,height=3in}}
+  \caption{TAM sample data point for nutation calculation}
+  \label{fig:TAMPoint191}
+\end{figure}
 
+In order to determine the best approximation for the measured nutations a number of combinations of approaches were attempted including using the proportion between two estimates, normalizing the reference vectors, projecting the point to the plane consisting of the two nearest vectors, and creating a conversion of the x and y vectors to an orthogonal space.  Some cases provided slightly lower classification error rates when run against the original calibration test set, but any improvements were not significant.  For simplicity and speed, the measurement estimate for nutation was reduced to a nearest neighbor classification \cite{nearestneighbor} where the closest reference point won out.
+
+Despite the improved speed and simplicity, this classification method has some large faults.  The biggest of which is the jitter that will be fed into the estimator since with no continuum of values, the nutation state will jump between the five calibration states of flat, and $14^o$ nutations.  Further work should be focused on refining this technique.
 
 \section{Messages Between TableSat and the Base Station}
 
