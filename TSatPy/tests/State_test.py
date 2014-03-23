@@ -158,6 +158,20 @@ class TestQuaternionAngles(unittest.TestCase):
         q = State.Quaternion([0, 0, 1], radians=0)
         self.assertEquals(State.Quaternion([0, 0, 0], 1), q)
 
+    def test_to_rotation(self):
+        vector = [np.sqrt(1/2.0), -np.sqrt(1/3.0), np.sqrt(1/6.0)]
+        radians = 1.4
+
+        q = State.Quaternion(vector, radians=radians)
+        v, r =  q.to_rotation()
+
+        r_err = np.abs(r - radians)
+        self.assertTrue(r_err < State.Quaternion.float_threshold)
+
+        dot = np.abs(np.dot(np.mat(vector), v)[0, 0])
+        vector_err = np.abs(dot - 1)
+        self.assertTrue(vector_err < State.Quaternion.float_threshold)
+
     def test_partial_turn(self):
         q1 = State.Quaternion([0, 0, 1], radians=np.pi/2)
         q2 = State.Quaternion([0, 0, 1], radians=np.pi/2 + np.pi * 2)

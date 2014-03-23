@@ -168,7 +168,6 @@ class Quaternion(object):
         radians = np.arccos(self.scalar) * 2
         return (v, radians)
 
-
     def decompose(self):
         """
         Take a single quaternion representing a state rotation and decompose
