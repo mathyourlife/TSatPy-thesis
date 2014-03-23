@@ -367,12 +367,12 @@
 
 
 
-{\catcode`\^^M=13
-   \gdef\@gobblecr{\@ifnextchar
-                       {\@gobble}
-                       {\ignorespaces}
-                  }
-}
+%{\catcode`\^^M=13
+%   \gdef\@gobblecr{\@ifnextchar
+%                       {\@gobble}
+%                       {\ignorespaces}
+%                  }
+%}
 
 {\catcode`\ =\active
     \gdef\@vobeyspaces{\catcode`\ \active \let \@xobeysp}
@@ -393,7 +393,7 @@
 
 \def\@sttytext{\obeyspaces\@ttytext}
 
-\def\@gobble#1{}
+% \def\@gobble#1{}
 
 \def\@ttytext
 {  \trivlist

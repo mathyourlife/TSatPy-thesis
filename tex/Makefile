@@ -1,6 +1,6 @@
 DIR := $(shell pwd)
 VIEW := evince
-TEX := latex
+TEX := latex -shell-escape
 BIB := bibtex
 
 view:
@@ -17,3 +17,6 @@ pdf-pieces:
 	mkdir -p $(DIR)/tmp
 	rm -f $(DIR)/tmp/*
 	pdftk $(DIR)/CoutureThesis.pdf burst output $(DIR)/tmp/CoutureThesis_%02d.pdf
+
+pdf-merge:
+	pdftk $(DIR)/tmp/CoutureThesis_*.pdf cat output $(DIR)/tmp/Merged.pdf

@@ -145,7 +145,6 @@ class Quaternion(object):
         :param radians: angle of rotation
         :type  radians: float
         """
-
         v = np.matrix(vector, dtype=np.float)
         if v.shape == (1, 3):
             v = v.T
@@ -154,6 +153,20 @@ class Quaternion(object):
 
         self.vector = v * np.sin(-radians / 2)
         self.scalar = np.cos(-radians / 2)
+
+    def to_rotation(self):
+        """
+        Convert the current quaternion into a vector and angle of rotation.
+        This is the inverse to self.from_rotation.
+
+        :return: (axis of rotation, angle of rotation)
+        :rtype: tuple
+        """
+
+        v = self.vector
+        v = v / np.sqrt((v.T * v)[0, 0])
+        radians = np.arccos(self.scalar) * 2
+        return (v, radians)
 
     def decompose(self):
         """
