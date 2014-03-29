@@ -30,11 +30,11 @@ function str = random_string(length, type)
 			error('"length" argument must be an integer in %s',mfilename())
 		end
 	end
-	
+
 	% If the type has not been specified,
 	% use upper case letters
 	if (nargin < 2) type = 1; end
-	
+
 	%ASCII Character codes
 	if (type == 1)
 		% Upper case letters
@@ -46,7 +46,6 @@ function str = random_string(length, type)
 		str = char(97 + floor(26 .* rand(length,1)))';
 	elseif (type == 3)
 		% Upper case, lower case, numbers, and special characters
-		% !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~
 		str = char(33 + floor(94 .* rand(length,1)))';
 	else
 		error('Unrecognized "type" argument in %s',mfilename())
