@@ -241,9 +241,9 @@ class Quaternion(object):
 
     def __mul__(self, q):
         s = self.scalar * q.scalar - (self.vector.T * q.vector)[0, 0]
-        v = self.vector * q.scalar + q.vector * self.scalar + np.cross(
-            self.vector.T, q.vector.T).T
-        return Quaternion(v.T, s)
+        v = (self.x + np.eye(3) * self.scalar) * q.vector
+        v += self.vector * q.scalar
+        return Quaternion(v, s)
 
     def latex(self):
         """
