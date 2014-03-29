@@ -252,7 +252,7 @@ class Quaternion(object):
         :return: LaTeX quaternion str
         :rtype: str
         """
-        msg = '%g \\textbf{i} %+g \\textbf{j} %+g \\textbf{k} %+g' % (
+        msg = '%g \\boldsymbol{i} %+g \\boldsymbol{j} %+g \\boldsymbol{k} %+g' % (
             self.vector[0, 0], self.vector[1, 0], self.vector[2, 0],
             self.scalar
         )
@@ -451,7 +451,7 @@ class BodyRate(object):
         :return: LaTeX quaternion str
         :rtype: str
         """
-        msg = '%g \\textbf{i} %+g \\textbf{j} %+g \\textbf{k}' % (
+        msg = '%g \\boldsymbol{i} %+g \\boldsymbol{j} %+g \\boldsymbol{k}' % (
             self.w[0, 0], self.w[1, 0], self.w[2, 0],
         )
         return msg

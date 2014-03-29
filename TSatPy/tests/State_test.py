@@ -46,7 +46,7 @@ class TestQuaternionBasics(unittest.TestCase):
     def test_latex(self):
         vec = [1, 2, 3]
         q = State.Quaternion(vec,  4)
-        q_str = '1 \\textbf{i} +2 \\textbf{j} +3 \\textbf{k} +4'
+        q_str = '1 \\boldsymbol{i} +2 \\boldsymbol{j} +3 \\boldsymbol{k} +4'
         self.assertEquals(q_str, q.latex())
 
     def test_definition(self):
@@ -461,7 +461,7 @@ class TestBodyRate(unittest.TestCase):
 
     def test_latex(self):
         w = State.BodyRate([1, -2, 3.5])
-        self.assertEquals('1 \\textbf{i} -2 \\textbf{j} +3.5 \\textbf{k}', w.latex())
+        self.assertEquals('1 \\boldsymbol{i} -2 \\boldsymbol{j} +3.5 \\boldsymbol{k}', w.latex())
 
 
 class TestEulerMomentEquations(unittest.TestCase):
@@ -620,8 +620,8 @@ class TestPlant(unittest.TestCase):
 
         p = State.Plant(I, x, clock)
         expected = {
-            'q': '-0.5 \\textbf{i} -2.5 \\textbf{j} +1 \\textbf{k} -3',
-            'w': '0 \\textbf{i} +0 \\textbf{j} -2 \\textbf{k}',
+            'q': '-0.5 \\boldsymbol{i} -2.5 \\boldsymbol{j} +1 \\boldsymbol{k} -3',
+            'w': '0 \\boldsymbol{i} +0 \\boldsymbol{j} -2 \\boldsymbol{k}',
         }
         self.assertEquals(p.latex(), expected)
 
