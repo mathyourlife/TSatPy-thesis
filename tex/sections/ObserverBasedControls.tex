@@ -1,0 +1,62 @@
+
+\chapter{Observer Based Controls}
+\label{chap:ObserverBasedControls}
+
+\section{Estimation and Controller Tools}
+\label{sec:EstimationandControllerTools}
+
+\subsection{Identity Quaternion}
+\label{subsec:IdentityMultiplication}
+
+The identity quaternion as with the identity matrix is the quantity that when multiplied by another quaternion, does not modify its value.  This identity holds true for general as well as rotational quaternions.
+
+\begin{equation}
+  \bs{q}_I = 0 \bs{i} + 0 \bs{j} + 0 \bs{k} + 1
+\end{equation}
+
+An Identity function was created it the TSatPy.State module to construct an identity quaternion.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy import State
+
+q = State.Quaternion([1,2,3], 4)
+print("q       = %s" % q)
+q_I = State.Identity()
+print("q_I     = %s" % q_I)
+print("q_I * q = %s" % (q_I * q))
+
+# Prints Out
+# q       = <Quaternion [1 2 3], 4>
+# q_I     = <Quaternion [0 0 0], 1>
+# q_I * q = <Quaternion [1 2 3], 4>
+  \end{minted}
+  \nocite{minted}
+\end{singlespace}
+
+
+\subsection{Quaternion Equality}
+\label{subsec:QuaterinonEquality}
+
+Rotational quaternions are considered equal if they represent the same attitude.  This can be tested with the multiplicative error quaternion.
+
+\begin{equation}
+  \bs{a} = \bs{b} \iff \bs{a}^* \otimes \bs{b} = \bs{q}_I
+\end{equation}
+
+
+\subsection{Decomposing A Quaternion}
+\label{subsec:DecomposingAQuaternion}
+
+
+\section{Estimators}
+\label{sec:Estimators}
+
+\section{Controllers}
+\label{sec:Controller}
+
+\section{Simulations}
+\label{sec:Simulations}
+
+\section{Experimental Validation}
+\label{sec:ExperimentalValidation}
