@@ -504,12 +504,12 @@ class EulerMomentEquations(object):
             return self.w
 
         w_dot = BodyRate([
-            M[0] / self.I[0, 0] - (self.I[2, 2] - self.I[1, 1]) *
-                self.w.w[1, 0] * self.w.w[2, 0] / self.I[0, 0],
-            M[1] / self.I[1, 1] - (self.I[0, 0] - self.I[2, 2]) *
-                self.w.w[0, 0] * self.w.w[2, 0] / self.I[1, 1],
-            M[2] / self.I[2, 2] - (self.I[1, 1] - self.I[0, 0]) *
-                self.w.w[0, 0] * self.w.w[1, 0] / self.I[2, 2],
+            (M[0] - (self.I[2, 2] - self.I[1, 1]) *
+                self.w.w[1, 0] * self.w.w[2, 0]) / self.I[0, 0],
+            (M[1] - (self.I[0, 0] - self.I[2, 2]) *
+                self.w.w[0, 0] * self.w.w[2, 0]) / self.I[1, 1],
+            (M[2] - (self.I[1, 1] - self.I[0, 0]) *
+                self.w.w[0, 0] * self.w.w[1, 0]) / self.I[2, 2],
         ])
 
         # Update body rate rate on the class.
