@@ -28,7 +28,7 @@ MMS's four satellites will be equipped with instrumentation mounted at the end o
 
 \begin{figure}[H]
 \centerline{\psfig{file=figures/booms.eps,height=1.6in}}
-\caption{MMS Boom Configuration \cite{tsat1c}}
+\caption{MMS Boom Configuration}
 \label{fig:booms}
 \end{figure}
 
@@ -171,7 +171,8 @@ The following chapters are organized as follows:
 
 \begin{itemize}
     \item Chapter \ref{chap:UNHTableSat1A}, \nameref{chap:UNHTableSat1A} - A review of the UNH TableSat 1A design including sensors used, actuator selection, and boom modeling to represent MMS's ADP and SDP booms.
-    \item Chapter \ref{chap:Analytical}, \nameref{chap:Analytical} - Observer-based control methods investigated.  State representation selection and how that influenced the base station design.  Simulations and experimental validation of theoretical models.
+    \item Chapter \ref{chap:SatelliteAttitudeModeling}, \nameref{chap:SatelliteAttitudeModeling} -  State representation selection and system dynamics and how they influenced the base station application design.
+    \item Chapter \ref{chap:ObserverBasedControls}, \nameref{chap:ObserverBasedControls} - Observer-based control methods investigated.  Simulations and experimental validation of theoretical models.
     \item Chapter \ref{chap:StandardTools}, \nameref{chap:StandardTools} - Details on the first two iterations of the controls application for the base station.  First, an application of Matlab Simulink based on one used by Vess \cite{vessthesis}.  Next, an application based on Matlab m-files for direct control of the messages sent and received from TableSat.
     \item Chapter \ref{chap:SoftwareDevelopmentforExperimentalIntegration}, \nameref{chap:SoftwareDevelopmentforExperimentalIntegration} - Iterations three and four of the control systems application.  First, improved Matlab tooling around ``real-time'' feedback on the controller's view of simulations and experimental tests.  Next, a Matlab object oriented application providing persistent state throughout the controller and helper methods to deal with most of the heavy lifting involved in state manipulation.
     \item Chapter \ref{chap:TSatPy}, \nameref{chap:TSatPy} - A python based implementation of the observer-based controller.  Advantages to using a true object oriented language over previous Matlab iterations.  Explanations of how the application's architecture and how it allows for deep inspection, rapid development, varied control rates between modules, multiple estimator and control methods to run in tandem, and use of a global clock to allow for large changes in $\Delta t$.

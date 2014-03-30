@@ -130,7 +130,7 @@ Following this analysis, the magnetic field surrounding the experimental setup w
 
 Since the gyroscope and accelerometers were determined to be useless for the observer based controller, and the course sun sensors only able to detect motion about the z-axis, the triple-axis magnetometer remained the only sensor onboard that had the capability of detecting the nutation required for the MMS controller.
 
-The baseline path established for TableSat in the absence of nutation (Fig fig:TAMUniformField) should be able to be compared to readings during a live run of the system and any offsets used to quantify nutation.  The same process of rotating the TableSat under a constant thrust was repeated four more times.  Each time a 200g brass weight was placed on the TableSat's deck at each principle axis $+x, +y, -x, -y$ causing the TableSat to pivot about 14 degrees out of the spin plane which was about the extent its range for nutation.  The TAM voltages for each run are grouped by color and shown in Figure \ref{fig:TAMNutationVoltages}.  Although the paths intersect and measurements are not $1:1$ to the TableSat's orientation, there is at least a separation in paths.  Further study found that while the TAM voltages are duplicated between nutation paths, points that occupy the same space in the TAM measurement have different yaw measurements as measured by the course sun sensor.
+The baseline path established for TableSat in the absence of nutation (Figure \ref{fig:TAMUniformField}) should be able to be compared to readings during a live run of the system and any offsets used to quantify nutation.  The same process of rotating the TableSat under a constant thrust was repeated four more times.  Each time a 200g brass weight was placed on the TableSat's deck at each principle axis $+x, +y, -x, -y$ causing the TableSat to pivot about 14 degrees out of the spin plane which was about the extent its range for nutation.  The TAM voltages for each run are grouped by color and shown in Figure \ref{fig:TAMNutationVoltages}.  Although the paths intersect and measurements are not 1:1 to the TableSat's orientation, there is at least a separation in paths.  Further study found that while the TAM voltages are duplicated between nutation paths, points that occupy the same space in the TAM measurement have different yaw measurements as measured by the course sun sensor.
 
 \begin{figure}[H]
   \centerline{\psfig{file=figures/tam_distinct_tilts_with_good_field.eps,height=4in}}
@@ -225,7 +225,7 @@ Figure \ref{fig:TAMNutationReference} shows the result of the nutation reference
   \begin{subfigure}[h!]{0.5\textwidth}
     \includegraphics[width=\textwidth]{figures/tam_calibration_ref_25deg_smoothing.eps}
     \caption{$\pm 25^o$ smoothing}
-    \label{fig:TAM15degCalibration}
+    \label{fig:TAM25degCalibration}
   \end{subfigure}
 
   \begin{subfigure}[h!]{0.8\textwidth}

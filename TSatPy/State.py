@@ -164,7 +164,11 @@ class Quaternion(object):
         """
 
         v = self.vector
-        v = v / np.sqrt((v.T * v)[0, 0])
+        v_mag = np.sqrt((v.T * v)[0, 0])
+        if v_mag == 0:
+            v = np.mat([0,0,0]).T
+        else:
+            v = v / v_mag
         radians = np.arccos(self.scalar) * 2
         return (v, radians)
 
@@ -241,9 +245,9 @@ class Quaternion(object):
 
     def __mul__(self, q):
         s = self.scalar * q.scalar - (self.vector.T * q.vector)[0, 0]
-        v = self.vector * q.scalar + q.vector * self.scalar + np.cross(
-            self.vector.T, q.vector.T).T
-        return Quaternion(v.T, s)
+        v = (self.x + np.eye(3) * self.scalar) * q.vector
+        v += self.vector * q.scalar
+        return Quaternion(v, s)
 
     def latex(self):
         """
@@ -252,7 +256,7 @@ class Quaternion(object):
         :return: LaTeX quaternion str
         :rtype: str
         """
-        msg = '%g \\textbf{i} %+g \\textbf{j} %+g \\textbf{k} %+g' % (
+        msg = '%g \\boldsymbol{i} %+g \\boldsymbol{j} %+g \\boldsymbol{k} %+g' % (
             self.vector[0, 0], self.vector[1, 0], self.vector[2, 0],
             self.scalar
         )
@@ -451,7 +455,7 @@ class BodyRate(object):
         :return: LaTeX quaternion str
         :rtype: str
         """
-        msg = '%g \\textbf{i} %+g \\textbf{j} %+g \\textbf{k}' % (
+        msg = '%g \\boldsymbol{i} %+g \\boldsymbol{j} %+g \\boldsymbol{k}' % (
             self.w[0, 0], self.w[1, 0], self.w[2, 0],
         )
         return msg
@@ -500,12 +504,12 @@ class EulerMomentEquations(object):
             return self.w
 
         w_dot = BodyRate([
-            M[0] / self.I[0, 0] - (self.I[2, 2] - self.I[1, 1]) *
-                self.w.w[1, 0] * self.w.w[2, 0] / self.I[0, 0],
-            M[1] / self.I[1, 1] - (self.I[0, 0] - self.I[2, 2]) *
-                self.w.w[0, 0] * self.w.w[2, 0] / self.I[1, 1],
-            M[2] / self.I[2, 2] - (self.I[1, 1] - self.I[0, 0]) *
-                self.w.w[0, 0] * self.w.w[1, 0] / self.I[2, 2],
+            (M[0] - (self.I[2, 2] - self.I[1, 1]) *
+                self.w.w[1, 0] * self.w.w[2, 0]) / self.I[0, 0],
+            (M[1] - (self.I[0, 0] - self.I[2, 2]) *
+                self.w.w[0, 0] * self.w.w[2, 0]) / self.I[1, 1],
+            (M[2] - (self.I[1, 1] - self.I[0, 0]) *
+                self.w.w[0, 0] * self.w.w[1, 0]) / self.I[2, 2],
         ])
 
         # Update body rate rate on the class.

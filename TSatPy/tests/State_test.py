@@ -46,7 +46,7 @@ class TestQuaternionBasics(unittest.TestCase):
     def test_latex(self):
         vec = [1, 2, 3]
         q = State.Quaternion(vec,  4)
-        q_str = '1 \\textbf{i} +2 \\textbf{j} +3 \\textbf{k} +4'
+        q_str = '1 \\boldsymbol{i} +2 \\boldsymbol{j} +3 \\boldsymbol{k} +4'
         self.assertEquals(q_str, q.latex())
 
     def test_definition(self):
@@ -172,6 +172,14 @@ class TestQuaternionAngles(unittest.TestCase):
         vector_err = np.abs(dot - 1)
         self.assertTrue(vector_err < State.Quaternion.float_threshold)
 
+    def test_idenitiy_to_rotation(self):
+        q = State.Identity()
+        v, r = q.to_rotation()
+
+        r_err = np.abs(r - 0)
+        self.assertTrue(r_err < State.Quaternion.float_threshold)
+        self.assertTrue(np.all(np.mat([0,0,0]).T == v))
+
     def test_partial_turn(self):
         q1 = State.Quaternion([0, 0, 1], radians=np.pi/2)
         q2 = State.Quaternion([0, 0, 1], radians=np.pi/2 + np.pi * 2)
@@ -209,7 +217,7 @@ class TestQuaternionAngles(unittest.TestCase):
         # Test a -1/2 turn about the x axis
         q = State.Quaternion([1, 0, 0], radians=-np.pi)
 
-        pt = np.mat([0.2, 0.5, 1]).T
+        pt = np.mat([0.2, 0.5, 1],).T
         truth = np.mat([0.2, -0.5, -1]).T
 
         new_pt = q.rmatrix * pt
@@ -461,7 +469,7 @@ class TestBodyRate(unittest.TestCase):
 
     def test_latex(self):
         w = State.BodyRate([1, -2, 3.5])
-        self.assertEquals('1 \\textbf{i} -2 \\textbf{j} +3.5 \\textbf{k}', w.latex())
+        self.assertEquals('1 \\boldsymbol{i} -2 \\boldsymbol{j} +3.5 \\boldsymbol{k}', w.latex())
 
 
 class TestEulerMomentEquations(unittest.TestCase):
@@ -620,8 +628,8 @@ class TestPlant(unittest.TestCase):
 
         p = State.Plant(I, x, clock)
         expected = {
-            'q': '-0.5 \\textbf{i} -2.5 \\textbf{j} +1 \\textbf{k} -3',
-            'w': '0 \\textbf{i} +0 \\textbf{j} -2 \\textbf{k}',
+            'q': '-0.5 \\boldsymbol{i} -2.5 \\boldsymbol{j} +1 \\boldsymbol{k} -3',
+            'w': '0 \\boldsymbol{i} +0 \\boldsymbol{j} -2 \\boldsymbol{k}',
         }
         self.assertEquals(p.latex(), expected)
 

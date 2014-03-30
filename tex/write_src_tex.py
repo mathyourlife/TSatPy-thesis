@@ -11,7 +11,8 @@ def TSatPyTeX():
     src_tex = os.path.join(os.path.dirname(__file__), 'sections/TSatPySource.tex')
 
     header = """
-\chapter{TSatPy Source Code}\label{ch:tsatpy_source}
+\chapter{TSatPy Source Code}
+\label{chap:tsatpy_source}
 
 \linespread{1}
 """
@@ -30,7 +31,7 @@ def TSatPyTeX():
             fn = f[len(tsat_dir)+1:]
             tex.write('\n')
             tex.write('\pagebreak\n')
-            tex.write('\section{TSatPy/%s}\label{code:TSatPy/%s}' % (fn.replace('_', '\_'), fn))
+            tex.write('\section{TSatPy/%s}\label{code:TSatPy/%s}\n' % (fn.replace('_', '\_'), fn))
             tex.write('\inputminted[linenos,fontsize=\scriptsize]{python}{%s}\n' % f)
 
 def MatlabOOTeX():
@@ -38,7 +39,8 @@ def MatlabOOTeX():
     src_tex = os.path.join(os.path.dirname(__file__), 'sections/MatlabOOSource.tex')
 
     header = """
-\chapter{Matlab Object Oriented Source Code}\label{ch:MatlabObjectOrientedSourceCode}
+\chapter{Matlab Object Oriented Source Code}
+\label{ch:MatlabObjectOrientedSourceCode}
 
 \linespread{1}
 """
@@ -54,7 +56,10 @@ def MatlabOOTeX():
             tex.write('\n')
             tex.write('\pagebreak\n')
             tex.write('\section{MatlabOO/%s}\label{code:MatlabOO/%s}\n' % (fn.replace('_', '\_'), fn))
-            tex.write('\lstinputlisting{%s}\n' % f)
+            tex.write('\inputminted[linenos,fontsize=\scriptsize]{matlab}{%s}\n' % f)
+
+            # tex.write('\section{MatlabOO/%s}\label{code:MatlabOO/%s}\n' % (fn.replace('_', '\_'), fn))
+            # tex.write('\lstinputlisting{%s}\n' % f)
 
 
 if __name__ == "__main__":
