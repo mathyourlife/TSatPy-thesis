@@ -164,7 +164,11 @@ class Quaternion(object):
         """
 
         v = self.vector
-        v = v / np.sqrt((v.T * v)[0, 0])
+        v_mag = np.sqrt((v.T * v)[0, 0])
+        if v_mag == 0:
+            v = np.mat([0,0,0]).T
+        else:
+            v = v / v_mag
         radians = np.arccos(self.scalar) * 2
         return (v, radians)
 
