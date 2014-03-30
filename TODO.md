@@ -50,6 +50,9 @@ Coding Status
 
 TODO
 
+* Video in thesis?
+    * [Unforced Plant](https://vimeo.com/68018120)
+    * [Forced Plant](https://vimeo.com/42960673)
 * Remind Fussell of committee
 * Find a programming / robotics conference
     * Space flight conference?
