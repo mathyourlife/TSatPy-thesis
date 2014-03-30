@@ -45,3 +45,12 @@ class Metronome(object):
         self.speed_changed = self.tick()
         self.start_marker = time.time()
         self.speed = speed
+
+    def __str__(self):
+        """
+        Create a string representation of the clock time
+
+        :return: system time
+        :rtype: str
+        """
+        return "%gs" % self.tick()
