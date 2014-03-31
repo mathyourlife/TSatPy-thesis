@@ -1,4 +1,4 @@
-Items since last meeting:
+**Items since last meeting**
 
 * Abstract (draft completed)
 * Intro Chapter (draft completed)
@@ -12,14 +12,31 @@ Items since last meeting:
     * May 2014 is the end
 * mcode formatting fix (now minted)
 
+**Questions**
+
+* how video in thesis
+* time nomenclature
+* timing for review and hand off to committee
+* Jeff Kite - footnote reference
+* Name of original CS student
+* Calendar okay?
+
+Notes:
+
+* Focus on ability to apply on future
+* Test print to make sure
+* May-Win reach out to Fussell then I reach out
+* Where printing?
+* After, Mike Chris Tom how to use TSatPy
+
 ***
 
-Chapter Status
+**Chapter Status**
 
-* Abstract (draft completed)
-* Intro Chapter (draft completed)
-* TableSat 1A (draft completed)
-* Satellite Attitude Modeling (almost draft complete)
+* Abstract **(draft completed)**
+* Intro Chapter **(draft completed)**
+* TableSat 1A **(draft completed)**
+* Satellite Attitude Modeling **(draft complete)**
 * Observer Based Controls
 * Standard Control Theory Tools
 * Software Development fur Experimental Integration
@@ -29,7 +46,7 @@ Chapter Status
 
 ***
 
-Coding Status
+**Coding Status**
 
 * Estimators
     * PID (done)
@@ -54,6 +71,7 @@ TODO
     * [Unforced Plant](https://vimeo.com/68018120)
     * [Forced Plant](https://vimeo.com/42960673)
 * Remind Fussell of committee
+* Check in with Hatcher about code review
 * Find a programming / robotics conference
     * Space flight conference?
     * PyCon
