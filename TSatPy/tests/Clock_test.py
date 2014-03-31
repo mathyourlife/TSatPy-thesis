@@ -39,3 +39,10 @@ class TestMetronome(unittest.TestCase):
         clock.set_speed(-2)
         MockTime.return_value = 13
         self.assertEquals(10, clock.tick())
+
+    @patch('time.time')
+    def test_str(self, mock_time):
+        mock_time.return_value = 12345
+        clock = Metronome()
+        mock_time.return_value = 12346.5
+        self.assertEquals('1.5s', str(clock))
