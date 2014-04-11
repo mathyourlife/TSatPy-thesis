@@ -87,30 +87,27 @@ class QuaternionGain(object):
         """
         Update the gain matrix
 
-        :param K: 3x3 matrix for scaling BodyRate values
+        :param K: 3x3 matrix for scaling the rotational quaternion
         :type  K: list
         """
         self.K = K
 
     def __mul__(self, q):
         """
-        Matrix based multiplication for a BodyRate instance
+        Angle Multiplier with Vector Magnitude Normalization
 
-        :param w: BodyRate instance to be multiplied
-        :type  w: BodyRate
+        :param q: Quaternion instance to be multiplied
+        :type  q: Quaternion
         """
-        qi = State.Identity()
-        if q == qi:
-            return qi
+        kpc = self.K * np.arccos(q.scalar)
+        if kpc == 0:
+            return State.Identity()
+        gamma = np.sqrt((q.vector.T * q.vector)[0,0] / (np.sin(kpc))**2)
 
-        s = q.scalar
-        s = np.cos(np.arccos(q.scalar) * self.K)
-
-        if s == 1:
-            c = 1
-        else:
-            c = np.sqrt((q.vector.T * q.vector)[0, 0] / float(1 - s ** 2))
-        return State.Quaternion(q.vector / c, s)
+        return State.Quaternion(
+            q.vector / gamma,
+            np.cos(kpc)
+        )
 
     def __str__(self):
         """
