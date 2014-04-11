@@ -106,7 +106,10 @@ class QuaternionGain(object):
         s = q.scalar
         s = np.cos(np.arccos(q.scalar) * self.K)
 
-        c = np.sqrt((q.vector.T * q.vector)[0, 0] / float(1 - s ** 2))
+        if s == 1:
+            c = 1
+        else:
+            c = np.sqrt((q.vector.T * q.vector)[0, 0] / float(1 - s ** 2))
         return State.Quaternion(q.vector / c, s)
 
     def __str__(self):
