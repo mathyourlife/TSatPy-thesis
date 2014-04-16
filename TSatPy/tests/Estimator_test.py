@@ -80,7 +80,7 @@ class TestPID(unittest.TestCase):
         mock_time.return_value = 1234
 
         c = Metronome()
-        k = 1.5
+        k = 0.5
         Kq = StateOperators.QuaternionGain(k)
         Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
         Ki = StateOperators.StateGain(Kq, Kw)
@@ -102,7 +102,7 @@ class TestPID(unittest.TestCase):
         dt = 1.2
         mock_time.return_value = 1236.2
 
-        # Update integral estimate after 1.2 sec with a 1.5 gain
+        # Update integral estimate after 1.2 sec with a 0.5 gain
         x_hat = pid.update(x)
         x_hat_expected = State.State(
             State.Quaternion([0,0,1],radians=0.1 * dt * k),
@@ -112,6 +112,7 @@ class TestPID(unittest.TestCase):
                 3 * dt * k,
             ])
         )
+
         self.assertEquals(x_hat, x_hat_expected)
 
     @patch('time.time')
