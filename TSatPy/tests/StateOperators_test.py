@@ -46,6 +46,13 @@ class TestQuaternionGain(unittest.TestCase):
         q_expected = State.Identity()
         self.assertEquals(q_new, q_expected)
 
+    def test_floating_point_domain_error(self):
+        q = State.Quaternion([0,0,0], 1 + 2.22044604925e-16)
+        qg = StateOperators.QuaternionGain(0.25)
+        q_new = (qg * q)
+        q_expected = State.Identity()
+        self.assertEquals(q_new, q_expected)
+
 
 class TestStateGain(unittest.TestCase):
     def test_init(self):

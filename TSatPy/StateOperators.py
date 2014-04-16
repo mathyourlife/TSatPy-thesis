@@ -99,7 +99,15 @@ class QuaternionGain(object):
         :param q: Quaternion instance to be multiplied
         :type  q: Quaternion
         """
-        kpc = self.K * np.arccos(q.scalar)
+        # Floating point errors can cause the domain to exceed |q.scalar| <= 1
+        if q.scalar > 1:
+            s = 1.0
+        elif q.scalar < -1:
+            s = -1.0
+        else:
+            s = q.scalar
+
+        kpc = self.K * np.arccos(s)
         if kpc == 0:
             return State.Identity()
         gamma = np.sqrt((q.vector.T * q.vector)[0,0] / (np.sin(kpc))**2)
