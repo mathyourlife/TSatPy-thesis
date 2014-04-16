@@ -6,19 +6,22 @@ from TSatPy import StateOperators
 
 
 class Estimator(object):
-    def __init__(self):
-        self.x_hat = State()
+    def __init__(self, clock, **kwargs):
+        self.x_hat = State.State()
         self.estimators = {
-            'pid': PID(),
+            'pid': PID(clock, **kwargs),
         }
 
-    def propagate(self, x, u):
+    def update(self, x, M=None):
+
+        for est in self.estimators.keys():
+            self.estimators[est].update(x=x, M=M)
         pass
 
 
 class EstimatorBase(object):
 
-    def __init__(self, clock, propagate_every=None, I=None, ic=None):
+    def __init__(self, clock, propagate_every=None, plant=None, ic=None):
         self.clock = clock
         self.last_update = None
         self.I = [[4, 0, 0], [0, 4, 0], [0, 0, 4]]
@@ -26,7 +29,7 @@ class EstimatorBase(object):
             self.x_hat = State.State()
         else:
             self.x_hat = ic
-        self.plant = State.Plant(self.I, self.x_hat, self.clock)
+        self.plant = plant
         self.propagate_every = propagate_every
 
         if self.propagate_every is not None:
@@ -36,7 +39,7 @@ class EstimatorBase(object):
             self.start_propagation()
 
     def start_propagation(self):
-        if self.propagate is not None:
+        if self.propagate_every is not None:
             self.timers['propagate'].start(self.propagate_every)
 
     def propagate(self, M=None):
@@ -48,8 +51,10 @@ class EstimatorBase(object):
 
 class PID(EstimatorBase):
 
-    def __init__(self, clock, propagate_every=None, I=None, ic=None):
-        EstimatorBase.__init__(self, clock, propagate_every, I, ic)
+    def __init__(self, clock, **kwargs):
+        EstimatorBase.__init__(self, clock, **kwargs)
+
+        # Zero out state integrator
         self.x_i = State.State()
         self.last_err = None
         self.K = {
@@ -73,6 +78,15 @@ class PID(EstimatorBase):
             dt = t - self.last_update
         except TypeError:
             dt = 0
+
+        # Use the plant dynamics to predict where the system's state
+        # should be now.
+        self.plant.propagate()
+        x_hat_pre = self.plant.x
+        self.x_hat.q.vector = x_hat_pre.q.vector
+        self.x_hat.q.scalar = x_hat_pre.q.scalar
+        self.x_hat.w.w = x_hat_pre.w.w
+
 
         x_err = State.StateError(self.x_hat, x)
         x_adj = State.State()
@@ -104,7 +118,9 @@ class PID(EstimatorBase):
             x_kd = self.K['d'] * x_d_err
             x_adj += x_kd
 
+        self.x_adj = x_adj
         self.x_hat -= x_adj
+        self.plant.set_state(self.x_hat)
         self.last_update = t
         self.last_err = x_err
         return self.x_hat
