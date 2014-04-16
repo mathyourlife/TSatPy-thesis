@@ -139,3 +139,72 @@ class PID(EstimatorBase):
         for G in self.K.iteritems():
             gains.append(' K%s %s' % G)
         return '\n'.join(gains)
+
+
+class SMO(EstimatorBase):
+    """
+
+    x(k+1) = x(k) + L*x_e(k) + K*1s(x_e(k))
+    """
+
+    def __init__(self, clock, **kwargs):
+        EstimatorBase.__init__(self, clock, **kwargs)
+
+        # Zero out state integrator
+        self.last_err = None
+        self.L = None
+        self.K = None
+        self.S = None
+
+    def set_L(self, L):
+        self.L = L
+
+    def set_K(self, K):
+        self.K = K
+
+    def set_S(self, S):
+        self.S = S
+
+    def update(self, x, M=None):
+        t = self.clock.tick()
+        try:
+            dt = t - self.last_update
+        except TypeError:
+            dt = 0
+
+        # Use the plant dynamics to predict where the system's state
+        # should be now.
+        if self.plant:
+            self.plant.propagate()
+            x_hat_pre = self.plant.x
+            self.x_hat.q.vector = x_hat_pre.q.vector
+            self.x_hat.q.scalar = x_hat_pre.q.scalar
+            self.x_hat.w.w = x_hat_pre.w.w
+
+        x_err = State.StateError(self.x_hat, x)
+        x_adj = State.State()
+
+        if self.L is not None:
+            x_l = self.L * x_err
+            x_adj += x_l
+        # print("x_adj:   %s" % (x_adj))
+        x_s = self.S * x_err
+        x_ks = self.K * x_s
+        x_adj += x_ks
+
+        self.x_adj = x_adj
+        self.x_hat -= x_adj
+        if self.plant:
+            self.plant.set_state(self.x_hat)
+        self.last_update = t
+        self.last_err = x_err
+        return self.x_hat
+
+    def __str__(self):
+        gains = [self.__class__.__name__, ' x_hat %s' % self.x_hat]
+        gains.append(' L %s' % self.L)
+        gains.append(' K %s' % self.K)
+        gains.append(' S %s' % self.S)
+        return '\n'.join(gains)
+
+
