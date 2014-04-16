@@ -169,7 +169,14 @@ class Quaternion(object):
             v = np.mat([0,0,0]).T
         else:
             v = v / v_mag
-        radians = np.arccos(self.scalar) * 2
+
+        if self.scalar < -1:
+            s = -1
+        elif self.scalar > 1:
+            s = 1
+        else:
+            s = self.scalar
+        radians = np.arccos(s) * 2
         return (v, radians)
 
     def decompose(self):
@@ -342,7 +349,6 @@ class QuaternionDynamics(object):
     def __init__(self, q, clock):
         self.q = q
         self.clock = clock
-        self.q_dot = Quaternion([0, 0, 0], 0)
         self.last_update = None
         self.w = None
 
@@ -364,13 +370,6 @@ class QuaternionDynamics(object):
         q2mat = phi * self.q.mat
         q2 = Quaternion(q2mat[0:3, 0], q2mat[3, 0])
         q2.normalize()
-
-        q_dot = q2 - self.q
-
-        if dt > 0:
-            q_dot.vector /= dt
-            q_dot.scalar /= dt
-            self.q_dot = q_dot
 
         self.q = q2
 
@@ -554,6 +553,13 @@ class State(object):
         """
         return "%s, %s" % (self.q, self.w)
 
+    def latex(self):
+        """
+        Create the latex representation for the state
+        """
+
+        return (self.q.latex(), self.w.latex())
+
     __repr__ = __str__
 
     def __add__(self, x):
@@ -607,7 +613,19 @@ class Plant(object):
     def x(self):
         return State(self.pos.q, self.vel.w)
 
-    def propagate(self, M):
+    def set_state(self, x):
+        """
+        When used for state estimation, the state of the plant may need to
+        be set to a new value.
+
+        :param x: set the plant to a new state
+        :type  x: State
+        """
+        self.pos.q.vector = x.q.vector
+        self.pos.q.scalar = x.q.scalar
+        self.vel.w.w = x.w.w
+
+    def propagate(self, M=None):
         """
         Propagate the state of the plant.  Based on an applied moment,
         propagate the body rate then quaternion states.
@@ -617,6 +635,9 @@ class Plant(object):
         :return: new body rate and quaternion state (w, q)
         :rtype: w (BodyRate), q (Quaternion)
         """
+
+        if M is None:
+            M = [0, 0, 0]
         w = self.vel.propagate(M)
         q = self.pos.propagate(w)
         return q, w

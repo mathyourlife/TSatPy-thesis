@@ -346,9 +346,7 @@ class TestQuaternionDynamics(unittest.TestCase):
         clock = Metronome()
         q = State.Quaternion([0, 0, 1], radians=0)
         qd = State.QuaternionDynamics(q, clock)
-
         self.assertEquals(q, qd.q)
-        self.assertEquals(State.Quaternion([0, 0, 0], 0), qd.q_dot)
 
     @patch('time.time', return_value=12)
     def test_propagate_from_default(self, MockTime):
