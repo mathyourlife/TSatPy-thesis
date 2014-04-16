@@ -24,14 +24,14 @@ def TSatPyTeX():
             fn = f[len(tsat_dir)+1:]
             tex.write('\n')
             tex.write('\pagebreak\n')
-            tex.write('\section{TSatPy/%s}\label{code:TSatPy/%s}' % (fn.replace('_', '\_'), fn))
+            tex.write('\section*{TSatPy/%s}\label{code:TSatPy/%s}' % (fn.replace('_', '\_'), fn))
             tex.write('\inputminted[linenos,fontsize=\scriptsize]{python}{%s}\n' % f)
 
         for f in sorted(glob.glob('%s/tests/*.py' % tsat_dir)):
             fn = f[len(tsat_dir)+1:]
             tex.write('\n')
             tex.write('\pagebreak\n')
-            tex.write('\section{TSatPy/%s}\label{code:TSatPy/%s}\n' % (fn.replace('_', '\_'), fn))
+            tex.write('\section*{TSatPy/%s}\label{code:TSatPy/%s}\n' % (fn.replace('_', '\_'), fn))
             tex.write('\inputminted[linenos,fontsize=\scriptsize]{python}{%s}\n' % f)
 
 def MatlabOOTeX():
@@ -55,7 +55,7 @@ def MatlabOOTeX():
             fn = f[len(code_dir)+1:]
             tex.write('\n')
             tex.write('\pagebreak\n')
-            tex.write('\section{MatlabOO/%s}\label{code:MatlabOO/%s}\n' % (fn.replace('_', '\_'), fn))
+            tex.write('\section*{MatlabOO/%s}\label{code:MatlabOO/%s}\n' % (fn.replace('_', '\_'), fn))
             tex.write('\inputminted[linenos,fontsize=\scriptsize]{matlab}{%s}\n' % f)
 
             # tex.write('\section{MatlabOO/%s}\label{code:MatlabOO/%s}\n' % (fn.replace('_', '\_'), fn))
