@@ -38,16 +38,16 @@ For implementation into the TableSat 1A's base station observer based controller
 
 \begin{subequations}
   \begin{align}
-    \omega_{x}(k+1) & = \frac{1}{I_x} \left[ M_1(t_{k+1}) - (I_z - I_y) \omega_{y}(k) \omega_{z}(k) \right] (t_{k+1} - t_{k}) \\
-    \omega_{y}(k+1) & = \frac{1}{I_y} \left[ M_2(t_{k+1}) - (I_x - I_z) \omega_{x}(k) \omega_{z}(k) \right] (t_{k+1} - t_{k}) \\
-    \omega_{z}(k+1) & = \frac{1}{I_z} \left[ M_3(t_{k+1}) - (I_y - I_x) \omega_{x}(k) \omega_{y}(k) \right] (t_{k+1} - t_{k})
+    \dot{\omega}_{x}(t_{k+1}) & = \frac{1}{I_x} \left[ M_1(t_{k+1}) - (I_z - I_y) \omega_{y}(t_k) \omega_{z}(t_k) \right] \\
+    \dot{\omega}_{y}(t_{k+1}) & = \frac{1}{I_y} \left[ M_2(t_{k+1}) - (I_x - I_z) \omega_{x}(t_k) \omega_{z}(t_k) \right] \\
+    \dot{\omega}_{z}(t_{k+1}) & = \frac{1}{I_z} \left[ M_3(t_{k+1}) - (I_y - I_x) \omega_{x}(t_k) \omega_{y}(t_k) \right]
   \end{align}
   \label{eqn:DiscreteEulerMomentEquations}
 \end{subequations}
 
-In this representation, the potential for variable step sizes on each update is covered by the replacement of a standard $\Delta t$ with the measured difference in timestamps $t_{k+1} - t_{k}$ on each cycle.  The applied moments $M_n(t_{k+1})$ are the applied moments at time $t_{k+1}$.  Since the update frequencies are allowed to vary for each section of the observer-based controller, the applied moment values may have multiple values between $t_{k}$ and $t_{k+1}$.  To avoid the complexity of calculating a more accurate moment for each time step that is a combination of changes in applied moments, the value of the most recent moments is taken and assumed constant for $t_{k} < t < t_{k+1}$.  If the moment update loop is running slower than the Euler equation model, the last known moment is assumed to still be valid.
+The moments $M_n(t_{k+1})$ are the applied moments at time $t_{k+1}$.  Since the update frequencies are allowed to vary for each section of the observer-based controller, the applied moment values may have multiple values between $t_{k}$ and $t_{k+1}$.  To avoid the complexity of calculating a more accurate moment for each time step that is a combination of changes in applied moments, the value of the most recent moments is taken and assumed constant for $t_{k} < t < t_{k+1}$.  If the moment update loop is running slower than the Euler equation model, the last known moment is assumed to still be valid.
 
-While the Euler equation model works well for propagating the state of the system's, in Section \ref{sec:Sensors} it was explained that the only sources of state measurement were in attitude leaving body rates unmeasured.  Body rates must then be calculated through both observing changes in current attitude and state predictions based on previous attitude changes.  Euler angles and quaternions were investigated for parameterizing TableSat's attitude.
+While the Euler equation model works well for propagating the state of the system's, Section \ref{sec:Sensors} found that the only sources of state measurement were in attitude leaving body rates unmeasured.  Body rates must then be calculated through both observing changes in current attitude and state predictions based on previous attitude changes.  Euler angles and quaternions were investigated for parameterizing TableSat's attitude.
 
 Euler angles were first considered because of their wide use in control theory where the representation of a body's attitude can be reached through a series of no more than three roll, pitch, yaw rotations.   Out of the twelve possible sequences, the 3-1-3 sequence is commonly used in spacecraft ADCS.  With this sequence Kaplan \cite{kaplan}, shows that the conversion between Euler angle rates and body rates can be calculated with
 
@@ -98,13 +98,13 @@ The alternative attitude parameterization investigated was the quaternion attitu
 
 \begin{equation}
   \begin{aligned}
-    q(t_{k+1}) = & \bigg[ \exp \left( \frac{\Delta t}{2} \Omega \left[ \bar{\omega}(t_{k+1}) \right] \right) + \\
-    & \frac{\Delta t^2}{48} \Big(
-    \Omega \left[\omega(t_{k+1}) \right]
-    \Omega \left[\omega(t_{k})   \right] -
-    \Omega \left[\omega(t_{k})   \right]
-    \Omega \left[\omega(t_{k+1}) \right]
-      \Big) \bigg] q(t_{k})
+    \bs{q}(t_{k+1}) = & \bigg[ \exp \left( \frac{\Delta t_{k+1}}{2} \bs{\Omega} \left[ \bs{\bar{\omega}}(t_{k+1}) \right] \right) + \\
+    & \frac{1}{48} \Delta t_{k+1}^2 \Big(
+    \bs{\Omega} \left[\bs{\omega}(t_{k+1}) \right]
+    \bs{\Omega} \left[\bs{\omega}(t_{k})   \right] -
+    \bs{\Omega} \left[\bs{\omega}(t_{k})   \right]
+    \bs{\Omega} \left[\bs{\omega}(t_{k+1}) \right]
+      \Big) \bigg] \bs{q}(t_{k})
   \end{aligned}
   \label{eqn:DiscreteQuaternionPropagation}
 \end{equation}
@@ -112,25 +112,25 @@ The alternative attitude parameterization investigated was the quaternion attitu
 where
 
 \begin{equation}
-    \Omega \left[ \bar{\omega}(t_{k+1}) \right] = \frac{\Omega \left[\omega(t_{k+1}) \right] + \Omega \left[\omega(t_{k}) \right]}{2}
+    \bs{\Omega} \left[ \bs{\bar{\omega}}(t_{k+1}) \right] = \frac{\bs{\Omega} \left[\bs{\omega}(t_{k+1}) \right] + \bs{\Omega} \left[\bs{\omega}(t_{k}) \right]}{2}
     \label{eqn:DiscreteQuaternionToBodyRate}
 \end{equation}
 
 \begin{equation}
-  \Omega \left[ \omega \right] =
+  \bs{\Omega} \left[ \bs{\omega} \right] =
   \begin{bmatrix}
-    - [ \omega \times ] & \omega \\
-    - \omega^T & 0 \\
+    - [ \bs{\omega} \times ] & \bs{\omega} \\
+    - \bs{\omega}^T & 0 \\
   \end{bmatrix}
   \label{eqn:OmegaMatrix}
 \end{equation}
 
 \begin{equation}
-  \omega \times =
+  \bs{\omega} \times =
   \begin{bmatrix}
-    0 & -\omega_z & \omega_y \\
-    \omega_z & 0 & -\omega_x \\
-    -\omega_y & \omega_x & 0 \\
+    0 & -\bs{\omega}_z & \bs{\omega}_y \\
+    \bs{\omega}_z & 0 & -\bs{\omega}_x \\
+    -\bs{\omega}_y & \bs{\omega}_x & 0 \\
   \end{bmatrix}
 \end{equation}
 
@@ -170,7 +170,7 @@ As discussed in Section \ref{subsec:StateMeasurement}, between TableSat sensor a
 One point of confusion when working with quaternions is the placement of the scalar term.  As shown in Equation \ref{eqn:UnitQuaternions} the scalar term is followed by the three complex terms.  To stay consistent with related research, the quaternion notation to be used in this thesis follows the structure of 4 dimensional vector where the scalar term follows the vector.
 
 \begin{equation}
-  \bs{q} = \bs{v} + q_0 = q_1 \bs{i} + q_1 \bs{j} + q_1 \bs{k} + q_0
+  \bs{q} = \bs{v} + q_0 = q_1 \bs{i} + q_2 \bs{j} + q_3 \bs{k} + q_0
 \end{equation}
 
 In academic literature, the difference is not terribly significant as the notation is generally defined by the author or the reader can recognize the variation in structure.  For example in Equation \ref{eqn:OmegaMatrix}, written in a scalar last format, is composed from a 3x3, 3x1, 1x3, and 1x1.  During implementation, mixing of scalar first matrices with scalar last matrices can be a troublesome source of error.  As will be described more in Chapter \ref{chap:TSatPy}, the implementation in this thesis is done in an object oriented manner so it can handle either the scalar first or scalar last format.
