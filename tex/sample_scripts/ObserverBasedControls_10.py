@@ -16,8 +16,8 @@ c.set_speed(speed)
 def grid_me(ax):
     ax.grid(color='0.75', linestyle='--', linewidth=1)
 
-def run_test(p,i,d,plot=False):
-    ts, q_tracking, w_tracking = integrate_error(p,i,d)
+def run_test(L, K, S, plot=False):
+    ts, q_tracking, w_tracking = test(L, K, S)
 
     if plot:
         fig = plt.figure(dpi=80, facecolor='w', edgecolor='k')
@@ -49,83 +49,6 @@ def run_test(p,i,d,plot=False):
         plt.tight_layout()
         plt.show()
 
-    return ts, q_tracking, w_tracking
-
-
-def integrate_error(p,i,d):
-
-    x_m = State.State(
-        State.Identity(),
-        State.BodyRate([0,0,0.314]))
-
-    I = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
-    plant = State.Plant(I, x_m, c)
-    plant_est = State.Plant(I, State.State(), c)
-
-    kp = {'q': p, 'w': 0.7}
-    Kp = StateOperators.StateGain(
-        StateOperators.QuaternionGain(kp['q']),
-        StateOperators.BodyRateGain(np.eye(3) * kp['w']))
-    ki = {'q': i, 'w': 0.0}
-    Ki = StateOperators.StateGain(
-        StateOperators.QuaternionGain(ki['q']),
-        StateOperators.BodyRateGain(np.eye(3) * ki['w']))
-    kd = {'q': d, 'w': 0.0}
-    Kd = StateOperators.StateGain(
-        StateOperators.QuaternionGain(kd['q']),
-        StateOperators.BodyRateGain(np.eye(3) * kd['w']))
-
-    pid = Estimator.PID(c, plant=plant_est)
-    pid.set_Kp(Kp)
-    pid.set_Ki(Ki)
-    pid.set_Kd(Kd)
-
-    start_time = c.tick()
-    ts = []
-    q_tracking = {
-        'measured': [],
-        'estimated': [],
-        'err': [],
-    }
-    w_tracking = {
-        'measured': [],
-        'estimated': [],
-        'err': [],
-    }
-    dts = [0.8, 1.2]
-    end_time = c.tick() + 120
-    while c.tick() < end_time:
-        # sys.stdout.write("\b\b\b\b%s" % int(c.tick() - start_time))
-        # sys.stdout.flush()
-
-        plant.propagate()
-
-        # Create measurement noise
-        offset = np.random.randn() * 20 / 180.0 * np.pi
-        q_noise = State.Quaternion([0,0,1], radians=offset) * plant.x.q
-
-        x_m = State.State(q_noise, plant.x.w)
-        pid.update(x_m)
-
-        ts.append(c.tick() - start_time)
-
-        e, r = plant.x.q.to_rotation()
-        q_tracking['measured'].append(r)
-        e, r = pid.x_hat.q.to_rotation()
-        q_tracking['estimated'].append(r)
-
-        q_e = State.QuaternionError(pid.x_hat.q, plant.x.q)
-        e, r = q_e.to_rotation()
-        q_tracking['err'].append(r)
-
-        w_tracking['measured'].append(x_m.w.w[2,0])
-        w_tracking['estimated'].append(pid.x_hat.w.w[2,0])
-        w_tracking['err'].append(pid.x_hat.w.w[2,0] - x_m.w.w[2,0])
-
-        random.shuffle(dts)
-        dt = dts[0]
-
-        time.sleep(dt / float(speed))
     return ts, q_tracking, w_tracking
 
 
@@ -192,7 +115,7 @@ def test(L, K, S):
     }
     dts = [0.8, 1.2]
     start_time = c.tick()
-    end_time = c.tick() + 120
+    end_time = c.tick() + 10
     while c.tick() < end_time:
         plant.propagate()
 
@@ -229,7 +152,7 @@ def main():
     S = {'q':2,     'w':0.1}
 
     with open('%s-gradient-descent.csv' % __file__, 'a') as f:
-        ts, q_tracking, w_tracking = test(L, K, S)
+        ts, q_tracking, w_tracking = run_test(L, K, S, True)
 
         err = np.array(q_tracking['err'])
         for stat in [err.std(), err.mean(), L['q'], L['w'],
