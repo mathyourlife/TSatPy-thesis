@@ -74,9 +74,6 @@
 \input{unhthesis\@mysize.clo}
 
 
-
-
-
 \hoffset        -1in      % Pull logical page back to the physical page
 \voffset        0in      % edges. These are 'fudged' for the PrintServer
                                 % 40, but can change as the printer ages.
@@ -88,11 +85,13 @@
                                 % output from within your THESIS.TEX file.
                                 %
 \oddsidemargin   1.500in        % Bound side of page has 1.5 inch margin.
-\topmargin       0.500in        % Header box is half inch from page top.
+% \topmargin       0.500in        % Header box is half inch from page top.
+\topmargin       0.000in        % Header moved due to minted.sty interference.
 \headheight      0.250in        % Large enough for 11pt type.
 \headsep         0.250in        % This should place body 1in from top of page.
 \textwidth       6.000in        % 8.5 page width - \oddsidemargin.
-\textheight      9.000in        % 11.0 page height - (1in top + 1in bot)
+% \textheight      9.000in        % 11.0 page height - (1in top + 1in bot)
+\textheight      9.500in        % page height due to minted.sty interference 
 \footskip        0.500in        % Place bottom numbers 1/2 inch from bottom.
 
 
