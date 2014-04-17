@@ -5,11 +5,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import time
 import random
+import json
 
 
 print('Sliding Mode Observer')
 
+run_time = 120
 speed = 10
+dts = [0.8, 1.2]
 c = Metronome()
 c.set_speed(speed)
 
@@ -52,30 +55,6 @@ def run_test(L, K, S, plot=False):
     return ts, q_tracking, w_tracking
 
 
-def vals():
-    # for p in range(-14, -24, -1):
-    for p in [p / 100.0 for p in range(7, 18)]:
-        # for i in range(-6, -12, -1):
-        for i in [i / 1000.0 for i in range(0, 9)]:
-            # for d in range(-6, -12, -1):
-            for d in [d / 1000.0 for d in range(0, 17)]:
-                yield p, i, d
-
-def gradient_desc():
-    pbase = 1.1
-    ibase = 2
-    dbase = 2
-    with open('%s-gradient-descent.csv' % __file__, 'a') as f:
-        for p, i, d in vals():
-            # ts, q_tracking, w_tracking = run_test(pbase**p,ibase**i,dbase**d)
-            ts, q_tracking, w_tracking = run_test(p,i,d)
-            err = np.array(q_tracking['err'])
-            # f.write("%g,%g,%g,%g,%g\n" % (
-            #     err.std(), err.mean(), pbase**p, ibase**i, dbase**d))
-            f.write("%g,%g,%g,%g,%g\n" % (
-                err.std(), err.mean(), p, i, d))
-            f.flush()
-
 def test(L, K, S):
 
     x_ic = State.State(
@@ -113,9 +92,8 @@ def test(L, K, S):
         'estimated': [],
         'err': [],
     }
-    dts = [0.8, 1.2]
     start_time = c.tick()
-    end_time = c.tick() + 10
+    end_time = c.tick() + run_time
     while c.tick() < end_time:
         plant.propagate()
 
@@ -146,23 +124,94 @@ def test(L, K, S):
     return ts, q_tracking, w_tracking
 
 
+def create_test_args(*args):
+
+    targs = {
+        'L': {'q': args[0],'w': args[1]},
+        'K': {'q': args[2],'w': args[3]},
+        'S': {'q': args[4],'w': args[5]},
+    }
+    return targs
+
+
+def next_test_args(arg_data):
+    args = []
+
+    for data in arg_data:
+        if data[2] is None:
+            m = (data[0] + data[1]) / 2.0
+        else:
+            m = data[2]
+
+        if data[3] is None:
+            s = (data[1] - data[0]) / 4.0
+        else:
+            s = data[3]
+
+        val = None
+        while val is None or not (data[0] < val < data[1]):
+            val = np.random.randn() * s + m
+        args.append(val)
+    return args
+
+
 def main():
-    L = {'q':0,     'w':0}
-    K = {'q':0.1,   'w':0.3}
-    S = {'q':2,     'w':0.1}
 
-    with open('%s-gradient-descent.csv' % __file__, 'a') as f:
-        ts, q_tracking, w_tracking = run_test(L, K, S, True)
+    results = []
+    arg_data = [
+        [0, 1, None, None], # Lq
+        [0, 1, None, None], # Lw
+        [0, 1, None, None], # Kq
+        [0, 1, None, None], # Kw
+        [0, np.pi, None, None], # Sq
+        [0, 10, None, None], # Sw
+    ]
 
+    N = 100
+    thresh = N * 0.2
+    if thresh < 10:
+        thresh = N - 1
+
+    for _ in range(N):
+        args = next_test_args(arg_data)
+        kwargs = create_test_args(*args)
+        ts, q_tracking, w_tracking = run_test(**kwargs)
         err = np.array(q_tracking['err'])
-        for stat in [err.std(), err.mean(), L['q'], L['w'],
-            K['q'], K['w'], S['q'], S['w']]:
-            f.write("%s," % stat)
+        cost = np.abs(err).mean() * err.std()
+        kwargs['cost'] = cost
+        with open('%s-gradient-descent.csv' % __file__, 'a') as f:
+            f.write(json.dumps(kwargs))
+            f.write("\n")
+            f.flush()
+        args.append(cost)
+        results.append(args)
 
-        f.write("\n")
-        f.flush()
+        if len(results) > thresh:
+            rdata = np.array(results)
+            rdata = rdata[rdata[:,-1].argsort()]
+            for idx, m in enumerate(rdata[0:thresh/2,:-1].mean(axis=0)):
+                arg_data[idx][2] = m
+            for idx, s in enumerate(rdata[0:thresh/2,:-1].std(axis=0)):
+                arg_data[idx][3] = s
 
+    kwargs = create_test_args(*[d[2] for d in arg_data])
+    for data in arg_data:
+        print data
+
+    print kwargs
     return 0
 
+
 if __name__ == "__main__":
-    exit(main())
+
+    kwargs = {'S': {'q': 1.908376120345185, 'w': 6.5356517995605596}, 'K': {'q': 0.12520202719936652, 'w': 0.48433605036767613}, 'L': {'q': 0.41506774287666348, 'w': 0.35072151415483038}}
+    # kwargs = {"S": {"q": 0.7324366102332057, "w": 0.5386880719560759}, "K": {"q": 0.6340430770694714, "w": 0.5821736289388915},  "L": {"q": 0.7814360951486294, "w": 0.736085136529068}}
+
+    if kwargs is not None:
+        kwargs['plot'] = True
+        ts, q_tracking, w_tracking = run_test(**kwargs)
+    else:
+        exit(main())
+
+
+
