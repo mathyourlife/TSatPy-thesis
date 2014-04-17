@@ -6,12 +6,12 @@ import matplotlib.pyplot as plt
 import time
 import random
 import json
-
+from GradientDescent import GradientDescent
 
 print('Sliding Mode Observer')
 
 run_time = 120
-speed = 10
+speed = 15
 dts = [0.8, 1.2]
 c = Metronome()
 c.set_speed(speed)
@@ -19,8 +19,8 @@ c.set_speed(speed)
 def grid_me(ax):
     ax.grid(color='0.75', linestyle='--', linewidth=1)
 
-def run_test(L, K, S, plot=False):
-    ts, q_tracking, w_tracking = test(L, K, S)
+def run_test(Lq, Lw, Kq, Kw, Sq, Sw, plot=False):
+    ts, q_tracking, w_tracking = test(Lq, Lw, Kq, Kw, Sq, Sw)
 
     if plot:
         fig = plt.figure(dpi=80, facecolor='w', edgecolor='k')
@@ -55,7 +55,7 @@ def run_test(L, K, S, plot=False):
     return ts, q_tracking, w_tracking
 
 
-def test(L, K, S):
+def test(Lq, Lw, Kq, Kw, Sq, Sw):
 
     x_ic = State.State(
         State.Quaternion([0,0,1], radians=4),
@@ -66,15 +66,15 @@ def test(L, K, S):
     plant_est = State.Plant(I, State.State(), c)
 
     L = StateOperators.StateGain(
-        StateOperators.QuaternionGain(L['q']),
-        StateOperators.BodyRateGain(np.eye(3) * L['w']))
+        StateOperators.QuaternionGain(Lq),
+        StateOperators.BodyRateGain(np.eye(3) * Lw))
     K = StateOperators.StateGain(
-        StateOperators.QuaternionGain(K['q']),
-        StateOperators.BodyRateGain(np.eye(3) * K['w']))
+        StateOperators.QuaternionGain(Kq),
+        StateOperators.BodyRateGain(np.eye(3) * Kw))
 
     Sx = StateOperators.StateSaturation(
-        StateOperators.QuaternionSaturation(S['q']),
-        StateOperators.BodyRateSaturation(S['w']))
+        StateOperators.QuaternionSaturation(Sq),
+        StateOperators.BodyRateSaturation(Sw))
 
     smo = Estimator.SMO(c, plant=plant_est)
     smo.set_S(Sx)
@@ -121,91 +121,51 @@ def test(L, K, S):
         random.shuffle(dts)
         time.sleep(dts[0] / float(speed))
 
-    return ts, q_tracking, w_tracking
+    return [ts, q_tracking, w_tracking]
 
 
-def create_test_args(*args):
-
-    targs = {
-        'L': {'q': args[0],'w': args[1]},
-        'K': {'q': args[2],'w': args[3]},
-        'S': {'q': args[4],'w': args[5]},
-    }
-    return targs
-
-
-def next_test_args(arg_data):
-    args = []
-
-    for data in arg_data:
-        if data[2] is None:
-            m = (data[0] + data[1]) / 2.0
-        else:
-            m = data[2]
-
-        if data[3] is None:
-            s = (data[1] - data[0]) / 4.0
-        else:
-            s = data[3]
-
-        val = None
-        while val is None or not (data[0] < val < data[1]):
-            val = np.random.randn() * s + m
-        args.append(val)
-    return args
+def calc_err(ts, q_tracking, w_tracking):
+    err = np.array(q_tracking['err'])
+    cost = np.abs(err).mean() * err.std()
+    return cost
 
 
 def main():
-
-    results = []
-    arg_data = [
-        [0, 1, None, None], # Lq
-        [0, 1, None, None], # Lw
-        [0, 1, None, None], # Kq
-        [0, 1, None, None], # Kw
-        [0, np.pi, None, None], # Sq
-        [0, 10, None, None], # Sw
+    domains = [
+        ['Lq', 0.3,  0.42],
+        ['Lw', 0.3,  0.46],
+        ['Kq', 0.23, 0.37],
+        ['Kw', 0.43, 0.57],
+        ['Sq', 0.32, 0.54],
+        ['Sw', 0.0042, 0.006],
     ]
 
-    N = 100
-    thresh = N * 0.2
-    if thresh < 10:
-        thresh = N - 1
+    kwargs = {
+        # Number of iterations to run
+        'N': 40,
 
-    for _ in range(N):
-        args = next_test_args(arg_data)
-        kwargs = create_test_args(*args)
-        ts, q_tracking, w_tracking = run_test(**kwargs)
-        err = np.array(q_tracking['err'])
-        cost = np.abs(err).mean() * err.std()
-        kwargs['cost'] = cost
-        with open('%s-gradient-descent.csv' % __file__, 'a') as f:
-            f.write(json.dumps(kwargs))
-            f.write("\n")
-            f.flush()
-        args.append(cost)
-        results.append(args)
+        # Definition of parameter search domain
+        'domains': domains,
 
-        if len(results) > thresh:
-            rdata = np.array(results)
-            rdata = rdata[rdata[:,-1].argsort()]
-            for idx, m in enumerate(rdata[0:thresh/2,:-1].mean(axis=0)):
-                arg_data[idx][2] = m
-            for idx, s in enumerate(rdata[0:thresh/2,:-1].std(axis=0)):
-                arg_data[idx][3] = s
+        # Function that will run a test
+        'run_test': test,
 
-    kwargs = create_test_args(*[d[2] for d in arg_data])
-    for data in arg_data:
-        print data
-
-    print kwargs
+        # Function that will take the return of run_test and determine
+        # how well the parameters worked.
+        'calc_cost': calc_err,
+    }
+    print GradientDescent.descend(**kwargs)
     return 0
-
 
 if __name__ == "__main__":
 
     kwargs = {'S': {'q': 1.908376120345185, 'w': 6.5356517995605596}, 'K': {'q': 0.12520202719936652, 'w': 0.48433605036767613}, 'L': {'q': 0.41506774287666348, 'w': 0.35072151415483038}}
-    # kwargs = {"S": {"q": 0.7324366102332057, "w": 0.5386880719560759}, "K": {"q": 0.6340430770694714, "w": 0.5821736289388915},  "L": {"q": 0.7814360951486294, "w": 0.736085136529068}}
+    kwargs = {'Sq': 0.41907997065661806, 'Sw': 0.0051694684390066791, 'Lw': 0.37515549802999743, 'Kq': 0.30761968347413188, 'Kw': 0.49944203549841026, 'Lq': 0.36189863645623715}
+    # kwargs = {
+    #     'Lq': 0.9828790111278123, 'Lw': 0.48984986144901216,
+    #     'Kq': 0.3873248945634525, 'Kw': 0.7488258000760872,
+    #     'Sq': 0.8889470672534283, 'Sw': 0.00923290543465792}
+
 
     if kwargs is not None:
         kwargs['plot'] = True

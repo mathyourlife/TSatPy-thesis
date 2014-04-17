@@ -1,23 +1,78 @@
 
 import time
+import numpy as np
 from twisted.internet.task import LoopingCall
 from TSatPy import State
-from TSatPy import StateOperators
+from TSatPy import StateOperators as SO
 
 time_vary = True
 
 class Estimator(object):
     def __init__(self, clock, **kwargs):
-        self.x_hat = State.State()
-        self.estimators = {
-            'pid': PID(clock, **kwargs),
-        }
+        self.clock = clock
+        self.estimators = []
+
+    def add(self, type, plant, kwargs):
+        """
+        Add an estimator to the array of estimators
+        """
+        if type.lower() == 'pid':
+            est = self.config_pid(plant, **kwargs)
+        elif type.lower() == 'smo':
+            est = self.config_smo(plant, **kwargs)
+        self.estimators.append(est)
+
+    def config_smo(self, plant, Lq, Lw, Kq, Kw, Sq, Sw):
+
+        L = SO.StateGain(
+            SO.QuaternionGain(Lq),
+            SO.BodyRateGain(np.eye(3) * Lw))
+        K = SO.StateGain(
+            SO.QuaternionGain(Kq),
+            SO.BodyRateGain(np.eye(3) * Kw))
+
+        Sx = SO.StateSaturation(
+            SO.QuaternionSaturation(Sq),
+            SO.BodyRateSaturation(Sw))
+
+        smo = SMO(self.clock, plant=plant)
+        smo.set_S(Sx)
+        smo.set_L(L)
+        smo.set_K(K)
+        return smo
+
+    def config_pid(self, plant, kpq, kpw, kiq, kiw, kdq, kdw):
+
+        pid = PID(self.clock, plant=plant)
+
+        Kp = SO.StateGain(
+            SO.QuaternionGain(kpq),
+            SO.BodyRateGain(np.eye(3) * kpw))
+        Ki = SO.StateGain(
+            SO.QuaternionGain(kiq),
+            SO.BodyRateGain(np.eye(3) * kiw))
+        Kd = SO.StateGain(
+            SO.QuaternionGain(kdq),
+            SO.BodyRateGain(np.eye(3) * kdw))
+
+        pid.set_Kp(Kp)
+        pid.set_Ki(Ki)
+        pid.set_Kd(Kd)
+        return pid
 
     def update(self, x, M=None):
+        """
+        Update all active estimators with the current measured state.
+        """
+        for idx in xrange(len(self.estimators)):
+            self.estimators[idx].update(x=x, M=M)
 
-        for est in self.estimators.keys():
-            self.estimators[est].update(x=x, M=M)
-        pass
+    def __str__(self):
+        est_str = [self.__class__.__name__]
+        for est in self.estimators:
+            est_str.append(str(est))
+        return '\n'.join(est_str)
+
 
 
 class EstimatorBase(object):
@@ -98,10 +153,10 @@ class PID(EstimatorBase):
             x_adj += x_kp
 
         if dt and self.K['i'] is not None:
-            Kq = StateOperators.QuaternionGain(dt)
-            Kw = StateOperators.BodyRateGain(
+            Kq = SO.QuaternionGain(dt)
+            Kw = SO.BodyRateGain(
                 [[dt, 0, 0], [0, dt, 0], [0, 0, dt]])
-            Kt = StateOperators.StateGain(Kq, Kw)
+            Kt = SO.StateGain(Kq, Kw)
 
             x_i_err = Kt * x_err
             if time_vary:
@@ -113,10 +168,10 @@ class PID(EstimatorBase):
             x_adj += x_ki
 
         if dt and self.K['d'] is not None:
-            Kq = StateOperators.QuaternionGain(1 / dt)
-            Kw = StateOperators.BodyRateGain(
+            Kq = SO.QuaternionGain(1 / dt)
+            Kw = SO.BodyRateGain(
                 [[1 / dt, 0, 0], [0, 1 / dt, 0], [0, 0, 1 / dt]])
-            Kt = StateOperators.StateGain(Kq, Kw)
+            Kt = SO.StateGain(Kq, Kw)
 
             x_diff = x_err - self.last_err
             x_d_err = Kt * x_diff
@@ -187,7 +242,7 @@ class SMO(EstimatorBase):
         if self.L is not None:
             x_l = self.L * x_err
             x_adj += x_l
-        # print("x_adj:   %s" % (x_adj))
+
         x_s = self.S * x_err
         x_ks = self.K * x_s
         x_adj += x_ks
