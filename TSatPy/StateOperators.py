@@ -87,27 +87,35 @@ class QuaternionGain(object):
         """
         Update the gain matrix
 
-        :param K: 3x3 matrix for scaling BodyRate values
+        :param K: 3x3 matrix for scaling the rotational quaternion
         :type  K: list
         """
         self.K = K
 
     def __mul__(self, q):
         """
-        Matrix based multiplication for a BodyRate instance
+        Angle Multiplier with Vector Magnitude Normalization
 
-        :param w: BodyRate instance to be multiplied
-        :type  w: BodyRate
+        :param q: Quaternion instance to be multiplied
+        :type  q: Quaternion
         """
-        qi = State.Identity()
-        if q == qi:
-            return qi
+        # Floating point errors can cause the domain to exceed |q.scalar| <= 1
+        if q.scalar > 1:
+            s = 1.0
+        elif q.scalar < -1:
+            s = -1.0
+        else:
+            s = q.scalar
 
-        s = q.scalar
-        s = np.cos(np.arccos(q.scalar) * self.K)
+        kpc = self.K * np.arccos(s)
+        if kpc == 0:
+            return State.Identity()
+        gamma = np.sqrt((q.vector.T * q.vector)[0,0] / (np.sin(kpc))**2)
 
-        c = np.sqrt((q.vector.T * q.vector)[0, 0] / float(1 - s ** 2))
-        return State.Quaternion(q.vector / c, s)
+        return State.Quaternion(
+            q.vector / gamma,
+            np.cos(kpc)
+        )
 
     def __str__(self):
         """
@@ -166,3 +174,99 @@ class StateGain(object):
         return '<%s <Kq %s>, <Kw = %s>>' % (
             self.__class__.__name__,
             str(self.Kq), str(self.Kw))
+
+
+class QuaternionSaturation(object):
+
+    def __init__(self, rho):
+        self.update_rho(rho)
+
+    def update_rho(self, rho):
+        """
+        Update the threshold for the saturation function
+
+        :param rho: threshold for saturation function
+        :type  rho: numeric
+        """
+        self.rho = np.abs(float(rho))
+
+    def __mul__(self, q):
+        """
+        Return the saturation result of the quaternion.  Unchanged if the
+        rotational angle is below the rho threshold. And capped at the
+        threshold if above.
+
+        :param q: quaternion to be saturated
+        :type  q: Quaternion
+        """
+
+        # to_rotation returns an angle 0 < r < 2pi
+        e, r = q.to_rotation()
+
+        # compensate for r > 180
+        if r > np.pi:
+            r = r - 2 * np.pi
+            e = -e
+
+        # to saturate?
+        if np.abs(r) > self.rho:
+            return State.Quaternion(e, radians=-self.rho)
+        # or not
+        return q
+
+    def __str__(self):
+        return '<%s <rho %s>>' % (self.__class__.__name__, str(self.rho))
+
+
+class BodyRateSaturation(object):
+
+    def __init__(self, rho):
+        self.update_rho(rho)
+
+    def update_rho(self, rho):
+        """
+        Update the threshold for the saturation function
+
+        :param rho: threshold for saturation function
+        :type  rho: numeric
+        """
+        self.rho = np.ones((3,1)) * float(rho)
+
+    def __mul__(self, w):
+        """
+        Return the saturation result of the body rate.  Saturation is performed
+        on an element-wise basis for each of the 3 body rate values.
+
+        :param w: body rate to be saturated
+        :type  w: BodyRate
+        """
+        w_sat = np.multiply(np.minimum.reduce([np.abs(w.w), self.rho]),
+            np.sign(w.w))
+        return State.BodyRate(w_sat)
+
+    def __str__(self):
+        return '<%s <rho %s>>' % (self.__class__.__name__, str(self.rho[0,0]))
+
+
+class StateSaturation(object):
+
+    def __init__(self, Sq=None, Sw=None):
+        self.Sq = Sq
+        self.Sw = Sw
+
+    def __mul__(self, x):
+        try:
+            q_new = self.Sq * x.q
+        except TypeError:
+            q_new = State.Identity()
+
+        try:
+            w_new = self.Sw * x.w
+        except TypeError:
+            w_new = State.BodyRate()
+        return State.State(q_new, w_new)
+
+    def __str__(self):
+        return '<%s <Sq %s>, <Sw = %s>>' % (
+            self.__class__.__name__,
+            str(self.Sq), str(self.Sw))

@@ -1,5 +1,38 @@
 **Items since last meeting**
 
+* Membership for
+    * ASME (dynamics systems + control)
+    * AIAA (GNC)
+    * IEEE(Control Systems Society)
+* 500 pages or 3" is a required split into 2 bindings
+* Print inquiry
+    * http://www.infiniteimaging.com/index.php/contact/
+    * http://www.ecm-design.com/?page_id=6
+    * http://www.southportprinting.com/request-quote/
+    * http://www.gusandruby.com/contact-us.html
+    * http://www.allegraportsmouth.com/
+* Got supplies to print at home
+
+**Questions**
+
+* how video in thesis
+* time nomenclature
+* Jeff Kite - footnote reference
+* Name of original CS student
+
+Notes:
+
+* Focus on ability to apply on future
+* Test print to make sure
+* May-Win reach out to Fussell then I reach out
+* After, Mike Chris Tom how to use TSatPy
+
+***
+
+**Past Notes**
+
+3/30 Meeting Update
+
 * Abstract (draft completed)
 * Intro Chapter (draft completed)
 * TableSat 1A (draft completed)
@@ -12,22 +45,11 @@
     * May 2014 is the end
 * mcode formatting fix (now minted)
 
-**Questions**
+Commencement info
 
-* how video in thesis
-* time nomenclature
-* timing for review and hand off to committee
-* Jeff Kite - footnote reference
-* Name of original CS student
-* Calendar okay?
+* [http://www.unh.edu/universityevents/commencement/](http://www.unh.edu/universityevents/commencement/)
 
-Notes:
 
-* Focus on ability to apply on future
-* Test print to make sure
-* May-Win reach out to Fussell then I reach out
-* Where printing?
-* After, Mike Chris Tom how to use TSatPy
 
 ***
 
@@ -49,7 +71,7 @@ Notes:
 **Coding Status**
 
 * Estimators
-    * PID (done)
+    * PID **(done)**
     * EKF
     * SMO
     * Estimator Master
@@ -75,10 +97,6 @@ TODO
 * Find a programming / robotics conference
     * Space flight conference?
     * PyCon
-* Get membership for
-    * ASME (dynamics systems + control)
-    * AIAA (GNC)
-    * IEEE(Control Systems Society)
 * reference tablesat2 as future platforms
 * Matlab code line length
 * Slerp?
@@ -102,11 +120,3 @@ TODO
         b = math.sin(o*t) / so
         return q0*a + q1*b
     ```
-
-***
-
-Notes
-
-Commencement info
-
-* [http://www.unh.edu/universityevents/commencement/](http://www.unh.edu/universityevents/commencement/)

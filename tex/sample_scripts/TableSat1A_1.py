@@ -8,9 +8,12 @@ import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../'))
+
+
 def convert_mat_to_csv():
-    mat = '/home/dcouture/git/mathyourlife/TSatPy/beta_versions/matlab_object_oriented/TAMNutation/TAM-Calibration.mat'
-    mat = '/home/dcouture/git/mathyourlife/TSatPy/beta_versions/matlab_object_oriented/TAM-Calibration2.mat'
+    mat = os.path.join(ROOT_DIR, 'data/tam/TAM-Calibration.mat')
+    mat = os.path.join(ROOT_DIR, 'data/tam/TAM-Calibration2.mat')
     tam_data = io.loadmat(mat)
 
     # steady_data, xpos_data, ypos_data, xneg_data, yneg_data
@@ -40,7 +43,7 @@ def calculate_tam_nutation_refences():
 
     # steady_data, xpos_data, ypos_data, xneg_data, yneg_data
 
-    data_dir = '/home/dcouture/git/mathyourlife/TSatPy/data/tam'
+    data_dir = os.path.join(ROOT_DIR, 'data/tam')
     tam_log = {
         'steady': np.genfromtxt(
             os.path.join(data_dir, 'tam_calibration_steady2.csv'),
@@ -183,42 +186,46 @@ def plot_tam_ref_for_yaw_close(tam_ref, smoothing_window, yaw, tam_pt):
     plt.show()
 
 
-tam_ref, smoothing_window = calculate_tam_nutation_refences()
+def main():
+    tam_ref, smoothing_window = calculate_tam_nutation_refences()
 
-# plot_tam_ref(tam_ref, smoothing_window)
+    plot_tam_ref(tam_ref, smoothing_window)
 
-# plot_tam_ref_for_yaw(tam_ref, smoothing_window, 191)
+    plot_tam_ref_for_yaw(tam_ref, smoothing_window, 191)
 
-tam_191_data = {
-    'steady': ([ 2.6466, 2.6351, 2.6328, 2.6314 ],
-            [ 2.403, 2.3967, 2.3929, 2.397 ],
-            [ 2.3114, 2.3169, 2.313, 2.3038 ]),
-    'xpos': ([ 2.6451, 2.6378, 2.6337 ],
-            [ 2.4236, 2.4093, 2.4252 ],
-            [ 2.3044, 2.3095, 2.3117 ]),
-    'ypos': ([ 2.6318, 2.6431, 2.6395, 2.6257, 2.641 ],
-            [ 2.4207, 2.4293, 2.4242, 2.4136, 2.436 ],
-            [ 2.3256, 2.3124, 2.3218, 2.3227, 2.3193 ]),
-    'xneg': ([ 2.6369, 2.6518, 2.645 , 2.6479, 2.6389, 2.6451 ],
-            [ 2.3953, 2.4002, 2.4037, 2.403, 2.3884, 2.4058 ],
-            [ 2.3243, 2.3215, 2.3228, 2.3293, 2.3149, 2.3241 ]),
-    'yneg': ([ 2.6389, 2.6279, 2.6353, 2.6282, 2.6382, 2.6305, 2.6266, 2.6342, 2.6305, 2.6333 ],
-            [ 2.3983, 2.3695, 2.3868, 2.3826, 2.3891, 2.3786, 2.3894, 2.3928, 2.3945, 2.3843 ],
-            [ 2.3237, 2.3187, 2.3177, 2.3202, 2.3264, 2.3094, 2.315, 2.312, 2.3161, 2.3093 ]),
-}
+    tam_191_data = {
+        'steady': ([ 2.6466, 2.6351, 2.6328, 2.6314 ],
+                [ 2.403, 2.3967, 2.3929, 2.397 ],
+                [ 2.3114, 2.3169, 2.313, 2.3038 ]),
+        'xpos': ([ 2.6451, 2.6378, 2.6337 ],
+                [ 2.4236, 2.4093, 2.4252 ],
+                [ 2.3044, 2.3095, 2.3117 ]),
+        'ypos': ([ 2.6318, 2.6431, 2.6395, 2.6257, 2.641 ],
+                [ 2.4207, 2.4293, 2.4242, 2.4136, 2.436 ],
+                [ 2.3256, 2.3124, 2.3218, 2.3227, 2.3193 ]),
+        'xneg': ([ 2.6369, 2.6518, 2.645 , 2.6479, 2.6389, 2.6451 ],
+                [ 2.3953, 2.4002, 2.4037, 2.403, 2.3884, 2.4058 ],
+                [ 2.3243, 2.3215, 2.3228, 2.3293, 2.3149, 2.3241 ]),
+        'yneg': ([ 2.6389, 2.6279, 2.6353, 2.6282, 2.6382, 2.6305, 2.6266, 2.6342, 2.6305, 2.6333 ],
+                [ 2.3983, 2.3695, 2.3868, 2.3826, 2.3891, 2.3786, 2.3894, 2.3928, 2.3945, 2.3843 ],
+                [ 2.3237, 2.3187, 2.3177, 2.3202, 2.3264, 2.3094, 2.315, 2.312, 2.3161, 2.3093 ]),
+    }
 
-# plot_tam_ref_for_yaw_close(
-#     tam_ref, smoothing_window, 191, tam_191_data)
+    plot_tam_ref_for_yaw_close(
+        tam_ref, smoothing_window, 191, tam_191_data)
 
-tam_191_data = {
-    'steady': ([ ], [ ], [ ]),
-    'xpos': ([ ], [ ], [ ]),
-    'ypos': ([ ], [ ], [ ]),
-    'xneg': ([ ], [ ], [ ]),
-    'yneg': ([ 2.6279 ], [ 2.3695 ], [ 2.3187 ]),
-}
+    tam_191_data = {
+        'steady': ([ ], [ ], [ ]),
+        'xpos': ([ ], [ ], [ ]),
+        'ypos': ([ ], [ ], [ ]),
+        'xneg': ([ ], [ ], [ ]),
+        'yneg': ([ 2.6279 ], [ 2.3695 ], [ 2.3187 ]),
+    }
 
-plot_tam_ref_for_yaw_close(
-    tam_ref, smoothing_window, 191, tam_191_data)
+    plot_tam_ref_for_yaw_close(
+        tam_ref, smoothing_window, 191, tam_191_data)
+    return 0
 
 
+if __name__ == "__main__":
+    exit(main())
