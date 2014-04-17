@@ -5,7 +5,6 @@ from twisted.internet.task import LoopingCall
 from TSatPy import State
 from TSatPy import StateOperators as SO
 
-time_vary = True
 
 class Estimator(object):
     def __init__(self, clock, **kwargs):
@@ -159,10 +158,7 @@ class PID(EstimatorBase):
             Kt = SO.StateGain(Kq, Kw)
 
             x_i_err = Kt * x_err
-            if time_vary:
-                self.x_i += x_i_err
-            else:
-                self.x_i += x_err
+            self.x_i += x_i_err
 
             x_ki = self.K['i'] * self.x_i
             x_adj += x_ki
@@ -175,10 +171,7 @@ class PID(EstimatorBase):
 
             x_diff = x_err - self.last_err
             x_d_err = Kt * x_diff
-            if time_vary:
-                x_kd = self.K['d'] * x_d_err
-            else:
-                x_kd = self.K['d'] * x_diff
+            x_kd = self.K['d'] * x_d_err
             x_adj += x_kd
 
         self.x_adj = x_adj
