@@ -743,9 +743,9 @@ From Section \ref{subsec:PIDEstimation}, Equation \ref{eqn:PIDEstimatorUnforcedM
   \begin{align}
     \bs{\hat{x}}(t_{k+1}) &= \begin{bmatrix} \bs{\hat{q}}(t_{k+1}) \\ \bs{\hat{\omega}}(t_{k+1}) \end{bmatrix} \\
     \bs{\hat{q}}(t_{k+1}) &= \bs{\psi}\left(\bs{q}_{ed}(t_k), K_{qd}\right) \otimes \bs{\psi}\big(\bs{q}_{ei}(t_k), K_{qi}\big) \otimes \bs{\psi}(\bs{q}_e(t_{k}), K_{qp})  \otimes \bs{\hat{q}}(t_{k+1})^- \\
-    \bs{\hat{\omega}}(t_{k+1}) &= \bs{\hat{\omega}}(t_{k}) + \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k})
+    \bs{\hat{\omega}}(t_{k+1}) &= \bs{\hat{\omega}}(t_{k+1})^- + \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k})
   \end{align}
-  \label{eqn:PIDEstimatorUnforcedMotion}
+  \label{eqn:PIDEstimatorwithPredictionUnforcedMotion}
 \end{subequations}
 
 with the a priori state $\bs{\hat{x}}(t_{k+1})^-$ as
@@ -770,6 +770,59 @@ The quaternion's proportional value is still the dominant gain, but has been red
   \caption{PID-Estimator with state prediction}
   \label{fig:PIDEstimatorwithstateprediction}
 \end{figure}
+
+
+\subsection{Sliding Mode Observer}
+\label{subsec:SlidingModeObserver}
+
+The Sliding Mode Observer (SMO) is a proportional estimator with an additional smoothing term that uses a chosen sliding surface.  The general form for the SMO is
+
+\begin{equation}
+  \bs{\dot{\hat{x}}} = \bs{\hat{f}}(\bs{\hat{x}}, \bs{\hat{u}}, t) + \bs{L}(\bs{C}\bs{\hat{x}} - \bs{C}\bs{x}) + \bs{K}\bs{1}_s\bs{\hat{y}}
+  \label{eqn:SMOContinuous}
+\end{equation}
+
+Where L is a luenberger gain and $\bs{1}_s$ is a switching function based on $s$.  The sliding mode terms allow additional control of the state adjustments without adding a lot of computational complexity.  The SMO can continue to use the nonlinear model's state predictions as in the PID estimators in Section \ref{subsec:PIDEstimatorwithStatePrediction}, which is an advantage over methods such as the Extended Kalman Filter (EKF) where the system is linearized about an operating point and assumes a constant time step.
+
+This thesis takes the discretized form of Equation \ref{eqn:SMOContinuous} with a quaternion multiplicative correction
+
+\begin{subequations}
+  \begin{align}
+    \bs{\hat{x}}(t_{k+1}) &= \begin{bmatrix} \bs{\hat{q}}(t_{k+1}) \\ \bs{\hat{\omega}}(t_{k+1}) \end{bmatrix} \\
+    \bs{\hat{q}}(t_{k+1}) &= \bs{1}_s\big(\bs{q}_{e}(t_k)\big) \otimes \bs{\psi}(\bs{q}_e(t_{k}), L_{q})  \otimes \bs{\hat{q}}(t_{k+1})^- \\
+    \bs{\hat{\omega}}(t_{k+1}) &= \bs{\hat{\omega}}(t_{k+1})^- + \bs{L}_{\omega} \bs{\omega}_e(t_{k}) + \bs{1}_s \big(\bs{\omega}_e(t_{k}) \big)
+  \end{align}
+  \label{eqn:PIDEstimatorwithPredictionUnforcedMotion}
+\end{subequations}
+
+where
+
+\begin{subequations}
+  \begin{align}
+    \bs{1}_s\big(\bs{q}_{e}(t_k) \big) &= \begin{bmatrix} \bs{v_e} \\ sat\left( \frac{\cos^{-1} q_{0e} }{S_{q}} \right) \end{bmatrix} \\
+    \bs{L}_{\omega} &= L_\omega \cdot \bs{I} \\
+    \bs{1}_s \big(\bs{\omega}_e(t_{k}) \big) &= sat\left( \frac{\bs{\omega}_e(t_{k})}{S_{\omega}} \right)
+  \end{align}
+\end{subequations}
+
+For body rates, the a priori state provides the predicted body rate $\bs{\hat{\omega}}(t_{k+1})^-$ that gets adjusted by a proportional term $\bs{L}_{\omega} \bs{\omega}_e(t_{k})$ as in the P-Estimator, but has an additional saturation function correction based on sliding surfaces for the individual body rate errors.  As found in the PID estimator, the proportional estimator for a steady spin stabilized satellite performs adequately.  The additional saturation term becomes helpful for situations with low $L_\omega$ values that can take longer to converge from the initial body rate to the actual body rate, but once close will increase the effort in staying in step with the measured body rate.
+
+Similar to the PID estimator, the quaternion sliding mode observer limits it's focus to the angular measure of the rotational quaternion.  The sliding surface is taken based on the radian measure.  If the radian measure is below, the saturation limit the quaternion stays as is.  If the quaternion represents a rotation greater than the saturation limit a saturated quaternion is created about the same Euler axis but limit to the saturation angle of rotation.
+
+kwargs = {'S': {'q': 1.908376120345185, 'w': 6.5356517995605596}, 'K': {'q': 0.12520202719936652, 'w': 0.48433605036767613}, 'L': {'q': 0.41506774287666348, 'w': 0.35072151415483038}}
+kwargs = {"S": {"q": 0.7324366102332057, "w": 0.5386880719560759}, "K": {"q": 0.6340430770694714, "w": 0.5821736289388915},  "L": {"q": 0.7814360951486294, "w": 0.736085136529068}}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/smo_estimator_with_prediction.eps,width=6in}}
+  \caption{SMO-Estimator with state prediction}
+  \label{fig:SMOEstimatorwithstateprediction}
+\end{figure}
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/smo_bad_estimator_with_prediction.eps,width=6in}}
+  \caption{SMO-Estimator high gain with state prediction}
+  \label{fig:SMOEstimatorhighgainwithstateprediction}
+\end{figure}
+
 
 
 \section{Controllers}
