@@ -792,7 +792,7 @@ This thesis takes the discretized form of Equation \ref{eqn:SMOContinuous} with 
     \bs{\hat{q}}(t_{k+1}) &= \bs{\psi} (\bs{1}_s\big(\bs{q}_{e}(t_k)\big), K_q) \otimes \bs{\psi}(\bs{q}_e(t_{k}), L_{q})  \otimes \bs{\hat{q}}(t_{k+1})^- \\
     \bs{\hat{\omega}}(t_{k+1}) &= \bs{\hat{\omega}}(t_{k+1})^- + \bs{L}_{\omega} \bs{\omega}_e(t_{k}) + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e(t_{k}) \big)
   \end{align}
-  \label{eqn:PIDEstimatorwithPredictionUnforcedMotion}
+  \label{eqn:SMOEstimatorwithPredictionUnforcedMotion}
 \end{subequations}
 
 where
@@ -929,12 +929,35 @@ if __name__ == '__main__':
 \nocite{minted}
 \end{singlespace}
 
-
-
-
 \section{Controllers}
 \label{sec:Controller}
-From the MMS requirements, the body rate portion of the desired state is taken as a 3rpm (0.31416 rad/sec) rotation about the satellite's $z$-axis with zero body rates about the $x$ and $y$ axes.
+
+The controller portion of this thesis has requirements for TableSat 1A that are based off of NASA MMS's mission requirements.  From Section \ref{subsec:ComparativeEstimationTests} it was demonstrated that multiple estimators can be run in parallel even when running with the experimental setup.  This was discussed above, this allows for a better insight into performance differences in estimation methods.  It also allows for estimator scheduling if required.  Like gain scheduling which for an estimator or controller can modify what gains it uses depending on the state of the system, estimator scheduling allows for switching between disparate estimation techniques depending on the system's state.  For example, two estimation models can be running in parallel.  One that is efficient at dealing with converging initial conditions or large disturbances to the measured state and a second that is more effective at fine tuning the estimated state with small perturbations.  Since both are continually updated with the state measurements if a large disturbance is detected the controller can switch from trusting the steady state estimator to the transient state estimator until states converge then switch back.
+
+The control requirements for TableSat 1A can be broken into three main goals.
+
+First is to maintain a steady spin rate of 3 rpm (0.31416 rad/sec).  Given the relative success of the body rate estimation in section \ref{sec:Estimators}, this goal should not be that difficult and likely will not need a complicated control model.
+
+Second is to correct for any detected nutation by the estimator.  This can take the form of both driving body rates $\omega_y$ and $\omega_z$ to zero, and ensuring the estimated quaternion has an Euler axis is kept in parallel with the global $z$-axis.
+
+Third is to prevent oscillations in the ADP and SDP booms or stop any oscillations that exist.  Out of the three, this performance goal is the most reliant on a full and robust system with a accurate system model and responsive actuators.
+
+Assuming the system has been brought up to the desired operating conditions, there are a minimum of two checks that are required to determine if the system continues to stay in the desired state.
+
+\begin{equation}
+  \begin{aligned}
+    \omega_z &= 3 \text{ rpm} \\
+    \bs{v} \bullet (0\bs{i}+0\bs{j}+1\bs{k}) &= \left\{ \begin{array}{lr} 1 & : q_0 > 0 \\ -1 & : q_0 < 0 \end{array} \right.
+  \end{aligned}
+  \label{}
+\end{equation}
+
+Correcting for variations in $\omega_z$ follows standard control theory methods.  Correcting for variation in the Euler vector are more complicated especially when keeping with multiplicative correction methods instead of state difference methods as was determined in Section \ref{sec:StateError}.  Keeping the two state requirements decoupled is advantageous if possible.  Even though the rate of the quaternion can be used to help control the body rate, if the control of the quaternion is limited to aligning the vector component with the global $z$-axis, the body rate controller can focus on correcting for any errors in the spin rate.
+
+\subsection{Quaternion Decomposition}
+\label{subsec:QuaternionDecomposition}
+
+
 
 \begin{equation}
   \bs{\omega}_d = \begin{bmatrix} 0 & 0 & 0.31416 \end{bmatrix}^T
@@ -948,11 +971,7 @@ Since the satellite is spin stabilized, the desired quaternion is not as straigh
   \label{eqn:DesiredQuaternion}
 \end{equation}
 
-\subsection{Quaternion Decomposition}
-\label{subsec:QuaternionDecomposition}
 
 \section{Simulations}
 \label{sec:Simulations}
 
-\section{Experimental Validation}
-\label{sec:ExperimentalValidation}

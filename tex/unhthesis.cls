@@ -352,9 +352,18 @@
 
 \def\endabstractpage
    {\end{abstract}
-    \newpage
    }
 
+\def\nomenclature
+   {\vspace*{0.5in}
+    \thispagestyle{plain}
+    \chapter*{Nomenclature}
+    \addcontentsline{toc}{section}{Nomenclature}
+    \@normalsize
+    \parindent 0pt                      % Don't indent 'paragraphs'.
+   }
+
+\def\endnomenclature{\par}
 
 
 \newenvironment{Squote}%
