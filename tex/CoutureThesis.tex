@@ -8,7 +8,7 @@
 
 \title{DEVELOPMENT OF A HIGH-INTEGRITY ANALYTICAL AND EXPERIMENTAL TEST BED FOR OBSERVER-BASED CONTROLLERS FOR NASA's MAGNETOSPHERIC MULTISCALE MISSION SPACECRAFT}
 \author{Daniel R. Couture}
-\prevdegrees{B.S. Mechanical Engineering, University of New Hampshire (2001)}
+\prevdegrees{B.S. Mechanical Engineering, University of New Hampshire, 2001}
 \major{Mechanical Engineering}
 \degree{Master of Science}
 \degreemonth{May}
@@ -35,9 +35,13 @@
     I would like to fin ack
 \end{acknowledgments}
 
-\tableofcontents
-\listoftables
-\listoffigures
+\begin{singlespace}
+  \tableofcontents
+  \addcontentsline{toc}{section}{LIST OF TABLES}
+  \listoftables
+  \addcontentsline{toc}{section}{LIST OF FIGURES}
+  \listoffigures
+\end{singlespace}
 
 \begin{abstractpage}
 This thesis utilizes an experimental tabletop satellite (TableSat) to span two main efforts.  First is to create a physical model of a satellite from NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control (ADC) techniques.  The ADC systems must keep the TableSat rotating at a constant 3 rpm, prevent boom oscillations, and correct for detected nutations out of the spin plane.  The second goal is to produce a software system that can be used to run against both theoretical simulations and multiple evolutions of experimental models.  The system should provide near ``real-time'' feedback of the system's state, allow for on-the-fly modification to control parameters, and be designed such that individuals specializing in control systems could customize and extend its functionality without substantial computer science expertise.
@@ -103,10 +107,17 @@ This thesis utilizes an experimental tabletop satellite (TableSat) to span two m
 
 \include{sections/Biblio}
 
+\newpage
+\vspace*{100mm}
+\begin{center}
+  {\huge \bf APPENDICES}
+\end{center}
+
 \appendix
-  \begin{singlespace}
-  % \include{sections/TSatPySource}
-  % \include{sections/MatlabOOSource}
+\pagebreak
+\begin{singlespace}
+  \include{sections/TSatPySource}
+  \include{sections/MatlabOOSource}
 \end{singlespace}
 
 
