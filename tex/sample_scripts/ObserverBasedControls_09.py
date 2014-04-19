@@ -1,10 +1,9 @@
-import sys
-from TSatPy import Estimator, State, StateOperators
-from TSatPy.Clock import Metronome
-import numpy as np
-import matplotlib.pyplot as plt
 import time
 import random
+import numpy as np
+import matplotlib.pyplot as plt
+from TSatPy import Estimator, State, StateOperators
+from TSatPy.Clock import Metronome
 
 
 print('PID with prediction')
@@ -95,9 +94,6 @@ def integrate_error(p,i,d):
     dts = [0.8, 1.2]
     end_time = c.tick() + 120
     while c.tick() < end_time:
-        # sys.stdout.write("\b\b\b\b%s" % int(c.tick() - start_time))
-        # sys.stdout.flush()
-
         plant.propagate()
 
         # Create measurement noise
