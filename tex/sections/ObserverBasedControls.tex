@@ -932,15 +932,129 @@ if __name__ == '__main__':
 \section{Controllers}
 \label{sec:Controller}
 
-The controller portion of this thesis has requirements for TableSat 1A that are based off of NASA MMS's mission requirements.  From Section \ref{subsec:ComparativeEstimationTests} it was demonstrated that multiple estimators can be run in parallel even when running with the experimental setup.  This was discussed above, this allows for a better insight into performance differences in estimation methods.  It also allows for estimator scheduling if required.  Like gain scheduling which for an estimator or controller can modify what gains it uses depending on the state of the system, estimator scheduling allows for switching between disparate estimation techniques depending on the system's state.  For example, two estimation models can be running in parallel.  One that is efficient at dealing with converging initial conditions or large disturbances to the measured state and a second that is more effective at fine tuning the estimated state with small perturbations.  Since both are continually updated with the state measurements if a large disturbance is detected the controller can switch from trusting the steady state estimator to the transient state estimator until states converge then switch back.
+The TableSat 1A controller has performance requirements based off of NASA MMS's mission parameters.  Section \ref{subsec:ComparativeEstimationTests} demonstrated that multiple estimators can be run in parallel during both simulations and experimental runs.  As discussed above, this allows for a better insight into performance differences in estimation methods.  An additional benefit to running the controller through TSatPy is the ability to perform estimator scheduling.  Like gain scheduling which for an estimator or controller can modify what gains it uses depending on the current performance, estimator scheduling allows for switching between disparate estimation techniques during run-time.  For example, one estimator tuned for responding to large errors and run along side an estimator tuned for steady state performance.  The control algorithm can then receive more accurate state estimates on a wider range of environmental conditions.
 
-The control requirements for TableSat 1A can be broken into three main goals.
+The control requirements for TableSat 1A can be simplified into three main goals.
 
 First is to maintain a steady spin rate of 3 rpm (0.31416 rad/sec).  Given the relative success of the body rate estimation in section \ref{sec:Estimators}, this goal should not be that difficult and likely will not need a complicated control model.
 
-Second is to correct for any detected nutation by the estimator.  This can take the form of both driving body rates $\omega_y$ and $\omega_z$ to zero, and ensuring the estimated quaternion has an Euler axis is kept in parallel with the global $z$-axis.
+Second is to correct for any nutation out of the spin plane detected by the estimator.  This can take the form of both driving body rates $\omega_y$ and $\omega_z$ to zero, and ensuring the estimated quaternion has an Euler axis is kept in parallel with the global $z$-axis.
 
-Third is to prevent oscillations in the ADP and SDP booms or stop any oscillations that exist.  Out of the three, this performance goal is the most reliant on a full and robust system with a accurate system model and responsive actuators.
+Third is to prevent oscillations in the ADP and SDP booms or attenuate any existing oscillations.  Out of the three, this performance goal has the largest set of dependencies for success.  This level of control is reliant on effective actuators along with reliable state estimates based on an accurate system model including boom dynamics.
+
+\subsection{Actuators}
+\label{subsec:Actuators}
+
+The actuators in use on TableSat 1A consists of four single directional computer fans.  Two oriented for rate control and two for nutation corrections.  Rate control fans are mounted on opposite sides of the deck in opposing directions.  The two nutation fans are mounted at 90 degree angles and both have their thrust pointing down.  The fans are assumed to be mounted so that the rotation and nutation moments are applied about orthogonal axes, and that the thrust applied is tangential to the body's center of mass.  This initially simplifies the controller's voltage calculations for each fan which can be revisited if testing shows the effects are not negligible.
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/tsat_thrusters.eps,height=3in}}
+  \caption{TableSat 1A thrusters}
+  \label{fig:TSatThrusters}
+\end{figure}
+
+With this arrangement, actuators are identified by their center, direction of thrust related to the body reference frame, and the maximum force the actuator can produce.
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/tsat_body_axes.eps,height=3in}}
+  \caption{TableSat Body Axes}
+  \label{fig:TableSatBodyAxes}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{c|c|c|c|c}
+    Fan & Center $\bs{f_c}$ (m) & Direction $\bs{n}$ & $F$ (N) & Max Moment $\frac{F \bs{n} \times \bs{f_c}}{|\bs{n}|}$ (Nm) \\ \hline
+    1 & $(0.2474, -0.2474, 0)$ & $(-1, -1, 0)$ & 0.08 & $(0, 0, 0.039598)$ \\
+    2 & $(-0.2474, 0.2474, 0)$ & $(-1, -1, 0)$ & 0.08 & $(0, 0, -0.039598)$ \\
+    3 & $(0.25, 0, 0)$ & $(0, 0, -1)$ & 0.08 & $(0.02, 0, 0)$ \\
+    4 & $(0, 0.25, 0)$ & $(0, 0, -1)$ & 0.08 & $(0, -0.02, 0)$ \\
+  \end{tabular}
+  \caption{Actuator configuration}
+  \label{tbl:ActuatorConfiguration}
+\end{table}
+
+
+The role of the actuator module is to accept a desired moment in $\Re^3$ about the body's frame of reference and return what moment is capable with the limited actuator configuration and single direction fans.  The configuration listed in lines 4-13 represent the fan configuration displayed in Figure \ref{fig:TSatThrusters} with the addition of a hypothetical second clockwise fan to demonstrate how the request can be distributed among multiple fans if available.
+
+In the ``setup\_actuators'' function, each fan configuration is fed into the module which calculates the maximum possible moment using the fan's location, direction, and force.
+
+\begin{equation}
+  M = \frac{F \bs{n} \times \bs{f_c}}{|\bs{n}|}
+\end{equation}
+
+Lines 31-36 list the potential moments for each of the actuators loaded.  Lines 26-28 simulate a request by the controller module for a $(0.03, 0.01, 0.07)$ Nm moment.  Since the fans are mounted to create moments about one of the body reference frame axes, each component of the request is considered separately.  The $M_x = 0.03 Nm$ request can only be partially fulfilled by the Nx fan at max thrust producing a $0.02 Nm$ moment.  The $M_y = 0.01 Nm$ request is within the limits of the Ny fan but because the fan is single directional, the request can not be filled.  The $M_z = 0.07 Nm$ request can not be served by either the CCW1 or CCW2 fans alone but can be generated by both fans if they share the load.  The actuator module splits the request equally between the two CCW fans at 88\% of their max capacity.  In the end, of the initial $(0.03, 0.01, 0.07) Nm$ request is reduced to an attainable moment of $(0.02, 0, 0.07) Nm$.  At this point the information is provided to both``set\_level'' function that would relay the appropriate voltage requirements to the TableSat.  To finish up the request, the actuator module returns the attained moment which can enter a feedback to the estimator and control modules for more accurate system modeling.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+import numpy as np
+from TSatPy.Actuator import Actuator
+
+configs = [{'type': 'fan', 'args': {'name': 'CW',
+  'center': (0.2474, -0.2474, 0), 'direction': (-1, -1, 0), 'F': 0.08}
+},{'type': 'fan', 'args': {'name': 'CCW1',
+  'center': (-0.2474, 0.2474, 0), 'direction': (-1, -1, 0), 'F': 0.08}
+},{'type': 'fan', 'args': {'name': 'CCW2',
+  'center': (-0.2474, -0.2474, 0), 'direction': (1, -1, 0), 'F': 0.08}
+},{'type': 'fan', 'args': {'name': 'NY', 'center': (0.25, 0, 0),
+  'direction': (0, 0, 1), 'F': 0.08}
+},{'type': 'fan', 'args': {'name': 'NX', 'center': (0, 0.25, 0),
+  'direction': (0, 0, 1), 'F': 0.08}}]
+
+def set_level(act, power_level):
+    print 'Setting power level=%g for: %s' % (power_level, act)
+
+def setup_actuators(configs):
+    act = Actuator()
+    for config in configs:
+        act.add(config['type'], set_level, config['args'])
+    return act
+
+act = setup_actuators(configs)
+print(act)
+M = np.mat([0.03, 0.11, 0.07]).T
+print("Request moment: %s" % (M.T))
+print("Applied moment: %s" % (act.request_moment(M).T))
+
+# Prints Out
+# Actuator
+#  <Fan CW moment=(0, -0, -0.0279901)>
+#  <Fan CCW1 moment=(0, 0, 0.0279901)>
+#  <Fan CCW2 moment=(0, 0, 0.0279901)>
+#  <Fan NY moment=(0, -0.02, 0)>
+#  <Fan NX moment=(0.02, 0, 0)>
+# Request moment: [[ 0.03  0.11  0.07]]
+# Setting power level=1 for: <Fan NX moment=(0.02, 0, 0)>
+# Setting power level=1 for: <Fan CCW1 moment=(0, 0, 0.0279901)>
+# Setting power level=1 for: <Fan CCW2 moment=(0, 0, 0.0279901)>
+# Applied moment: [[ 0.02        0.          0.05598023]]
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+Prior implementations of TableSat generally stuck with a static actuator layout which requires a significant portion of time to rewrite code and/or rewire electronics to assess variations on the actuator layout.  With the use of TSatPy, most modifications to the actuators during testing can be done with just a change to the config structure that provides a much faster turn around time between tests.
+
+\subsection{Rate Control}
+\label{subsec:RateControl}
+
+The
+
+\begin{equation}
+  x
+  \label{eqn:RateControl}
+\end{equation}
+
+\subsubsection{PID Rate Control}
+\label{subsubsec:PIDRateControl}
+
+
+\subsubsection{Sliding Mode Controller}
+\label{subsubsec:SlidingModeController}
+
+
+
+\subsection{Nutation Correction}
+\label{subsec:NutationCorrection}
 
 Assuming the system has been brought up to the desired operating conditions, there are a minimum of two checks that are required to determine if the system continues to stay in the desired state.
 
@@ -956,6 +1070,14 @@ Correcting for variations in $\omega_z$ follows standard control theory methods.
 
 \subsection{Quaternion Decomposition}
 \label{subsec:QuaternionDecomposition}
+
+\subsection{Boom Dynamics}
+\label{subsec:Boom Dynamics}
+
+
+
+
+
 
 
 
