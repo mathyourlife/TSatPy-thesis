@@ -22,21 +22,32 @@
 ***
 ### Items since last meeting
 
+* Writing
+    * Satellite Attitude Modeling
+    * Observer Based Controls
+        * Error State
+        * Estimators
+        * Actuators
+* Coding
+    * Gradient Descent lib for gain tuning
+    * Estimators
+        * PID
+        * SMO
+        * Estimator Master
+    * Actuators
 * Membership for
     * ASME (dynamics systems + control)
     * AIAA (GNC)
     * IEEE(Control Systems Society)
-* 500 pages or 3" is a required split into 2 bindings
-* Printing at home
-    * Tested printer for equations/color/pics etc
+* Printing
+    * 500 pages or 3" is a required split into 2 bindings
+    * Printing at home
+        * Tested printer for equations/color/pics etc
 * Submitted up through Estimator to GS for format review
     * Passed! no edits required
-* Gradient Descent lib for gain tuning
 * Hatcher
     * Created github account
     * Got availability for defense
-* Satellite Attitude Modeling (draft complete)
-
 
 ***
 ### Defense Times
@@ -86,9 +97,9 @@
 * Intro Chapter **(draft completed)**
 * TableSat 1A **(draft completed)**
 * Satellite Attitude Modeling **(draft complete)**
-* Observer Based Controls **(Error State and Estimators complete)**
+* Observer Based Controls **(Error State, Estimators, Actuators complete)**
 * Standard Control Theory Tools
-* Software Development fur Experimental Integration
+* Software Development for Experimental Integration
 * TSatPy
 * Conclusions
 * Future Work
@@ -96,16 +107,17 @@
 ***
 ### Coding Status
 
-* Estimators
-    * PID **(done)**
-    * SMO **(done)**
-    * Estimator Master **(done)**
+* Unit Testing
+* Estimators **completed**
+    * PID **completed**
+    * SMO **completed**
+    * Estimator Master **completed**
 * Controllers
     * PID
     * SMC
     * Controller Master
-* Actuators
-    * Feed moments back to estimators
+* Actuators **completed**
+    * Feed moments back to estimators **completed**
 * Coordinator
     * timer integration
     * functional testing
