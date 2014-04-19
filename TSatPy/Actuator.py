@@ -20,11 +20,11 @@ class Actuator(object):
         act._set_level = set_level
         self.actuators.append(act)
 
-    def config_fan(self, name, center, direction):
+    def config_fan(self, name, center, direction, F):
         """
         Configure a fan to be added to the array of actuators.
         """
-        return Fan(name, center, direction)
+        return Fan(name, center, direction, F)
 
     def request_moment(self, M):
         """
@@ -79,24 +79,25 @@ class ActuatorBase(object):
 
 class Fan(ActuatorBase):
 
-    def __init__(self, name, center, direction):
+    def __init__(self, name, center, direction, F):
         self.name = name
         self.center = np.mat(center, dtype=float)
-        self.direction = np.mat(direction, dtype=float)
-        self.moment = np.cross(self.center, self.direction).T
-        if not np.sum(self.moment == 0) == 2:
-            msg = 'Actuator.request_moment requires that fans be mounted ' \
-                  'to control a single body axis'
-            raise ActuatorException(msg)
-
         if self.center.shape == (1, 3):
             self.center = self.center.T
+        self.direction = np.mat(direction, dtype=float)
         if self.direction.shape == (1, 3):
             self.direction = self.direction.T
 
         # Make sure it's a unit vector
         self.direction = self.direction/np.sqrt(
             self.direction.T * self.direction)
+        self.F = self.direction * F
+
+        self.moment = np.cross(self.center.T, self.F.T).T
+        if not np.sum(self.moment == 0) == 2:
+            msg = 'Actuator.request_moment requires that fans be mounted ' \
+                  'to control a single body axis'
+            raise ActuatorException(msg)
 
     def __str__(self):
         moment = '(%g, %g, %g)' % (
