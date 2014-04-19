@@ -11,10 +11,9 @@
 * reference tablesat2 as future platforms
 * Clean up repo
     * README.md inside TSatPy Package, beta versions
-    *
     * Matlab code
         * Check for lines that exceed print margins
-        * Remove files with limited usefullness to cut down on length
+        * Remove files with limited usefulness to cut down on length
 * Focus on ability to apply on future
 * May-Win reach out to Fussell then I reach out
 * After, Mike Chris Tom how to use TSatPy
