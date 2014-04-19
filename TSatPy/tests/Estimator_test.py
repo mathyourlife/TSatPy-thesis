@@ -55,7 +55,7 @@ class TestPID(unittest.TestCase):
         Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
         Kp = StateOperators.StateGain(Kq, Kw)
         ic = State.State(
-            State.Quaternion([0,0,1],radians=np.pi/10),
+            State.Quaternion([0,0,1],radians=0.1),
             State.BodyRate([0,0,1])
         )
 
@@ -63,13 +63,13 @@ class TestPID(unittest.TestCase):
         pid.set_Kp(Kp)
 
         x = State.State(
-            State.Quaternion([0,0,1],radians=6*np.pi/10),
+            State.Quaternion([0,0,1],radians=0.6),
             State.BodyRate([0.1,2,3])
         )
         x_hat = pid.update(x)
 
         x_expected = State.State(
-            State.Quaternion([0,0,1],radians=2*np.pi/10),
+            State.Quaternion([0,0,1],radians=0.2),
             State.BodyRate([0.02,0.4,1.4]))
 
         self.assertEquals(x_hat, x_expected)
