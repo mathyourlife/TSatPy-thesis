@@ -146,3 +146,19 @@ class TestBodyRateSaturation(unittest.TestCase):
         self.assertEquals(State.BodyRate([-1,-1.3,1.3]), w_sat)
 
 
+class TestBodyRateToMoment(unittest.TestCase):
+
+    def test_init(self):
+        br2m = StateOperators.BodyRateToMoment(np.eye(3) * 3.2)
+        self.assertTrue(np.all(br2m.K == np.eye(3) * 3.2))
+
+    def test_str(self):
+        br2m = StateOperators.BodyRateToMoment(np.eye(3) * 3.2)
+        str_expected = '<BodyRateToMoment <K [[ 3.2 0. 0. ] ' \
+            '[ 0. 3.2 0. ] [ 0. 0. 3.2]]>>'
+        self.assertEquals(str_expected, str(br2m))
+
+    def test_mul(self):
+        br2m = StateOperators.BodyRateToMoment(np.eye(3) * 3.2)
+        w = State.BodyRate([3, -1, 8])
+        self.assertEquals(br2m * w, State.Moment([9.6, -3.2, 25.6]))
