@@ -13,7 +13,7 @@ class Estimator(object):
 
     def add(self, type, plant, kwargs):
         """
-        Add an estimator to the array of estimators
+        Add an configured estimator to the array of estimators
         """
         if type.lower() == 'pid':
             est = self.config_pid(plant, **kwargs)
