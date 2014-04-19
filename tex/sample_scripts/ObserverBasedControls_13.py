@@ -4,16 +4,16 @@ from TSatPy.Actuator import Actuator
 
 print('Actuator Usage')
 
-configs = [{'type': 'fan', 'args': {'name': 'CW', 'center': (2, -2, 0),
-  'direction': (-1, -1, 0), 'F': 10}
-},{'type': 'fan', 'args': {'name': 'CCW1', 'center': (-2, 2, 0),
-  'direction': (-1, -1, 0), 'F': 10}
-},{'type': 'fan', 'args': {'name': 'CCW2', 'center': (-2, 2, 0),
-  'direction': (-1, -1, 0), 'F': 10}
-},{'type': 'fan', 'args': {'name': 'NY', 'center': (5, 0, 0),
-  'direction': (0, 0, -1), 'F': 10}
-},{'type': 'fan', 'args': {'name': 'NX', 'center': (0, 5, 0),
-  'direction': (0, 0, -1), 'F': 10}}]
+configs = [{'type': 'fan', 'args': {'name': 'CW',
+  'center': (0.2474, -0.2474, 0), 'direction': (-1, -1, 0), 'F': 0.08}
+},{'type': 'fan', 'args': {'name': 'CCW1',
+  'center': (-0.2474, 0.2474, 0), 'direction': (-1, -1, 0), 'F': 0.08}
+},{'type': 'fan', 'args': {'name': 'CCW2',
+  'center': (-0.2474, -0.2474, 0), 'direction': (1, -1, 0), 'F': 0.08}
+},{'type': 'fan', 'args': {'name': 'NY', 'center': (0.25, 0, 0),
+  'direction': (0, 0, 1), 'F': 0.08}
+},{'type': 'fan', 'args': {'name': 'NX', 'center': (0, 0.25, 0),
+  'direction': (0, 0, 1), 'F': 0.08}}]
 
 
 def set_level(act, power_level):
@@ -29,8 +29,8 @@ def setup_actuators(configs):
 
 def main():
     act = setup_actuators(configs)
-    print act
-    M = np.mat([3, 11, 4]).T
+    print(act)
+    M = np.mat([0.03, 0.11, 0.07]).T
     print("\nRequest moment: %s" % (M.T))
     print
     print("\nApplied moment: %s" % (act.request_moment(M).T))
@@ -42,18 +42,17 @@ if __name__ == '__main__':
 
 
 # Prints Out
-# Actuator Usage
 # Actuator
-#  <Fan CW moment=(0, -0, -4)>
-#  <Fan CCW1 moment=(0, 0, 4)>
-#  <Fan CCW2 moment=(0, 0, 4)>
-#  <Fan NY moment=(-0, 5, 0)>
-#  <Fan NX moment=(-5, 0, 0)>
+#  <Fan CW moment=(0, -0, -0.0279901)>
+#  <Fan CCW1 moment=(0, 0, 0.0279901)>
+#  <Fan CCW2 moment=(0, 0, 0.0279901)>
+#  <Fan NY moment=(0, -0.02, 0)>
+#  <Fan NX moment=(0.02, 0, 0)>
 
-# Request moment: [[ 3 11  4]]
+# Request moment: [[ 0.03  0.11  0.07]]
 
-# Setting power level=1 for: <Fan NY moment=(-0, 5, 0)>
-# Setting power level=0.5 for: <Fan CCW1 moment=(0, 0, 4)>
-# Setting power level=0.5 for: <Fan CCW2 moment=(0, 0, 4)>
+# Setting power level=1 for: <Fan NX moment=(0.02, 0, 0)>
+# Setting power level=1 for: <Fan CCW1 moment=(0, 0, 0.0279901)>
+# Setting power level=1 for: <Fan CCW2 moment=(0, 0, 0.0279901)>
 
-# Applied moment: [[ 0.  5.  4.]]
+# Applied moment: [[ 0.02        0.          0.05598023]]
