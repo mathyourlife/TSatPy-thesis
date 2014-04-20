@@ -383,8 +383,8 @@ The section will cover the final version of the quaternion adjustment calculatio
 
 \begin{equation}
   \begin{aligned}
-    \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot \cos^{-1} (q_0))  \end{bmatrix} \\
-    \text{where } \gamma &= \sqrt{\frac{\bs{v}^T \cdot \bs{v}}{\sin^2 ( k \cdot \cos^{-1} (q_0))}} \\
+    \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot 2\cos^{-1} (q_0))  \end{bmatrix} \\
+    \text{where } \gamma &= \sqrt{\frac{\bs{v}^T \cdot \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}} \\
     \bs{q} &= \begin{bmatrix} \bs{v} \\ q_0  \end{bmatrix}
   \end{aligned}
   \label{eqn:PSI}
@@ -449,8 +449,8 @@ Adjustment Quaternions
 \begin{equation}
   \begin{aligned}
     \bs{q}_{adj} &= \bs{\psi}(\bs{q}_e, K_{qp}) \\
-    \text{where } \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot \cos^{-1} (q_0))  \end{bmatrix} \\
-    \gamma &= \sqrt{\frac{\bs{v}^T \cdot \bs{v}}{\sin^2 ( k \cdot \cos^{-1} (q_0))}} \\
+    \text{where } \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot 2\cos^{-1} (q_0))  \end{bmatrix} \\
+    \gamma &= \sqrt{\frac{\bs{v}^T \cdot \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}} \\
     \bs{q} &= \begin{bmatrix} \bs{v} \\ q_0  \end{bmatrix}
   \end{aligned}
 \end{equation}
@@ -799,7 +799,7 @@ where
 
 \begin{subequations}
   \begin{align}
-    \bs{1}_s\big(\bs{q}_{e}(t_k) \big) &= \begin{bmatrix} \bs{v_e} \\ sat\left( \frac{\cos^{-1} q_{0e} }{S_{q}} \right) \end{bmatrix} \\
+    \bs{1}_s\big(\bs{q}_{e}(t_k) \big) &= \begin{bmatrix} \bs{v_e} \\ sat\left( \frac{2\cos^{-1} q_{0e} }{S_{q}} \right) \end{bmatrix} \\
     \bs{1}_s \big(\bs{\omega}_e(t_{k}) \big) &= sat\left( \frac{\bs{\omega}_e(t_{k})}{S_{\omega}} \right) \\
     \bs{L}_{\omega} &= L_\omega \cdot \bs{I} \\
     \bs{K}_{\omega} &= K_\omega \cdot \bs{I}
@@ -1139,7 +1139,52 @@ Section \ref{subsubsec:PIDRateControl} covered the design of the rate controller
     \bs{M}(t_{k+1}) = \bs{M}_{q}(t_{k+1}) + \bs{M}_{\omega}(t_{k+1})
 \end{equation}
 
-The nutation control will focus or the differences between the estimated quaternion attitude and the desired quaternion attitude.  The addition of the desired body rates of $\omega_x = \omega_y = 0$ can be added later if needed. Since the work in Section \ref{sec:StateError} shows
+The nutation control will focus or the differences between the estimated quaternion attitude and the desired quaternion attitude.  The addition of the desired body rates of $\omega_x = \omega_y = 0$ can be added later if needed.  Since the work in Section \ref{sec:StateError} shows that working with the radian measure of the rotational quaternion had significant benefits over the traditional full state difference method, a similar approach will be used for the nutation control.
+
+\subsubsection{P Nutation Control}
+\label{subsubsec:PNutationControl}
+
+Starting with a simplest design of the proportional nutation control where the error quaternion $\bs{q}_e$ is defined in terms of the estimated quaternion $\bs{\hat{q}}$ and the desired quaternion attitude $\bs{q}_d$ as
+
+\begin{equation}
+  \bs{q}_e = \bs{\hat{q}}^* \otimes \bs{q}_d
+\end{equation}
+
+To generate the moments needed to correct for the error in attitude, the P controller can take advantage of the quaternion notation where the vector portion identifies the Euler axis, and whose components can be used as the basis for the correction moment by scaling them by the radian angular measurement of the error and a proportional gain.
+
+\begin{subequations}
+  \begin{align}
+    \bs{M}_{q}(t_{k+1}) &= (-2 K_{qp} \cos^{-1} (\hat{q}_{e0})) \bs{\hat{e}}_e \\
+    \text{where } \bs{\hat{e}}_e &= \frac{\bs{\hat{v}}_e}{|\bs{\hat{v}}_e|}
+  \end{align}
+  \label{eqn:PNutationControl}
+\end{subequations}
+
+To assess the basic functionality of the proportional quaternion in Equation \ref{eqn:PNutationControl}, the controller was run with $K_{qp} = 0.01$ and told to return the quaternion to the standard state with the body's reference frame aligned with the global reference frame.  The TableSat was given an initial condition of
+
+\begin{subequations}
+  \begin{align}
+    \bs{\hat{v}}_e &= 0\bs{i}+0.1\bs{j}+1 \bs{k}\\
+    \theta &= 1 \text{ rad} \\
+    \bs{\omega} &= \begin{bmatrix} 0 \\ -0.01 \\ 0.2 \end{bmatrix} \text{ rad/sec}
+  \end{align}
+\end{subequations}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/p_attitude_control.eps,width=6in}}
+  \caption{P Attitude Control}
+  \label{fig:PAttitudeControl}
+\end{figure}
+
+The results shown in \ref{fig:PAttitudeControl} are very promising.  The three dimensional object with an initial out of plane offset and initial body rates is able to oscillate about the desired set point with the use of a single gain measure being combined with the components of the quaternion state.
+
+
+
+
+
+
+
+
 
 Assuming the system has been brought up to the desired operating conditions, there are a minimum of two checks that are required to determine if the system continues to stay in the desired state.
 

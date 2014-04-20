@@ -334,7 +334,7 @@ class QuaternionToMoment(object):
         :type  q: Quaternion
         """
         e, r = q.to_rotation()
-        return State.Moment(e * r * self.K)
+        return State.Moment(-e * r * self.K)
 
     def __str__(self):
         """
