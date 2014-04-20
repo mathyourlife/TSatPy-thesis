@@ -7,9 +7,9 @@ from TSatPy import StateOperators as SO
 from TSatPy.Clock import Metronome
 from GradientDescent import GradientDescent
 
-print("Test P - Attitude and Body Rate Control")
+print("Test P - Nutation Control")
 
-run_time = 60
+run_time = 100
 speed = 20
 c = Metronome()
 c.set_speed(speed)
@@ -18,26 +18,28 @@ dt = 0.5
 x_d = State.State()
 
 
-def run_test(Kq, Kpwx, Kpwy, Kpwz, plot=False):
-    ts, Ms, ws, theta = test(Kq, Kpwx, Kpwy, Kpwz)
+def run_test(Kq, plot=False):
+    ts, Ms, ws, theta = test(Kq)
 
     if plot:
         graph_it(ts, Ms, ws, theta)
 
 
-def test(Kq, Kpwx, Kpwy, Kpwz):
+def test(Kq):
 
     # Randomize the initial condition of the plant
     x_est_ic = State.State(
-        State.Quaternion(np.random.rand(3,1),radians=np.random.rand()),
-        State.BodyRate(np.random.rand(3.1)))
+        State.Quaternion(np.random.rand(3,1),radians=np.random.rand()*3),
+        State.BodyRate([0,0,0]))
+    print("x_est_ic:    %s" % (x_est_ic))
+    print x_est_ic.q.to_rotation()
 
     I = [[4, 0, 0], [0, 4, 0], [0, 0, 2]]
     plant_est = State.Plant(I, x_est_ic, c)
 
     Kp = SO.StateToMoment(
         SO.QuaternionToMoment(Kq),
-        SO.BodyRateToMoment([[Kpwx,0,0],[0,Kpwy,0],[0,0,Kpwz]]))
+        None)
 
     pid = Controller.PID(c)
     pid.set_Kp(Kp)
@@ -55,6 +57,9 @@ def test(Kq, Kpwx, Kpwy, Kpwz):
         plant_est.propagate(M)
 
         x_plant = plant_est.x
+        q_r, q_n = x_plant.q.decompose()
+        x_plant.q = q_n
+
         M = pid.update(x_plant)
 
         ts.append(c.tick() - start_time)
@@ -110,9 +115,6 @@ def calc_err(ts, Ms, ws, theta):
 def main():
     domains = [
         ['Kq', 0.001,  0.9],
-        ['Kpwx', 0.001,  0.9],
-        ['Kpwy', 0.001,  0.9],
-        ['Kpwz', 0.001,  0.9],
     ]
 
     kwargs = {
@@ -135,7 +137,7 @@ def main():
 
 if __name__ == '__main__':
 
-    kwargs = {'Kpwx': 0.494, 'Kpwy': 0.583, 'Kq': 0.0912, 'Kpwz': 0.624}
+    kwargs = {'Kq': 0.15218575238038709}
 
     # kwargs = None
 

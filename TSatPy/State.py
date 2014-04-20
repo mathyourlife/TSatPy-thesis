@@ -219,7 +219,7 @@ class Quaternion(object):
 
             q_n.vector = -q_n.vector
 
-        return q_r, q_n
+        return q_r, -q_n
 
     @property
     def mat(self):
@@ -637,7 +637,7 @@ class Plant(object):
         """
 
         if M is None:
-            M = [0, 0, 0]
+            M = Moment([0, 0, 0])
         w = self.vel.propagate(M)
         q = self.pos.propagate(w)
         return q, w

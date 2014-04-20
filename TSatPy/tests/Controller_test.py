@@ -66,7 +66,7 @@ class TestPID(unittest.TestCase):
         pid.set_desired_state(x_d)
 
         M = pid.update(x_hat)
-        M_exp = State.Moment([0,0,-0.6])
+        M_exp = State.Moment([0,0,0.6])
 
         self.assertEquals(M_exp, M)
 
@@ -89,7 +89,7 @@ class TestPID(unittest.TestCase):
         pid.set_desired_state(x_d)
 
         M = pid.update(x_hat)
-        M_exp = State.Moment([-0.1,0,0.02]) + State.Moment([0,0,-0.6])
+        M_exp = State.Moment([-0.1,0,0.02]) + State.Moment([0,0,0.6])
 
         self.assertEquals(M_exp, M)
 
@@ -185,7 +185,7 @@ class TestPID(unittest.TestCase):
 
         # Second update 0.75 sec later
         self.assertEquals(M,
-            State.Moment([0, 0, -3 * 1 * 0.3 * 0.75]) +
+            State.Moment([0, 0, 3 * 1 * 0.3 * 0.75]) +
             State.Moment([0.75 * 0.1 * -1, 0, 0.75 * 0.1 * 0.2]))
 
     @patch('time.time', return_value=13)
@@ -247,6 +247,6 @@ class TestPID(unittest.TestCase):
             -0.1* 0.1 / 0.5,
             0.1  * 0.1 / 0.5,
         ]) + State.Moment([
-            0, 0, 1 * 0.3 / 0.5
+            0, 0, -1 * 0.3 / 0.5
         ])
         self.assertEquals(M, M_expected)

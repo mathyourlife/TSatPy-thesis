@@ -1240,7 +1240,7 @@ Since the state quaternion represents a single rotation about the Euler axis and
 \begin{subequations}
   \begin{align}
     \bs{q}_r &= 0 \bs{i} + 0 \bs{j} + r_3 \bs{k} + r_0\\
-    \bs{q}_n &= n_1 \bs{i} + n_2 \bs{j} + 0 \bs{k} + n_0 \\
+    \bs{q}_n &= -n_1 \bs{i} - n_2 \bs{j} + 0 \bs{k} - n_0 \\
     \text{where: } n_1 &= Q \cdot n_2 \\
     n_2 &= \sqrt{\frac{1 - n_0^2}{Q^2 + 1}} \\
     Q &= \frac{q_0 q_1 - q_2 q_3}{q_0 q_2 + q_1 q_3} \\
@@ -1249,6 +1249,16 @@ Since the state quaternion represents a single rotation about the Euler axis and
     n_0 &= \sqrt{q_0^2 + q_3^2}
   \end{align}
   \label{eqn:DecomposeQuaternion}
+\end{subequations}
+
+This thesis will refer to the method decomposition of a quaternion through the method in equation \ref{eqn:DecomposeQuaternion} as
+
+\begin{subequations}
+  \begin{align}
+  \bs{\chi}_r(\bs{q}) &= \bs{q}_r \\
+  \bs{\chi}_n(\bs{q}) &= \bs{q}_n \\
+  \text{where: } \bs{q} &= \bs{q}_n \otimes \bs{q}_r
+  \end{align}
 \end{subequations}
 
 Equation \ref{eqn:DecomposeQuaternion} has been built into the TSatPy library for use in the controller.  The code snippet below demonstrates the decompose method at work.  Lines 3-4 define a known rotation and nutation.  At line 8 the normal multiplication operation has been converted to a quaternion multiplication to combine quaternions into a single attitude quaternion that may be encountered in a simulation or experimental test.  Recall from Section \ref{subsec:QuaternionAttitude} that the quaternion multiplication is not commutative, so this combination represents a rotation first then a nutation.  At line 11, the single quaternion representation is asked to break itself into a rotation and nutation quaternion according as defined in Equation \ref{eqn:DecomposeQuaternion}.  The resulting decomposition can been seen in lines 16-22 to match the chosen rotation and nutation.
@@ -1281,54 +1291,37 @@ print("q_r2: %s" % q_n2)
 \nocite{minted}
 \end{singlespace}
 
+Now that there is a defined method for separating the allowed rotation from the unwanted nutations, the next section will incorporate it into a attitude controller.
 
 \subsubsection{P Nutation Control}
 \label{subsubsec:PNutationControl}
 
-Since the previous section's P-controller proved very successful at attitude control, this section will attempt to loosen the restrictions on the desired attitude to allow for free rotation about the global reference frame's $z$-axis while correcting for nutations out of the spin plane.
+Since the previous section's P-controller proved very successful at attitude control, this section will attempt to loosen the restrictions on the desired attitude to allow for free rotation about the global reference frame's $z$-axis while correcting for nutations out of the spin plane making use of the quaternion decomposition in Equation \ref{eqn:DecomposeQuaternion}.
 
-The initial step is a quaternion error based P-controller.
+In this test, a random attitude was chosen and the controller's task was to bring the satellite level regardless of the point in the rotation about the $z$-axis.  From Equation \ref{eqn:PAttitudeControl},    As with previous test runs, parameters were tuned to obtain a minimum control effort.
 
+\begin{subequations}
+  \begin{align}
+    \bs{M}_{q} &= \left[-2 K_{qp} \cos^{-1} (q_{0}) \right] \bs{\hat{e}} \\
+    \text{where: } \bs{v} + q_0 &= \bs{\chi}_n(\bs{\hat{q}}_e)\\
+    \bs{\hat{e}} &= \frac{\bs{v}}{|\bs{v}|}
+  \end{align}
+  \label{eqn:PNutationControl}
+\end{subequations}
 
-Assuming the system has been brought up to the desired operating conditions, there are a minimum of two checks that are required to determine if the system continues to stay in the desired state.
+The test was initialized at rest at an orientation of a 1.26 radian rotation about $-0.25 \bs{i} -0.406\bs{j} -0.879\bs{k}$.  With a proportional gain $K_{qp} = 0.152$, the P-controller behaved as a normal by oscillating back and forth about the desired orientation.  What is notable though is that even though the system was in a state rotated away from the standard orientation, the $M_z$ term remains 0 since the controller only uses the nutation portion of the quaternion state.
 
-\begin{equation}
-  \begin{aligned}
-    \omega_z &= 3 \text{ rpm} \\
-    \bs{v} \bullet (0\bs{i}+0\bs{j}+1\bs{k}) &= \left\{ \begin{array}{lr} 1 & : q_0 > 0 \\ -1 & : q_0 < 0 \end{array} \right.
-  \end{aligned}
-  \label{}
-\end{equation}
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/p_nutation_control.eps,width=6in}}
+  \caption{P Nutation Control}
+  \label{fig:PNutationControl}
+\end{figure}
 
-Correcting for variations in $\omega_z$ follows standard control theory methods.  Correcting for variation in the Euler vector are more complicated especially when keeping with multiplicative correction methods instead of state difference methods as was determined in Section \ref{sec:StateError}.  Keeping the two state requirements decoupled is advantageous if possible.  Even though the rate of the quaternion can be used to help control the body rate, if the control of the quaternion is limited to aligning the vector component with the global $z$-axis, the body rate controller can focus on correcting for any errors in the spin rate.
-
-
-\subsection{Boom Dynamics}
-\label{subsec:Boom Dynamics}
-
-
-
-
-
+\subsubsection{P Rate and Nutation Control}
+\label{subsubsec:PRateNutationControl}
 
 
-
-\begin{equation}
-  \bs{\omega}_d = \begin{bmatrix} 0 & 0 & 0.31416 \end{bmatrix}^T
-  \label{eqn:DesiredBodyRate}
-\end{equation}
-
-Since the satellite is spin stabilized, the desired quaternion is not as straight forward.  With a goal of keeping the body's $z$-axis aligned with the global reference frame's $z$-axis the $q_3$ and $q_0$ quaternion values should be allowed to vary as $q_1$ and $q_2$ should remain at zero if no nutation exists.
-
-\begin{equation}
-  \bs{q}_d = 0 \bs{i} + 0 \bs{j} + q_3 \bs{k} + q_0
-  \label{eqn:DesiredQuaternion}
-\end{equation}
-
-
-\TODO{Finish this}
-
-\section{Simulations}
-\label{sec:Simulations}
+\section{Nutation and Rate Control for Estimation Based Controllers}
+\label{sec:NutationandRateControlforEstimationBasedControllers}
 
 \TODO{Finish this}

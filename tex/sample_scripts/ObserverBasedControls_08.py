@@ -7,7 +7,7 @@ import time
 import random
 
 
-print('Integrated State Error')
+print('PID Estimation - No state prediction')
 
 speed = 10
 c = Metronome()

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import time
 import random
 
-print('PID / SMO Faceoff')
+print('PID / SMO Estimator Faceoff')
 
 configs = [{'type': 'pid',
  'args': {'kpq': 0.0735,'kpw': 0.7,'kiq': 0.000863,
