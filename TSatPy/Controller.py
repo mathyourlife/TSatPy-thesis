@@ -70,7 +70,7 @@ class PID(ControllerBase):
         m_adj += self.K['p'] * x_err
 
         self.x_e = x_err
-        self.M.M = -m_adj.M
+        self.M = m_adj
         return self.M
 
     def __str__(self):

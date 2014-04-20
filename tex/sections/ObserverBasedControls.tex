@@ -1037,15 +1037,30 @@ Prior implementations of TableSat generally stuck with a static actuator layout 
 \subsection{Rate Control}
 \label{subsec:RateControl}
 
-The
+The first of the three controls goals introduced at the start of Section \ref{sec:Controller}, is the rate control of the TableSat/MMS to control the $\omega_z$ body rate at a slow and steady $0.314$ rad/s while any body rates about the $\omega_x$ and $\omega_z$ axes be removed.  The rate controller works on the premise of accepting the estimator's guess at the state of the system and comparing that to a desired state.  Correction moments, $\bs{M}$, are calculated based on any differences in the estimated and desired states.
 
 \begin{equation}
-  x
-  \label{eqn:RateControl}
+  \bs{M}(t_{k+1}) = f(\bs{\hat{x}}(t_{k+1}), \bs{x}_d, t)
+  \label{eqn:GeneralRateControl}
 \end{equation}
 
 \subsubsection{PID Rate Control}
 \label{subsubsec:PIDRateControl}
+
+A PID rate controller works very similar to the PID estimator.  The input to the estimator is two states with one composite state as the output.  The PID controller takes two states as input as well, but creates moments about the principle axes $M_x, M_y, M_z$.
+
+A proportional controller is more than adequate level of control for a system with perfect measurements since the proportional component is not corrupted by noise.  Figure \ref{fig:PRateControl} shows the response to a randomly assigned initial body rates and how they converge to the desired state of $\omega_z = 0.314$ rad/sec and $\omega_x = \omega_y = 0$ rad/sec.
+
+\begin{equation}
+  \bs{M}(t_{k+1}) = \bs{K}_{\omega p} \left( \bs{\omega}_d - \bs{\hat{\omega}}(t_{k+1}) \right)
+  \label{eqn:GeneralRateControl}
+\end{equation}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/p_rate_control.eps,width=6in}}
+  \caption{P rate control}
+  \label{fig:PRateControl}
+\end{figure}
 
 
 \subsubsection{Sliding Mode Controller}

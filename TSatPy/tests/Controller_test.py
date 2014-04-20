@@ -43,7 +43,7 @@ class TestPID(unittest.TestCase):
         pid.set_desired_state(x_d)
 
         M = pid.update(x_hat)
-        M_exp = State.Moment([0.1,0,-0.02])
+        M_exp = State.Moment([-0.1,0,0.02])
 
         self.assertEquals(M_exp, M)
 
@@ -66,7 +66,7 @@ class TestPID(unittest.TestCase):
         pid.set_desired_state(x_d)
 
         M = pid.update(x_hat)
-        M_exp = State.Moment([0,0,0.6])
+        M_exp = State.Moment([0,0,-0.6])
 
         self.assertEquals(M_exp, M)
 
@@ -89,7 +89,7 @@ class TestPID(unittest.TestCase):
         pid.set_desired_state(x_d)
 
         M = pid.update(x_hat)
-        M_exp = State.Moment([0.1,0,-0.02]) + State.Moment([0,0,0.6])
+        M_exp = State.Moment([-0.1,0,0.02]) + State.Moment([0,0,-0.6])
 
         self.assertEquals(M_exp, M)
 
