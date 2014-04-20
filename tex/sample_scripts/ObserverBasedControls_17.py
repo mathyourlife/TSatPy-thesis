@@ -7,7 +7,7 @@ from TSatPy import StateOperators as SO
 from TSatPy.Clock import Metronome
 from GradientDescent import GradientDescent
 
-print("Test P - Nutation Control")
+print("Test P - Attitude Control")
 
 run_time = 120
 speed = 15
