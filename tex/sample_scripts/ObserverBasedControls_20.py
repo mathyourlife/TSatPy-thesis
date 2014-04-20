@@ -7,7 +7,7 @@ from TSatPy import StateOperators as SO
 from TSatPy.Clock import Metronome
 from GradientDescent import GradientDescent
 
-print("Test P - Nutation Control")
+print("Test P - Nutation and Rate Control (Start at Rest)")
 
 run_time = 100
 speed = 20
@@ -18,14 +18,14 @@ dt = 0.5
 x_d = State.State()
 
 
-def run_test(Kq, plot=False):
-    ts, Ms, ws, theta = test(Kq)
+def run_test(Kq, Kpwx, Kpwy, Kpwz, plot=False):
+    ts, Ms, ws, theta = test(Kq, Kpwx, Kpwy, Kpwz)
 
     if plot:
         graph_it(ts, Ms, ws, theta)
 
 
-def test(Kq):
+def test(Kq, Kpwx, Kpwy, Kpwz):
 
     # Randomize the initial condition of the plant
     x_est_ic = State.State(
@@ -39,7 +39,7 @@ def test(Kq):
 
     Kp = SO.StateToMoment(
         SO.QuaternionToMoment(Kq),
-        None)
+        SO.BodyRateToMoment([[Kpwx,0,0],[0,Kpwy,0],[0,0,Kpwz]]))
 
     pid = Controller.PID(c)
     pid.set_Kp(Kp)
@@ -116,6 +116,9 @@ def calc_err(ts, Ms, ws, theta):
 def main():
     domains = [
         ['Kq', 0.001,  0.9],
+        ['Kpwx', 0.001,  0.9],
+        ['Kpwy', 0.001,  0.9],
+        ['Kpwz', 0.001,  0.9],
     ]
 
     kwargs = {
@@ -138,7 +141,8 @@ def main():
 
 if __name__ == '__main__':
 
-    kwargs = {'Kq': 0.152}
+    kwargs = {'Kpwx': 0.58379003412064312, 'Kpwy': 0.50917176999456026, 'Kq': 0.31481959068585774, 'Kpwz': 0.47057475185806952}
+    kwargs = {'Kpwx': 0.41407745587677347, 'Kpwy': 0.55871067938322605, 'Kq': 0.26840461221894835, 'Kpwz': 0.41838178262906139}
 
     # kwargs = None
 

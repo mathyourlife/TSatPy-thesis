@@ -28,6 +28,10 @@
         * Error State
         * Estimators
         * Actuators
+        * Rate Control
+        * Attitude Control
+        * Nutation Control
+        * Nutation and Body Rate Control
 * Coding
     * Gradient Descent lib for gain tuning
     * Estimators
@@ -35,6 +39,11 @@
         * SMO
         * Estimator Master
     * Actuators
+    * Controllers
+        * PID
+        * SMC
+        * Nutation Control
+        * Quaternion Decomposition
 * Membership for
     * ASME (dynamics systems + control)
     * AIAA (GNC)
@@ -113,8 +122,8 @@
     * SMO **completed**
     * Estimator Master **completed**
 * Controllers
-    * PID
-    * SMC
+    * PID **completed**
+    * SMC **completed**
     * Controller Master
 * Actuators **completed**
     * Feed moments back to estimators **completed**

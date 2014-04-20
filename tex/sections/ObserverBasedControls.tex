@@ -1317,9 +1317,37 @@ The test was initialized at rest at an orientation of a 1.26 radian rotation abo
   \label{fig:PNutationControl}
 \end{figure}
 
+While this controller is correctly pushing the state to the spin plane there is no mechanism to damp out the oscillations.
+
+\subsubsection{P Rate and Nutation Control Starting at Rest}
+\label{subsubsec:PRateNutationControlStartingatRest}
+
+Since the proportional attitude control converged to the desired state through the addition of a proportional body rate controller, this section will add a body rate controller to the P-Nutation controller from the previous section.  Figure \ref{fig:PNutationRateControl} shows the result of a test with an initial conditions of $\bs{q}_0 = -0.289\bs{i} -0.0130 \bs{j} -0.154 \bs{k} + 0.945$ and body rates $\omega_x = \omega_f = \omega_z = 0$.  The proportional nutation and body rate controllers are run with the parameters
+
+\begin{equation}
+  K_{qp} = 0.268, \bs{K}_{\omega p} = \begin{bmatrix} 0.414 & 0 & 0 \\ 0 & 0.559 & 0 \\ 0 & 0 & 0.418 \end{bmatrix}
+\end{equation}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/p_nutation_and_rate_control.eps,width=6in}}
+  \caption{P Nutation and Rate Control}
+  \label{fig:PNutationRateControl}
+\end{figure}
+
 \subsubsection{P Rate and Nutation Control}
 \label{subsubsec:PRateNutationControl}
 
+\TODO{With initial spin}
+
+\subsubsection{PID Rate and Nutation Control}
+\label{subsubsec:PIDRateandNutationControl}
+
+\TODO{this}
+
+\subsubsection{SMC Rate and Nutation Control}
+\label{subsubsec:SMC}
+
+\TODO{this}
 
 \section{Nutation and Rate Control for Estimation Based Controllers}
 \label{sec:NutationandRateControlforEstimationBasedControllers}
