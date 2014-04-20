@@ -4,3 +4,17 @@
 The goal of this thesis was to determine the viability of the TableSat 1A's platform for comparison and experimental verification of various observer-based controllers.
 
 \TODO{Finish this}
+
+Estimator:
+  SMO bettor for initial response
+  Toss up between SMO/PID for ss response, SMO update state sooner, PID less error
+
+
+Controller:
+  SMC performs far better with perfect estimates
+
+
+State Error
+  Multiplicative quaternion corrections
+  Scaling based or the represented angle rather than the quaternion scalar
+  Estimating the vector quantities of the quaternion can interfere with the angular component, only control the use of the angular component (fewer parameters to tune)

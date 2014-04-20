@@ -180,7 +180,7 @@ class PID(EstimatorBase):
 
 class SMO(EstimatorBase):
     """
-
+    A sliding mode observer takes the form of
     x(k+1) = x(k) + L*x_e(k) + K*1s(x_e(k))
     """
 

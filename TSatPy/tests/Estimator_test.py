@@ -116,16 +116,16 @@ class TestPID(unittest.TestCase):
         self.assertEquals(x_hat, x_hat_expected)
 
     @patch('time.time')
-    def test_d_estimator(self, mock_time):
+    def test_d_estimator_no_time_change(self, mock_time):
 
         mock_time.return_value = 1234
 
         c = Metronome()
 
         k = 4
-        Kq = SO.QuaternionGain(k)
-        Kw = SO.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
-        Kd = SO.StateGain(Kq, Kw)
+        Kd = SO.StateGain(
+            SO.QuaternionGain(k),
+            SO.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]]))
 
         pid = Estimator.PID(c)
         pid.set_Kd(Kd)
@@ -147,9 +147,9 @@ class TestPID(unittest.TestCase):
 
         c = Metronome()
         k = 3
-        Kq = SO.QuaternionGain(k)
-        Kw = SO.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
-        Kd = SO.StateGain(Kq, Kw)
+        Kd = SO.StateGain(
+            SO.QuaternionGain(k),
+            SO.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]]))
 
         pid = Estimator.PID(c)
         pid.set_Kd(Kd)

@@ -1049,11 +1049,15 @@ The first of the three controls goals introduced at the start of Section \ref{se
 
 A PID rate controller works very similar to the PID estimator.  The input to the estimator is two states with one composite state as the output.  The PID controller takes two states as input as well, but creates moments about the principle axes $M_x, M_y, M_z$.
 
-A proportional controller is more than adequate level of control for a system with perfect measurements since the proportional component is not corrupted by noise.  Figure \ref{fig:PRateControl} shows the response to a randomly assigned initial body rates and how they converge to the desired state of $\omega_z = 0.314$ rad/sec and $\omega_x = \omega_y = 0$ rad/sec.
+\begin{equation}
+  \bs{M}_{\omega}(t_{k+1}) = \bs{K}_{\omega p} \left( \bs{\omega}_d - \bs{\hat{\omega}}(t_{k+1}) \right)
+  \label{eqn:PIDRateControl}
+\end{equation}
+
+A proportional controller governed by Equation \ref{eqn:GeneralRateControl} is more than adequate level of control for a system with perfect measurements since the proportional component is not corrupted by noise.  Figure \ref{fig:PRateControl} shows the response to a randomly assigned initial body rates and how they converge to the desired state of $\omega_z = 0.314$ rad/sec, $\omega_x = \omega_y = 0$ rad/sec, and the proportion gain of
 
 \begin{equation}
-  \bs{M}(t_{k+1}) = \bs{K}_{\omega p} \left( \bs{\omega}_d - \bs{\hat{\omega}}(t_{k+1}) \right)
-  \label{eqn:GeneralRateControl}
+  \bs{K}_{\omega p} = \begin{bmatrix} 0.404 & 0 & 0 \\ 0 & 0.463 & 0 \\ 0 & 0 & 0.428 \end{bmatrix}
 \end{equation}
 
 \begin{figure}[H]
@@ -1062,14 +1066,80 @@ A proportional controller is more than adequate level of control for a system wi
   \label{fig:PRateControl}
 \end{figure}
 
+Expanding the proportional controller to include the integral and derivative term as shown in Equation \ref{eqn:PIDRateControl} can improve the performance slightly.  The addition correction terms generally reduce the overshoot of the response, but do not significantly shorten the time to bring the system to a steady state.
+
+\begin{equation}
+  \begin{aligned}
+    \bs{M}_{\omega}(t_{k+1}) &= \bs{K}_{\omega p} \bs{\omega}_e(t_{k+1}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k+1}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k+1}) \\
+    \bs{\omega}_e(t_{k+1}) &= \bs{\omega}_d - \bs{\hat{\omega}}(t_{k+1}) \\
+  \end{aligned}
+  \label{eqn:PRateControl}
+\end{equation}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/pid_rate_control.eps,width=6in}}
+  \caption{PID rate control}
+  \label{fig:PIDRateControl}
+\end{figure}
+
+The response curve in Figure \ref{fig:PIDRateControl} was generated with a random initial condition, and with the PID gains (Equation \ref{PIDRateControlGains}) tuned through a gradient descent iteration based off the total control effort.
+
+\begin{subequations}
+  \begin{align}
+    \bs{K}_{\omega p} &= \begin{bmatrix} 0.597 & 0 & 0 \\ 0 & 0.643 & 0 \\ 0 & 0 & 0.450 \end{bmatrix} \\
+    \bs{K}_{\omega i} &= \begin{bmatrix} 0.364 & 0 & 0 \\ 0 & 0.372 & 0 \\ 0 & 0 & 0.328 \end{bmatrix} \\
+    \bs{K}_{\omega d} &= \begin{bmatrix} 0.435 & 0 & 0 \\ 0 & 0.357 & 0 \\ 0 & 0 & 0.392 \end{bmatrix}
+  \end{align}
+  \label{PIDRateControlGains}
+\end{subequations}
 
 \subsubsection{Sliding Mode Controller}
 \label{subsubsec:SlidingModeController}
 
+The Sliding Mode Controller (SMC) has a similar format to the Sliding Mode Observer (SMO) in Section \ref{subsec:SlidingModeObserver}.  Since the estimator contains a state prediction component, it is not required in the controller, and since the attitude is not under consideration for the rate controller, the quaternion adjustment terms are also removed.
 
+\begin{subequations}
+  \begin{align}
+    \bs{M}_{\omega}(t_{k+1}) &= \bs{L}_{\omega} \bs{\omega}_e(t_{k+1}) + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e(t_{k+1}) \big)
+  \end{align}
+  \label{eqn:SMOEstimatorwithPredictionUnforcedMotion}
+\end{subequations}
+
+where
+
+\begin{equation}
+  \bs{1}_s \big(\bs{\omega}_e(t_{k+1}) \big) = sat \begin{bmatrix} \omega_{ex}(t_{k+1}) / S_{\omega} &0 &0 \\ 0 & \omega_{ey}(t_{k+1}) / S_{\omega} & 0 \\ 0 & 0 & \omega_{ez}(t_{k+1}) / S_{\omega} \end{bmatrix}
+\end{equation}
+
+Unlike the comparison of the PID estimator with the Sliding Mode Observer where they're performances were very similar, the parameter tuned SMC clearly out performs the parameter tuned PID controller for rate control with perfect estimates.  Figure \ref{fig:SMCRateControl} shows the response of the rate control SMC where the response time is approximately half the time of the PID controller, and also with consistently less overshoot.
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/smc_rate_control.eps,width=6in}}
+  \caption{SMC rate control}
+  \label{fig:SMCRateControl}
+\end{figure}
+
+The SMC in Figure \ref{fig:SMCRateControl}, was run with the following parameters tuned through a gradient descent algorithm.
+
+\begin{equation}
+    \bs{L}_{\omega} = \begin{bmatrix} 0.370 & 0 & 0 \\ 0 & 0.508 & 0 \\ 0 & 0 & 0.451 \end{bmatrix},
+    \bs{K}_{\omega} = \begin{bmatrix} 0.428 & 0 & 0 \\ 0 & 0.424 & 0 \\ 0 & 0 & 0.549 \end{bmatrix},
+    S_{\omega} = 0.511
+  \label{SMCRateControlGains}
+\end{equation}
+
+While the SMC seems the clear preference for rate control, the two methods will need to be reevaluated when combined with each of the estimation techniques running off of noisy measurements.
 
 \subsection{Nutation Correction}
 \label{subsec:NutationCorrection}
+
+Section \ref{subsubsec:PIDRateControl} covered the design of the rate controller which addresses the first goal of the controller to maintain a spin rate of $\omega_z = 3$ rpm.  This section will focus on the nutation control problem that to simplicity the overall controller design is decoupled from the rate control.  The combined control effort would be
+
+\begin{equation}
+    \bs{M}(t_{k+1}) = \bs{M}_{q}(t_{k+1}) + \bs{M}_{\omega}(t_{k+1})
+\end{equation}
+
+The nutation control will focus or the differences between the estimated quaternion attitude and the desired quaternion attitude.  The addition of the desired body rates of $\omega_x = \omega_y = 0$ can be added later if needed. Since the work in Section \ref{sec:StateError} shows
 
 Assuming the system has been brought up to the desired operating conditions, there are a minimum of two checks that are required to determine if the system continues to stay in the desired state.
 
