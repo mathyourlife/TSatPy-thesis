@@ -87,8 +87,8 @@ class QuaternionGain(object):
         """
         Update the gain matrix
 
-        :param K: 3x3 matrix for scaling the rotational quaternion
-        :type  K: list
+        :param K: scalar value for scaling the rotational quaternion
+        :type  K: numeric
         """
         self.K = K
 
@@ -309,7 +309,41 @@ class BodyRateToMoment(object):
 
 
 class QuaternionToMoment(object):
-    pass
+    """
+    Take the error between two quaternion states and generate a moment
+    that will converge the two
+    """
+    def __init__(self, K):
+        self.update_gain(K)
+
+    def update_gain(self, K):
+        """
+        Update the gain matrix
+
+        :param K: scalar quantity for scaling the moment required
+        :type  K: list
+        """
+        self.K = K
+
+    def __mul__(self, q):
+        """
+        Convert a quaternion representing the difference in attitudes to
+        a moment couple that would converge the two.
+
+        :param q: Quaternion error instance
+        :type  q: Quaternion
+        """
+        e, r = q.to_rotation()
+        return State.Moment(e * r * self.K)
+
+    def __str__(self):
+        """
+        Return a string representation of the gain numpy matrix.
+
+        :return: gain matrix representation
+        :rtype: str
+        """
+        return str(self.K)
 
 
 class StateToMoment(object):

@@ -32,6 +32,7 @@ class PID(ControllerBase):
         self.M = State.Moment()
         # Zero out state integrator term
         self.x_i = State.State()
+        self.x_e = State.State()
 
         self.last_err = None
         self.K = {
@@ -66,9 +67,10 @@ class PID(ControllerBase):
         x_err = State.StateError(self.x_d, x_hat)
         m_adj = State.Moment()
 
-        m_adj += self.K['p'] * x_err.w
+        m_adj += self.K['p'] * x_err
 
-        self.M += m_adj
+        self.x_e = x_err
+        self.M.M = -m_adj.M
         return self.M
 
     def __str__(self):

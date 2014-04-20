@@ -151,8 +151,8 @@ class Quaternion(object):
 
         v = v / np.sqrt((v.T * v)[0, 0])
 
-        self.vector = v * np.sin(-radians / 2)
-        self.scalar = np.cos(-radians / 2)
+        self.vector = v * np.sin(-float(radians) / 2)
+        self.scalar = np.cos(-float(radians) / 2)
 
     def to_rotation(self):
         """
