@@ -1154,13 +1154,13 @@ To generate the moments needed to correct for the error in attitude, the P contr
 
 \begin{subequations}
   \begin{align}
-    \bs{M}_{q}(t_{k+1}) &= (-2 K_{qp} \cos^{-1} (\hat{q}_{e0})) \bs{\hat{e}}_e \\
-    \text{where } \bs{\hat{e}}_e &= \frac{\bs{\hat{v}}_e}{|\bs{\hat{v}}_e|}
+    \bs{M}_{q}(t_{k+1}) &= \left[-2 K_{qp} \cos^{-1} \big(\hat{q}_{e0}(t_{k+1}) \big) \right] \bs{\hat{e}}_e(t_{k+1}) \\
+    \text{where } \bs{\hat{e}}_e(t_{k+1}) &= \frac{\bs{\hat{v}}_e(t_{k+1})}{|\bs{\hat{v}}_e(t_{k+1})|}
   \end{align}
-  \label{eqn:PNutationControl}
+  \label{eqn:PAttitudeControl}
 \end{subequations}
 
-To assess the basic functionality of the proportional quaternion in Equation \ref{eqn:PNutationControl}, the controller was run with $K_{qp} = 0.01$ and told to return the quaternion to the standard state with the body's reference frame aligned with the global reference frame.  The TableSat was given an initial condition of
+To assess the basic functionality of the proportional quaternion in Equation \ref{eqn:PAttitudeControl}, the controller was run with $K_{qp} = 0.01$ and told to return the quaternion to the standard state with the body's reference frame aligned with the global reference frame.  The TableSat was given an initial condition of
 
 \begin{subequations}
   \begin{align}
@@ -1176,12 +1176,50 @@ To assess the basic functionality of the proportional quaternion in Equation \re
   \label{fig:PAttitudeControl}
 \end{figure}
 
-The results shown in \ref{fig:PAttitudeControl} are very promising.  The three dimensional object with an initial out of plane offset and initial body rates is able to oscillate about the desired set point with the use of a single gain measure being combined with the components of the quaternion state.
+The results shown in \ref{fig:PAttitudeControl} are very promising.  The full three degree of freedom (DOF) object with an initial out of plane offset and initial body rates is able to oscillate about the desired set point with the use of a single gain being combined with the components of the current step's quaternion attitude.
 
+Combining the proportional attitude control in Equation \ref{eqn:PAttitudeControl} with the proportional body rate control in Equation \ref{eqn:PRateControl} gives
 
+\begin{subequations}
+  \begin{align}
+    \bs{M}(t_{k+1}) &= \left[-2 K_{qp} \cos^{-1} \big(\hat{q}_{e0}(t_{k+1}) \big) \right] \bs{\hat{e}}_e(t_{k+1}) + \bs{K}_{\omega p} \bs{\omega}_e(t_{k+1})\\
+    \text{where } \bs{\hat{e}}_e(t_{k+1}) &= \frac{\bs{\hat{v}}_e(t_{k+1})}{|\bs{\hat{v}}_e(t_{k+1})|} \\
+    \bs{\omega}_e(t_{k+1}) &= \bs{\omega}_d - \bs{\hat{\omega}}(t_{k+1})
+  \end{align}
+  \label{eqn:PAttitudeControl}
+\end{subequations}
 
+After an iterative gradient descent to minimize the control effort, the following gains provided the best performance against a variety of initial conditions.
 
+\begin{equation}
+  K_{qp} = 0.0912, \bs{K}_{\omega p} = \begin{bmatrix} 0.494 & 0 & 0 \\ 0 & 0.583 & 0 \\ 0 & 0 & 0.624 \end{bmatrix}
+\end{equation}
 
+Figure \ref{fig:PAttitudeRateControl} shows the system's response when bringing a system into the standard orientation from an initial condition of
+
+\begin{equation}
+  \bs{x}_0 = \begin{bmatrix} -0.202 \bs{i} -0.0581 \bs{j} -0.222 \bs{k} +0.952 \\ 0.585 \bs{i} +0.0919 \bs{j} +0.999 \bs{k} \end{bmatrix}
+\end{equation}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/p_attitude_and_rate_control.eps,width=6in}}
+  \caption{P Attitude and Rate Control}
+  \label{fig:PAttitudeRateControl}
+\end{figure}
+
+Another random initial condition test run under the same parameters, provides additional support for the choice of the multiplicative quaternion corrections and error quaternions.  With the system initialed to the state
+
+\begin{equation}
+  \bs{x}_0 = \begin{bmatrix} -0.0134 \bs{i} -0.0611 \bs{j} -0.0347 \bs{k} +0.997 \\ 0.259 \bs{i} +0.899 \bs{j} +0.402 \bs{k} \end{bmatrix}
+\end{equation}
+
+The response in Figure \ref{fig:PAttitudeRateControlWith180RollOver} shows that at about five seconds into the control run, the control effort moments jump.  This can happen when the system passes close to a point antipodal from the desired orientation.  The proportional rate controller is slowing down the initial body rates while the quaternion proportional controller is attempting to unwind the angle to bring the system back to the desired orientation.  At about five seconds into the test run, the rate controller has reduced much of the initial spin rate.  At that same time the attitude quaternion angle shows it is passing a point that requires a 3.14 radian turn to bring it back to the desired orientation.  At this point it is more efficient to allow the rotation around the rest of the rotation and ease it into the desired state rather that bringing the system to a halt and unwinding the whole way.  This behavior in advantageous, but the additional benefit of using the quaternion multiplicative correction is that it is built into the rotational quaternion that 0 and $2\pi$ are the same orientation.  So even though the desired orientation is a zero degree angle as was performed in Figure \ref{eqn:PAttitudeControl}, this test run under the same parameters converges the system to the more efficient $2\pi$ orientation as shown in the center graph in Figure \ref{fig:PAttitudeRateControlWith180RollOver}.
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/p_attitude_and_rate_control_with_180_roll_over.eps,width=6in}}
+  \caption{P Attitude and Rate Control with 180 Roll Over}
+  \label{fig:PAttitudeRateControlWith180RollOver}
+\end{figure}
 
 
 
