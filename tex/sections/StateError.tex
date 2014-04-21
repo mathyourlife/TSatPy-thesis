@@ -1,0 +1,504 @@
+
+\chapter{State Error}
+\label{chap:StateError}
+
+A process for quantifying the error between two states is fundamental in any estimation or control techniques.  For the estimation case, it's the error $\bs{\hat{x}}_e$ between the measured state $\bs{x}$ and the estimated state $\bs{\hat{x}}$.  For the controllers, it's the error $\bs{x}_e$ representing the offset between the estimated state $\bs{\hat{x}}$ and the desired system state $\bs{x}_d$.
+
+\begin{subequations}
+  \begin{align}
+    \bs{\hat{x}}_e &= \bs{\hat{x}} - \bs{x} \\
+    \bs{x}_e &= \bs{\hat{x}} - \bs{x}_d
+  \end{align}
+  \label{eqn:StateError}
+\end{subequations}
+
+Sections \ref{sec:StateDifference} through \ref{subsec:ThetaMultiplierWithQuaternionVectorBalancing} outline the series of improvement made to the accuracy of the state error representation.  For comparison and to demonstrate their use with TSatPy, these sections will base their comparison on a single update to a proportional estimator.
+
+\begin{equation}
+  \bs{\hat{x}(t_{k+1})} = \bs{\hat{x}}(t_{k}) + \bs{K_p} ( \bs{\hat{x}}(t_{k}) - \bs{x}(t_{k}) )
+  \label{eqn:PEstimatorStateDiff}
+\end{equation}
+
+This simple estimation technique has some notable deficiencies when applied to the attitude parameters of a spin stabilized satellite.  These parameters are expected to change as the satellite rotates, but this model has no method for predicting the change in parameters so will rely solely on the state error to correct $\bs{\hat{x}(t_{k+1})}$.  After an adequate method is established for calculating the state error, later sections will address improving upon the proportional estimator.
+
+The sample error calculation in this section will be based off a last estimated state, $\bs{\hat{x}}(t_{k})$, of a $190^o$ rotation about $+z$-axis and a body rate of $\omega_z = 3$ rad/sec.  The associated the measured state, $\bs{x}(t_{k})$, is a $44^o$ rotation about the axis $0 \bs{i} + 0.1 \bs{j} + 1\bs{k}$ and a body rate of $\omega_z = 3.1$ rad/sec.
+
+
+\begin{subequations}
+  \begin{align}
+    \bs{\hat{x}}(t_{k})
+    = \begin{bmatrix}  \bs{\hat{q}}(t_{k}) \\ \bs{\hat{\omega}}(t_{k}) \end{bmatrix}
+    &= \begin{bmatrix} 0 \bs{i} +0 \bs{j} -0.996195 \bs{k} -0.0871557 \\ 0 \bs{i} +0 \bs{j} +3 \bs{k} \end{bmatrix}\\
+    \bs{x}(t_{k})
+    = \begin{bmatrix}  \bs{q}(t_{k}) \\ \bs{\omega}(t_{k}) \end{bmatrix}
+    &= \begin{bmatrix} 0 \bs{i} -0.0372747 \bs{j} -0.372747 \bs{k} +0.927184 \\ 0 \bs{i} +0 \bs{j} +3.1 \bs{k} \end{bmatrix}
+  \end{align}
+  \label{eqn:StateDifferenceQuaternionSamples}
+\end{subequations}
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.State import Quaternion, QuaternionError, State, BodyRate
+import numpy as np
+
+x_hat = State(
+    Quaternion([0,0,1],radians=190/180.0*np.pi),
+    BodyRate([0,0,3]))
+x_m = State(
+    Quaternion([0,0.1,1],radians=44/180.0*np.pi),
+    BodyRate([0,0,3.1]))
+print("x_hat:  %s" % (x_hat))
+print("x_m:    %s" % (x_m))
+
+# Prints Out
+# x_hat:  <Quaternion [-0 -0 -0.996195], -0.0871557>,
+#         <BodyRate [0 0 3]>
+# x_m:    <Quaternion [-0 -0.0372747 -0.372747], 0.927184>,
+#         <BodyRate [0 0 3.1]>
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+Section \ref{sec:StateDifference} will start out with the standard element wise matrix difference to represent the state error.
+
+\section{State Difference}
+\label{sec:StateDifference}
+
+The standard method for calculating the state error in either an estimation or control method is to calculate an element-wise difference.  TableSat has a seven element state in matrix form and expanding Equation \ref{eqn:StateError} becomes
+
+\begin{equation}
+  \begin{aligned}
+    \bs{\hat{x}}_e(t_{k}) &= \begin{bmatrix}  \bs{\hat{q}}_e(t_{k}) \\ \bs{\hat{\omega}}_e(t_{k}) \\ \end{bmatrix} \\
+    &= \begin{bmatrix} (\hat{q}_1 - q_{1}) \bs{i} + (\hat{q}_2 - q_{2}) \bs{j} + (\hat{q}_3 - q_{3}) \bs{k} + \hat{q}_0 - q_{0} \\ (\hat{\omega}_x - \omega_{x}) \bs{i} + (\hat{\omega}_y - \omega_{y}) \bs{j} + (\hat{\omega}_z - \omega_{z}) \bs{k} \end{bmatrix}
+  \end{aligned}
+  \label{eqn:StateDifference}
+\end{equation}
+
+
+Calculating the difference between the example estimated and measured states in Equation \ref{eqn:StateDifferenceQuaternionSamples} yields a state difference of
+
+\begin{equation}
+  \begin{aligned}
+    \bs{\hat{x}}_e(t_{k})
+    = \begin{bmatrix}  \bs{\hat{q}}_e(t_{k}) \\ \bs{\hat{\omega}}_e(t_{k}) \end{bmatrix}
+    &= \begin{bmatrix} 0 \bs{i} +0.0372747 \bs{j} -0.623447 \bs{k} -1.01434 \\ 0 \bs{i} +0 \bs{j} -0.1 \bs{k} \end{bmatrix}
+  \end{aligned}
+  \label{eqn:StateDifferenceSample}
+\end{equation}
+
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+x_e = State(
+    Quaternion(x_hat.q.vector - x_m.q.vector,
+        x_hat.q.scalar - x_m.q.scalar),
+    x_hat.w - x_m.w)
+print("x_e:  %s" % (x_e))
+
+# Prints Out
+# x_e:  <Quaternion [0 0.0372747 -0.623447], -1.01434>,
+#       <BodyRate [0 0 -0.1]>
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+
+The body rate error calculations are well behaved and are able to be directly used with standard estimation based control techniques.  The difference in quaternion parameters however pose a number of problems even when used in a basic proportional estimator.  Using this method of error measurement will be difficult especially since after a cursory review the scalar quantity in the error quaternion that is outside the possible range for a rotational quaternion.  Section \ref{sec:QuaternionDifference} will attempt to use this state difference along with a standard proportional estimation technique.
+
+\section{Quaternion Difference}
+\label{sec:QuaternionDifference}
+
+Taking the quaternion difference from Equation \ref{eqn:StateDifferenceSample}, and incorporating into the proportional estimation correction in Equation \ref{eqn:PEstimatorStateDiff} produces an state adjustment and estimated attitude of
+
+\begin{equation}
+  \begin{aligned}
+    \bs{q}_{adj} = -0.8 \cdot \bs{q}_e =& -0.8 \cdot (0 \bs{i} + 0.0372747 \bs{j} -0.623447 \bs{k} -1.01434 ) \\
+                       =& 0 \bs{i} -0.0298198 \bs{j} +0.498758 \bs{k} +0.811472 \\
+    \bs{\hat{q}(t_{k+1})} =& \bs{\hat{q}(t_{k})} + \bs{q}_{adj} \\
+                       =& 0 \bs{i} -0.0298198 \bs{j} -0.497437 \bs{k} + 0.724316 \\
+  \end{aligned}
+\end{equation}
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+q_hat = x_hat.q
+q_e = x_e.q
+q_adj = Quaternion(-0.8 * q_e.vector, -0.8 * q_e.scalar)
+q_hat_new = Quaternion(q_hat.vector + q_adj.vector,
+        q_hat.scalar + q_adj.scalar)
+
+print("q_e:         %s" % (q_e))
+print("q_adj:       %s" % (q_adj))
+print("q_hat_new:   %s" % (q_hat_new))
+print("|q_hat_new|: %g" % (q_hat_new.mag))
+
+# Prints Out
+# q_e:         <Quaternion [0 0.0372747 -0.623447], -1.01434>
+# q_adj:       <Quaternion [-0 -0.0298198 0.498758], 0.811472>
+# q_hat_new:   <Quaternion [-0 -0.0298198 -0.497437], 0.724316>
+# |q_hat_new|: 0.879185
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+The new estimate for the quaternion attitude has been adjusted closer to the measured state although the newly estimated state has a norm of $ \| \bs{\hat{q}(t_{k+1})} \| = 0.879185$.  Since failing to conform to the unit magnitude for rotational quaternions, this newly estimated attitude quaternion corrupts the systems state especially over multiple steps and long simulations.  For rotational quaternions with norms less that the unit quaternion the rotated points end up converging into the origin.  If the adjustment ends up with a rotational quaternion larger than a unit magnitude, rotated points dilate away from the origin.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+pt = np.mat([[1,0,0]])
+pt = q_hat_new.rotate_points(pt)
+print("pt * pt.T:   %s" % (pt * pt.T))
+
+# Prints Out
+# pt * pt.T:   [[ 0.5974769]]
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+
+\section{Scaled Quaternion Difference}
+\label{sec:ScaledQuaternionDifference}
+
+The next step to correct for the dilation or compression of points is to scale the adjusted quaternion to a unit quaternion before using it to represent the system's state.  The quaternion can be scaled through a standard vector normalization.
+
+\begin{equation}
+  \bs{\hat{q}}_n = \frac{\bs{q}_v + q_0}{\sqrt{\bs{q}_v \bullet \bs{q}_v + q_0^2}}
+  \label{eqn:NormalizeQuaternion}
+\end{equation}
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+print("q_hat_new:   %s" % (q_hat_new))
+q_hat_new.normalize()
+print("q_hat_new:   %s" % (q_hat_new))
+print("|q_hat_new|: %g" % (q_hat_new.mag))
+
+# Prints Out
+# q_hat_new:   <Quaternion [-0 -0.0298198 -0.497437], 0.724316>
+# q_hat_new:   <Quaternion [-0 -0.0339175 -0.565793], 0.823849>
+# |q_hat_new|: 1
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+The newly estimated state is equivalent to a $69$ degree rotation about
+\begin{equation}\hat{\bs{e}} = \begin{bmatrix} 0 & -0.0598395 & -0.998208 \end{bmatrix}\end{equation}.  While this state estimate conforms to the unit quaternion requirement and will no longer corrupt rotations, it has little in common with the desired $0.8$ proportional gain used the estimator's design.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+e, r = q_hat_new.to_rotation()
+print("e: <%g, %g, %g>\ndegree: %g" % (
+    e[0,0],e[1,0],e[2,0], r * 180.0 / np.pi))
+
+# Prints Out
+# e: <-0, -0.0598395, -0.998208>
+# degree: 69.056
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+
+\section{Quaternion Multiplicative Error}
+\label{sec:QuaternionMultiplicativeError}
+
+The previous sections have established that the state difference approach for adjusting for errors in attitude measurements has significant issues especially for low frequency updates with high error values.  The quaternion multiplication defined in Equation \ref{eqn:QuaternionMultiplication} can be used to modify the attitude while not introducing corruption into the model if used with rotational unit quaternions.
+
+If the estimated and measured states converge with the multiplicative correction, the error quaternion should converge to the identity quaternion.  The identity quaternion as with the identity matrix is the quantity that when multiplied by another quaternion, does not modify its value.  This identity holds true for general as well as rotational quaternions.
+
+\begin{equation}
+  \bs{q}_I = 0 \bs{i} + 0 \bs{j} + 0 \bs{k} + 1
+\end{equation}
+
+An Identity function was created it the TSatPy.State module to construct an identity quaternion.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy import State
+
+q = State.Quaternion([1,2,3], 4)
+print("q       = %s" % q)
+q_I = State.Identity()
+print("q_I     = %s" % q_I)
+print("q_I * q = %s" % (q_I * q))
+
+# Prints Out
+# q       = <Quaternion [1 2 3], 4>
+# q_I     = <Quaternion [0 0 0], 1>
+# q_I * q = <Quaternion [1 2 3], 4>
+  \end{minted}
+  \nocite{minted}
+\end{singlespace}
+
+Rotational quaternions are considered equal if they represent the same attitude.  The same attitude can be represented by more than one distinct quaternions, so a strict equality is not adequate.  The test for equality can be done by using the quaternion conjugate $\bs{q}^*$.
+
+\begin{subequations}
+  \begin{align}
+    \bs{\hat{q}} = \bs{q} & \iff \bs{\hat{q}}^* \otimes \bs{q} = \bs{q}^* \otimes \bs{\hat{q}} = \bs{q}_I \text{ or } -\bs{q}_I \\
+    \text{where } \bs{q}^* &= \begin{bmatrix} -\bs{v} \\ q_0 \end{bmatrix}
+  \end{align}
+  \label{eqn:QuaternionEquality}
+\end{subequations}
+
+The sample below shows how two distinct quaternions can represent the same attitude and that Equation \ref{eqn:QuaternionEquality} holds true.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+a = Quaternion([0,0,1],radians=190/180.0*np.pi)
+b = Quaternion([0,0,1],radians=(190 + 360)/180.0*np.pi)
+
+print("a:          %s" % (a))
+print("b:          %s" % (b))
+print("a.conj * b: %s" % (a.conj * b))
+
+# Prints Out
+# a:          <Quaternion [-0 -0 -0.996195], -0.0871557>
+# b:          <Quaternion [0 0 0.996195], 0.0871557>
+# a.conj * b: <Quaternion [0 0 -3.46945e-16], -1>
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+Equation \ref{eqn:QuaternionEquality} provides a method for determining whether two quaternions represent the same attitude, it can also be used to quantify the difference between two rotational quaternions using the multiplicative comparison.
+
+\begin{equation}
+  \bs{q}_e = \bs{q}^* \otimes \bs{\hat{q}}
+  \label{eqn:QuaternionError}
+\end{equation}
+
+Continuing with the example measured and estimated states from Equation \ref{eqn:StateDifferenceQuaternionSamples}, the multiplicative quaternion error between these states evaluates to
+
+\begin{equation}
+  \begin{aligned}
+    \bs{q}_e = & \bs{q}^* \otimes \bs{\hat{q}} \\
+    = & \big( 0 \bs{i} -0.0372747 \bs{j} -0.372747 \bs{k} +0.927184 \big)^* \\
+    & \otimes \big( 0 \bs{i} +0 \bs{j} -0.996195 \bs{k} -0.0871557 \big)\\
+    = & -0.0371329 \bs{i} -0.00324871 \bs{j} -0.956143 \bs{k} +0.29052
+  \end{aligned}
+  \label{eqn:QuaternionErrorSample}
+\end{equation}
+
+The sample error measurement in Equation \ref{eqn:QuaternionErrorSample} relates well to the deviations in the estimated and measured attitudes as it represents a 146 degree rotation about the Euler axis $<-0.0388067, -0.00339514, -0.999241>$ which would rotate the estimated quaternion back to match up perfectly with the measured state.  The multiplicative error correction quaternion also solves the issue encountered in Section \ref{sec:QuaternionDifference} where the magnitude of the error quaternion did not remain fixed at the unit quaternion.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.State import QuaternionError
+q_e = QuaternionError(x_hat.q, x_m.q)
+
+print("q_e:   %s" % (q_e))
+print("|q_e|: %s" % (q_e.mag))
+e, r = q_e.to_rotation()
+print("e:     <%g, %g, %g>\ndegree: %g" % (
+    e[0,0],e[1,0],e[2,0], r * 180.0 / np.pi))
+
+# Prints Out
+# q_e:   <Quaternion [-0.0371329 -0.00324871 -0.956143], 0.29052>
+# |q_e|: 1.0
+# e:     <-0.0388067, -0.00339514, -0.999241>
+# degree: 146.222
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+\section{Quaternion Multiplicative Correction}
+\label{sec:QuaternionMultiplicativeCorrection}
+
+Section \ref{sec:QuaternionMultiplicativeError} was able to establish a method for quantifying differences in attitudes in a method that preserves the integrity of the rotational quaternion while creating a representative measure of the state error.  For the next step, a series of options were investigated to determine how the error measurement can be used in estimation and control techniques.
+
+\subsection{Parameter Multiplier}
+\label{subsec:ParameterMultiplier}
+
+With a parameter multiplier method, the four parameters of the error quaternion get scaled by a $\bs{K_p}$ term similar to the standard proportional adjustment.
+
+\begin{equation}
+  \bs{q}_{adj} = \bs{K_p} \bs{q}_e
+    = \bs{K_p} \begin{bmatrix} \bs{v}_e \\ q_{e0} \end{bmatrix}
+    = \begin{bmatrix} \bs{K_{vp}}\bs{v}_e \\ K_{0p} \cdot q_{e0} \end{bmatrix}
+  \label{eqn:ParameterMultiplier}
+\end{equation}
+
+The $\bs{K_{vp}}$ term is a 3x3 matrix.  Since $\bs{v}_e$ defines the path between the estimated and measured quaternions the only form of $\bs{K_{vp}}$ that would not corrupt the direction mapped between the two states is
+
+\begin{equation}
+  \bs{K_{vp}} \bs{v}_e = \lambda \bs{v}_e
+  \label{eqn:QuaternionVectorCorrection}
+\end{equation}
+
+The effect of the $\lambda$ parameter is to modify the magnitude of the quaternion's Euler axis but not modify it's direction.  Combining \ref{eqn:QuaternionVectorCorrection} with \ref{eqn:ParameterMultiplier} yields
+
+\begin{equation}
+  \bs{q}_{adj} = \begin{bmatrix} \lambda \bs{v}_e \\ K_{0p} \cdot q_{e0} \end{bmatrix}
+  \label{eqn:QuaternionScalarMultiplier}
+\end{equation}
+
+Reducing the tunable parameters for the proportional quaternion estimator to $\lambda$ and $K_{0p}$.  This configuration, shares the same flaws as the state difference approach in Section \ref{sec:QuaternionDifference} where the magnitude of the adjusted quaternion can vary from the unit quaternion causing dilation or compression of rotated points.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+q_adj = Quaternion(
+    q_e.vector * 0.7,  # lambda chosen as 0.7
+    q_e.scalar * 0.4)  # K_p0 chosen as 0.4
+
+print("q_adj:   %s" % (q_adj))
+print("|q_adj|: %s" % (q_adj.mag))
+
+# Prints Out
+# q_adj:   <Quaternion [-0.025993 -0.0022741 -0.6693], 0.116208>
+# |q_adj|: 0.679814272084
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+
+\subsection{Parameter Multiplier with Normalization}
+\label{subsec:ParameterMultiplierwithNormalization}
+
+Normalizing the paramater multiplier's adjustment quaternion resolves the issues with dilating and contracting points as it did in Section \ref{sec:ScaledQuaternionDifference}.  A normalized parameter multiplier quaternion does not suffer from an invalid Euler axis of rotation as in Section \ref{sec:ScaledQuaternionDifference} as only the magnitude of the quaternion's vector is modified.  The scalar quantity however still ends up being muddied due to the coupling between  and $K_{0p}$ that occurs via normalization.  A constant angular error and $K_{0p}$ can create varied adjustment values based on the selection of the $\lambda$ gain.
+
+\subsection{$q_0$ Multiplier with Normalization}
+\label{subsec:q0MultiplierWithNormalization}
+
+Since the $\lambda$ gain used above provides no benefit and only ends up complicating the quaternion adjustment calculation, it can be dropped leaving a quaternion adjustment based solely on a modification of the scalar quantity.  After the scalar gain $k$, the quaternion can be normalized back to a unit quaternion.
+
+\begin{equation}
+  \begin{aligned}
+  \bs{q}_{adj} = & \begin{bmatrix} \bs{v}_e / \alpha \\ ( k \cdot q_{e0} )  / \alpha \end{bmatrix} \\
+  \text{where } \alpha & = \sqrt{\bs{v}_e^T \cdot \bs{v}_e + k^2 \cdot q_{e0}^2}
+  \end{aligned}
+  \label{eqn:ScalarMultiplierWithNormalization}
+\end{equation}
+
+Equation \ref{eqn:ScalarMultiplierWithNormalization} has a few strengths when used to apply adjustments to a quaternion attitude estimate.  It's based off the multiplicative correction quaternion that accurately quantifies the difference in estimated and measured states.  The normalization ensures that the rotational quaternion representation is not corrupted and when applied will not cause dilation or compression of the model.
+
+The disadvantage to using this representation is that the quaternion scalar parameter is a nonlinear function of the rotation angle (Equation \ref{eqn:RotationalQuaternionDefinition}).  Applying a constant scalar multiplier to it will result in inconsistent adjustment amount depending on the position along the sinusoidal value.
+
+\subsection{$\theta$ Multiplier with Quaternion Vector Balancing}
+\label{subsec:ThetaMultiplierWithQuaternionVectorBalancing}
+
+The section will cover the final version of the quaternion adjustment calculation that takes into consideration all the issues encountered in the above sections.  The function designated in this thesis for the scaling of a quaternion to for use with quaternion multiplicative corrections while maintaining it's connection to the physical system will be $\bs{\psi}(\bs{q}, k)$ where
+
+\begin{equation}
+  \begin{aligned}
+    \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot 2\cos^{-1} (q_0))  \end{bmatrix} \\
+    \text{where } \gamma &= \sqrt{\frac{\bs{v}^T \cdot \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}} \\
+    \bs{q} &= \begin{bmatrix} \bs{v} \\ q_0  \end{bmatrix}
+  \end{aligned}
+  \label{eqn:PSI}
+\end{equation}
+
+Using Equation \ref{eqn:PSI} to create a rotational quaternion adjustment for the proportional estimator would take the form.
+
+\begin{equation}
+  \bs{q}_{adj} = \bs{\psi}(\bs{q}_e, k)
+  \label{eqn:PEstimatorAngleMultiplierwithVectorMagnitudeNormalization}
+\end{equation}
+
+The code snippet below demonstrates the usage of Equation \ref{eqn:PEstimatorAngleMultiplierwithVectorMagnitudeNormalization} with TSatPy.  The proposed error between the measured and estimated quaternions is constructed as a $45^o$ rotation about the body's $z$-axis.  With a chosen gain of 0.2, the expected quaternion adjustment is correct in evaluating to be a $9^o$ rotation about the $z$-axis that still conforms to the unit norm of a rotational quaternion.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.State import Quaternion
+import numpy as np
+
+k = 0.2
+degree = 45
+
+q_e = Quaternion([0,0,1], radians=degree/180.0*np.pi)
+print("q_e:     %s" % (q_e))
+
+kpc = k * np.arccos(q_e.scalar)
+gamma = np.sqrt((q_e.vector.T * q_e.vector)[0,0] / (np.sin(kpc))**2)
+
+q_adj = Quaternion(
+    q_e.vector / gamma,
+    np.cos(kpc))
+print("q_adj:   %s" % (q_adj))
+print("|q_adj|: %s" % (q_adj.mag))
+
+e, r = q_adj.to_rotation()
+print("e:       <%g, %g, %g>\ndegree: %g" % (
+    e[0,0],e[1,0],e[2,0], r * 180.0 / np.pi))
+
+# Prints Out
+# q_e:     <Quaternion [-0 -0 -0.382683], 0.92388>
+# q_adj:   <Quaternion [-0 -0 -0.0784591], 0.996917>
+# |q_adj|: 1.0
+# e:       <-0, -0, -1>
+# degree: 9
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+\section{High Integrity State Adjustments}
+\label{sec:HighIntegrityStateAdjustments}
+
+The work described in Sections \ref{sec:StateDifference} through \ref{subsec:ThetaMultiplierWithQuaternionVectorBalancing} have established a solid foundation to quantify the state error along with appropriate methods for scaling state errors.
+
+Quaternion Error
+
+\begin{equation}
+  \bs{q}_e = \bs{q}^* \otimes \bs{\hat{q}}
+\end{equation}
+
+Adjustment Quaternions
+
+\begin{equation}
+  \begin{aligned}
+    \bs{q}_{adj} &= \bs{\psi}(\bs{q}_e, K_{qp}) \\
+    \text{where } \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot 2\cos^{-1} (q_0))  \end{bmatrix} \\
+    \gamma &= \sqrt{\frac{\bs{v}^T \cdot \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}} \\
+    \bs{q} &= \begin{bmatrix} \bs{v} \\ q_0  \end{bmatrix}
+  \end{aligned}
+\end{equation}
+
+Body Rate Error
+
+\begin{equation}
+  \bs{\omega}_e = \bs{\hat{\omega}} - \bs{\omega}
+\end{equation}
+
+Adjustment Body Rates
+
+\begin{equation}
+  \bs{\omega}_{adj} = \bs{K_{\omega p}} \bs{\omega}_e
+\end{equation}
+
+The following snippet will demonstrate the implementation of the chosen state parameterization and correction methods.  The state is created to represent a 44 degree rotation about the body's $z$-axis with body rates of $\omega_x, \omega_y, \omega_z = 0.02, -0.04, 0.3$ rad/sec.  The corrected state will take $1/4$ of the quaternion rotation and scale the body rates by 0.2, 0.3, and 0.8 respectively.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.State import State, Quaternion, BodyRate
+from TSatPy.StateOperator import QuaternionGain, BodyRateGain, StateGain
+import numpy as np
+
+k_q = 0.25
+k_w = [[0.2,0,0],[0,0.3,0],[0,0,0.8]]
+
+x = State(
+    Quaternion([0,0,1],radians=44/180.0*np.pi),
+    BodyRate([0.02,-0.04,0.3]))
+print("x:      %s" % (x))
+
+Kx = StateGain(
+    QuaternionGain(k_q),
+    BodyRateGain(k_w))
+print("Kx:     %s" % (Kx))
+
+x_adj = Kx * x
+print("x_adj:  %s" % (x_adj))
+
+e, r = x_adj.q.to_rotation()
+print("e:      <%g, %g, %g>\ndegree: %g" % (
+    e[0,0],e[1,0],e[2,0], r * 180.0 / np.pi))
+
+# Prints Out
+# x:      <Quaternion [-0 -0 -0.374607], 0.927184>,
+#         <BodyRate [0.02 -0.04 0.3]>
+# Kx:     <StateGain <Kq 0.25>,
+#           <Kw = [[ 0.2 0. 0. ] [ 0. 0.3 0. ] [ 0. 0. 0.8]]>>
+# x_adj:  <Quaternion [-0 -0 -0.0958458], 0.995396>,
+#         <BodyRate [0.004 -0.012 0.24]>
+# e:      <-0, -0, -1>
+# degree: 11
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
