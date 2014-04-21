@@ -1,4 +1,4 @@
-from TSatPy import Estimator, State, StateOperators
+from TSatPy import Estimator, State, StateOperator
 from TSatPy.Clock import Metronome
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,9 +18,9 @@ def integrate_error(dt, varied=False):
         State.BodyRate([0,0,0.01]))
 
     k = 0.01
-    Ki = StateOperators.StateGain(
-        StateOperators.QuaternionGain(k),
-        StateOperators.BodyRateGain(np.eye(3) * k))
+    Ki = StateOperator.StateGain(
+        StateOperator.QuaternionGain(k),
+        StateOperator.BodyRateGain(np.eye(3) * k))
 
     pid = Estimator.PID(c)
     pid.set_Ki(Ki)

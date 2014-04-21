@@ -6,7 +6,7 @@ to push the current state to the desired.
 """
 
 import numpy as np
-from TSatPy import State, StateOperators as SO
+from TSatPy import State, StateOperator as SO
 
 
 class ControllerException(Exception):

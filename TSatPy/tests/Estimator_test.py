@@ -1,6 +1,6 @@
 import unittest
 from mock import patch
-from TSatPy import State, StateOperators as SO, Estimator
+from TSatPy import State, StateOperator as SO, Estimator
 from TSatPy.Clock import Metronome
 import numpy as np
 

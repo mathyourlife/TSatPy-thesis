@@ -1,5 +1,5 @@
 """
-StateOperators module
+StateOperator module
 
 This module contains definitions for methods that can be applied to items
 from the TSatPy.State module.  The logic here is all meant to either modify
@@ -8,6 +8,7 @@ A common use case is for gains.  Since the objects in the State module are
 not generally just a matrix transformation this will ensure the modifications
 are made in a consistent and robust manner.
 
+Example Quaternion Gain::
 
 
 """
