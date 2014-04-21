@@ -1,9 +1,17 @@
 # TSatPy
 
-This thesis utilizes an experimental tabletop satellite (UNH TableSat 1A) to span three main efforts.
+TSatPy is a library written by Daniel R. Couture for my thesis titled "Development of a Modular Application for Observer Based Control Systems for NASA's Spin Stabilized MMS Mission Spacecraft" partial fulfillment for a Master's degree in Mechanical Engineering at the University of New Hampshire.  The general purpose of this code is to create an application developed for initial use with a small model of NASA's MMS mission s/c but can be reused for a wide variety of spin stabilized systems.
 
-1. Create a physical model of a satellite from NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control (ADC) techniques.  The ADC systems must keep the TableSat rotating at a constant 3 rpm, prevent boom oscillations, and correct for detected nutations off the spin plane.
-2. Produce a software system that can be used to run against both theoretical simulations and experimental models.
+**Important Links**
+
+* [TSatPy/README.md](TSatPy/README.md) for more detailed design information
+* [tex/sample_scripts/](tex/sample_scripts/) for sample scripts to demonstrate the functionality of the library
+* [TSatPy/tests/](TSatPy/tests) Unit tests (partially complete) run with `make test`
+* `make doc` to generate the code documentation with class structures/parameters/returns...
+* `make thesis` to generate a pdf of my thesis from LaTeX
+* `make lint` to perform python code compliance checks against PEP8 standards
+
+**Table of Contents**
 
 <!--- start_TOC -->
 
@@ -24,9 +32,6 @@ This thesis utilizes an experimental tabletop satellite (UNH TableSat 1A) to spa
 
 <!--- end_TOC -->
 
-## Purpose
-
-See TSatPy/README.md
 
 ## Contributions to Control Theory
 
