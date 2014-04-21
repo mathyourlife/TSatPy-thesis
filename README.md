@@ -4,7 +4,6 @@ This thesis utilizes an experimental tabletop satellite (UNH TableSat 1A) to spa
 
 1. Create a physical model of a satellite from NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control (ADC) techniques.  The ADC systems must keep the TableSat rotating at a constant 3 rpm, prevent boom oscillations, and correct for detected nutations off the spin plane.
 2. Produce a software system that can be used to run against both theoretical simulations and experimental models.
-3. Improve TableSat's use as an outreach tool.  The system should provide near "real-time" feedback of the system's state, allow for on-the-fly modification to control parameters, and be designed such that a individuals specializing in control systems could customize and extend its functionality without substantial computer science expertise.
 
 <!--- start_TOC -->
 
