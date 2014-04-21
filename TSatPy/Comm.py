@@ -1,3 +1,36 @@
+"""
+Use this to communicate with the TableSat
+
+Example::
+
+    def got_it(*args):
+        print 'got_it'
+
+    import time
+    bind_port = 9877
+    send_to = ('127.0.0.1', 9878)
+    u = UDP(bind_port, send_to)
+
+    u.add_callback(104, got_it)
+
+    with open('104.msg') as f:
+        msg104 = f.read()
+    with open('63.msg') as f:
+        msg63 = f.read()
+    with open('64.msg') as f:
+        msg64 = f.read()
+
+    u.send(104, 1)
+    time.sleep(0.1)
+    u.recieve()
+    print u.msg
+
+    u.send(104, 1)
+    time.sleep(0.1)
+    u.recieve()
+    print u.msg
+
+"""
 
 import socket
 import struct
@@ -114,29 +147,3 @@ class UDP(object):
         self.callbacks[msg_num].add(callback)
 
 
-# def got_it(*args):
-#     print 'got_it'
-
-# import time
-# bind_port = 9877
-# send_to = ('127.0.0.1', 9878)
-# u = UDP(bind_port, send_to)
-
-# u.add_callback(104, got_it)
-
-# with open('104.msg') as f:
-#     msg104 = f.read()
-# with open('63.msg') as f:
-#     msg63 = f.read()
-# with open('64.msg') as f:
-#     msg64 = f.read()
-
-# u.send(104, 1)
-# time.sleep(0.1)
-# u.recieve()
-# print u.msg
-
-# u.send(104, 1)
-# time.sleep(0.1)
-# u.recieve()
-# print u.msg

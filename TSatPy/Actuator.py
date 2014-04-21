@@ -149,6 +149,12 @@ class Actuator(object):
         ])
 
     def __str__(self):
+        """
+        Pretty print version of the object
+
+        :return: readable instance
+        :rtype: str
+        """
         act_str = [self.__class__.__name__]
         for act in self.actuators:
             act_str.append(' ' + str(act))
@@ -209,6 +215,12 @@ class Fan(ActuatorBase):
             raise ActuatorException(msg)
 
     def __str__(self):
+        """
+        Pretty print version of this instance
+
+        :return: readable instance
+        :rtype: str
+        """
         moment = '(%g, %g, %g)' % (
             self.moment[0, 0], self.moment[1, 0], self.moment[2, 0])
         fan_str = '<%s %s moment=%s>' % (

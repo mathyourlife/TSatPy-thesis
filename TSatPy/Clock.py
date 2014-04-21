@@ -1,5 +1,18 @@
 """
-Simulation clock.   Control the flow of time.
+Simulation clock.
+
+Control the flow of time.
+
+Example::
+
+    clock = Metronome()
+
+    # Do stuff
+    print "%s seconds have passed" % clock.tick()
+
+    # Make time go faster, I'm bored
+    clock.set_speed(3)
+
 """
 
 import time
