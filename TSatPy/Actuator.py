@@ -165,6 +165,12 @@ class ActuatorBase(object):
     """
     Base level actuator
     """
+    def _set_level(self, *args, **kwargs):
+        """
+        Empty method to be overridden
+        """
+        pass
+
     def set_level(self, act, level):
         """
         Helper method so the instance and level can be passed back

@@ -119,7 +119,7 @@ class Quaternion(object):
     @property
     def x(self):
         """
-        Skew-symetric cross product matrix.  A form used for a few calculations.
+        Skew-symetric cross product matrix.  A form used for a few calculations
 
         :return: Skew-symetric matrix from this quaternion's vector.
         :rtype: np.matrix
