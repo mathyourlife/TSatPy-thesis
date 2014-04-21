@@ -88,7 +88,7 @@ class Actuator(object):
         :type  direction: list/tuple
         :param F: max force capable
         :type  F: numeric
-        :returns: configured fan instance
+        :return: configured fan instance
         :rtype: Actuator.Fan
         """
         # No pre processing needed here yet
@@ -108,7 +108,7 @@ class Actuator(object):
 
         :param M: moment requested (3x1)
         :type  M: numpy.matrix
-        :returns: Actual moment (3x1)
+        :return: Actual moment (3x1)
         :rtype: numpy.matrix
         """
         levels = []
