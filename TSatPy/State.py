@@ -61,6 +61,15 @@ class Quaternion(object):
             np.abs(qe.scalar - 1) < self.float_threshold)
 
     def __ne__(self, q):
+        """
+        Negative test for equality.  Returns True if the two quaternions
+        do not represent the same attitude.
+
+        :param q: Quaternion to compare to the current instance
+        :type  q: Quaternion
+        :return: not equal status
+        :rtype: bool
+        """
         return not self.__eq__(q)
 
     @property
@@ -75,7 +84,11 @@ class Quaternion(object):
 
     def normalize(self):
         """
-        Normalize this quaternion instance.
+        Normalize this quaternion instance.  This should be rarely needed
+        if using the quaternion multiplicative correction.
+
+        :return: This quaternion scaled by it's magnitude
+        :rtype: Quaternion
         """
 
         mag = self.mag
@@ -85,6 +98,9 @@ class Quaternion(object):
     def is_unit(self):
         """
         Is this quaternion a unit quaternion with magnitude 1
+
+        :return: Am I a unit vector?
+        :rtype: bool
         """
 
         return np.abs(self.mag - 1) < self.float_threshold
@@ -93,14 +109,20 @@ class Quaternion(object):
     def conj(self):
         """
         Create a conjugate quaternion with the same scalar and the
-        negative vector.
+        negative vector.  Used for quaternion error calculations.
+
+        :return: conjugate quaternion
+        :rtype: Quaternion
         """
         return Quaternion(-self.vector, self.scalar)
 
     @property
     def x(self):
         """
-        Skew-symetric cross product matrix
+        Skew-symetric cross product matrix.  A form used for a few calculations.
+
+        :return: Skew-symetric matrix from this quaternion's vector.
+        :rtype: np.matrix
         """
         return np.mat([
             [0, -self.vector[2, 0], self.vector[1, 0]],
@@ -112,6 +134,9 @@ class Quaternion(object):
     def rmatrix(self):
         """
         Create a 3x3 rotational matrix based on this quaternion.
+
+        :return: rotate points around by multiplying by this 3x3 matrix
+        :rtype: np.matrix
         """
 
         s = self.scalar
@@ -129,7 +154,7 @@ class Quaternion(object):
         :param pts: Points to be rotated in R3 [[x1, y1, z1],[x2, y2, z2],...]
         :type  pts: np.mat
 
-        :returns: 3x3 rotational matrix for this rotational quaternion
+        :return: 3x3 rotational matrix for this rotational quaternion
         :rtype: np.mat
         """
         r_pts = self.rmatrix * pts.T
@@ -157,9 +182,10 @@ class Quaternion(object):
     def to_rotation(self):
         """
         Convert the current quaternion into a vector and angle of rotation.
-        This is the inverse to self.from_rotation.
+        This is the inverse to self.from_rotation.  The angle returned
+        is in the range [0, 2pi)
 
-        :return: (axis of rotation, angle of rotation)
+        :return: (Euler axis of rotation, angle of rotation in radians)
         :rtype: tuple
         """
 
@@ -185,8 +211,8 @@ class Quaternion(object):
         it into two rotational quaternions.  A pure rotation about z
         followed by a rotation about an axis in the x-y plane.
 
-        :return: pair of rotational quaternions (q_z, q_n)
-                 q_z: rotation about the body z axis
+        :return: pair of rotational quaternions (q_r, q_n)
+                 q_r: rotation about the body z axis
                  q_n: nutation - rotation about an axis in the xy plane
         :rtype: (quaternion, quaternion)
         """
@@ -223,6 +249,12 @@ class Quaternion(object):
 
     @property
     def mat(self):
+        """
+        If we need to fall back and get the data in a singe matrix format.
+
+        :return: scalar last matrix form
+        :rtype: np.matrix
+        """
 
         return np.mat([[self.vector[0, 0]],
                        [self.vector[1, 0]],
@@ -230,27 +262,75 @@ class Quaternion(object):
                        [self.scalar]])
 
     def __neg__(self):
+        """
+        The negative quaternion negates all parameters
+
+        :return: the neg quaternion
+        :rtype: Quaternion
+        """
         return Quaternion(-self.vector, -self.scalar)
 
     def __add__(self, q):
+        """
+        One does not simply add quaternions together.  Addition is just
+        remapped to __mul__
+
+        :param q: Quaternion rotation to add on
+        :type  q: Quaternion
+        :return: A multiplicative quaternion combination
+        :rtype: Quaternion
+        """
         return self * q
 
     def __iadd__(self, q):
+        """
+        Same as + but returns self in case the object ref integrity needs
+        to be maintained.
+
+        :param q: Quaternion rotation to add on
+        :type  q: Quaternion
+        :return: A multiplicative quaternion combination
+        :rtype: Quaternion
+        """
         q_new = q * self
         self.vector = q_new.vector
         self.scalar = q_new.scalar
         return self
 
     def __sub__(self, q):
+        """
+        The opposite of a quaternion is it's conjugate.
+
+        :param q: Quaternion to take off
+        :type  q: Quaternion
+        :return: q* x self
+        :rtype: Quaternion
+        """
         return q.conj * self
 
     def __isub__(self, q):
+        """
+        Same as __sub__, but keeps this instance intact.
+
+        :param q: Quaternion to take off
+        :type  q: Quaternion
+        :return: q* x self
+        :rtype: Quaternion
+        """
         q_new = q.conj * self
         self.vector = q_new.vector
         self.scalar = q_new.scalar
         return self
 
     def __mul__(self, q):
+        """
+        This is the way you combine quaternions.  None of that additive method!
+
+        :param q: Quaternion rotation to be combined with
+        :type  q: Quaternion
+        :return: the composite quaternion
+        :rtype: Quaternion
+        """
         s = self.scalar * q.scalar - (self.vector.T * q.vector)[0, 0]
         v = (self.x + np.eye(3) * self.scalar) * q.vector
         v += self.vector * q.scalar
@@ -260,7 +340,7 @@ class Quaternion(object):
         """
         Create a LaTeX representation of the current state of the quaternion
 
-        :return: LaTeX quaternion str
+        :return: LaTeX representation of this quaternion instance
         :rtype: str
         """
         msg = '%g \\boldsymbol{i} %+g \\boldsymbol{j} %+g \\boldsymbol{k} %+g'
@@ -297,7 +377,7 @@ def QuaternionError(q_hat, q):
     :type  q_hat: Quaternion
     :param q: The measured/actual attitude quaternion
     :type  q: Quaternion
-    :returns: The error quaternion
+    :return: The error quaternion
     :rtype: Quaternion
 
     Usage::
@@ -344,6 +424,15 @@ def QuaternionError(q_hat, q):
 
 
 class QuaternionDynamics(object):
+    """
+    Given a starting quaternion (postition) and current body rate (velocity),
+    determine the new quaternion.
+
+    :param q: Initial condition for the dynamics
+    :type  q: Quaternion
+    :param clock: The system clock so we can watch time progress
+    :type  clock: Clock.Metronome
+    """
 
     def __init__(self, q, clock):
         self.q = q
@@ -352,6 +441,21 @@ class QuaternionDynamics(object):
         self.w = None
 
     def propagate(self, w):
+        """
+        Use the time elapsed since last update and the supplied body rates
+        to determine where the next quaternion position will be.
+
+        This method of propagating the discrete was drawn from the work of
+        Nikolas Trawny and Stergios I. Roumeliotis in "Indirect Kalman Filter
+        for 3D Attitude Estimation A Tutorial for Quaternion Algebra"
+        Multiple Autonomous Robotic Systems Laboratory - Technical Report
+        Sep 2008
+
+        :param w: system's body rates
+        :type  w: BodyRate
+        :return: the next quaternion attitude
+        :rtype: Quaternion
+        """
         t = self.clock.tick()
         try:
             dt = t - self.last_update
@@ -377,6 +481,14 @@ class QuaternionDynamics(object):
         return self.q
 
     def _omega(self, w):
+        """
+        Helper method for the propagate function.
+
+        :param w: A body rate value
+        :type  w: BodyRate
+        :return: The Omega matrix
+        :rtype: np.matrix
+        """
         wx = w[0, 0]
         wy = w[1, 0]
         wz = w[2, 0]
@@ -400,7 +512,6 @@ class BodyRate(object):
     float_threshold = 1e-12
 
     def __init__(self, w=None):
-
         if w is None:
             w = [0, 0, 0]
 
@@ -412,12 +523,22 @@ class BodyRate(object):
     def __add__(self, w):
         """
         Sum two BodyRate instances
+
+        :param w: A body rate to sum with
+        :type  w: BodyRate
+        :return: the sum
+        :rtype: BodyRate
         """
         return BodyRate(self.w + w.w)
 
     def __sub__(self, w):
         """
         Diff of two BodyRate instances
+
+        :param w: Egh, what's the diff, man??
+        :type  w: BodyRate
+        :return: the difference
+        :rtype: BodyRate
         """
         return BodyRate(self.w - w.w)
 
@@ -425,6 +546,11 @@ class BodyRate(object):
         """
         Useful if adding deltas to an existing BodyRate instead of creating
         a new instance each time.
+
+        :param w: Same as addition just no new instance
+        :type  w: BodyRate
+        :return: myself, just changed
+        :rtype: BodyRate
         """
         self.w += w.w
         return self
@@ -432,6 +558,11 @@ class BodyRate(object):
     def __eq__(self, w):
         """
         Body rates are equivalent if their vectors are identical
+
+        :param w: Test for equalityish (allow for some fp routing)
+        :type  w: BodyRate
+        :return: equal or not
+        :rtype: bool
         """
         return np.sum(np.abs(self.w - w.w)) < self.float_threshold
 
@@ -439,6 +570,9 @@ class BodyRate(object):
     def x(self):
         """
         Skew-symetric cross product matrix
+
+        :return: A 3x3 matrix used in a variety of calculations
+        :rtype: np.matrix
         """
         return np.mat([
             [0, -self.w[2, 0], self.w[1, 0]],
@@ -476,6 +610,13 @@ class EulerMomentEquations(object):
     Euler's equations describe the rotation of a rigid body, using a
     rotating reference frame with its axes fixed to the body and parallel
     to the body's principal axes of inertia.
+
+    :param I: the 3x3 moment of intertia matrix
+    :type  I: np.matrix or list of lists
+    :param w: Body rate initial condition
+    :type  w: BodyRate
+    :param clock: The system clock to quantify the time steps
+    :type  clock: Clock.Metronome
     """
 
     def __init__(self, I, w, clock):
@@ -543,40 +684,83 @@ class State(object):
         """
         Determine if two states are equivalent.  Body rates must be
         equal and quaternions must represent the same orientation.
+
+        :param x: The state to compare this instance to
+        :type  x: State
+        :return: Equal or not?
+        :rtype: bool
         """
         return self.w == x.w and self.q == x.q
 
     def __str__(self):
         """
-        See the current state
+        See the current state in string format
+
+        :return: nicer way to print the instances parameters
+        :rtype: str
         """
         return "%s, %s" % (self.q, self.w)
 
     def latex(self):
         """
-        Create the latex representation for the state
-        """
+        Create the LaTeX representation for the state
 
+        :return: the LaTeX representation of the quaternion and body rate (q,w)
+        :rtype: (str, str)
+        """
         return (self.q.latex(), self.w.latex())
 
     __repr__ = __str__
 
     def __add__(self, x):
+        """
+        Create a combined state by summing the current instance with
+        one provided.
+
+        :param x: state to be added to the current
+        :type  x: State
+        :return: the combined states
+        :rtype: State
+        """
         q_new = self.q + x.q
         w_new = self.w + x.w
         return State(q_new, w_new)
 
     def __iadd__(self, x):
+        """
+        Same as the addition just maintains the current instance.
+
+        :param x: state to be added onto me
+        :type  x: State
+        :return: the summed states
+        :rtype: State
+        """
         self.q += x.q
         self.w += x.w
         return self
 
     def __sub__(self, x):
+        """
+        Take the passed state off this instance.
+
+        :param x: state to be taken off
+        :type  x: State
+        :return: reduced state
+        :rtype: State
+        """
         q_new = self.q - x.q
         w_new = self.w - x.w
         return State(q_new, w_new)
 
     def __isub__(self, x):
+        """
+        Same as the __sub__ method but maintains the current instance.
+
+        :param x: state to be taken off
+        :type  x: State
+        :return: reduced state
+        :rtype: State
+        """
         self.q -= x.q
         self.w -= x.w
         return self
@@ -590,7 +774,7 @@ def StateError(x_hat, x):
     :type  x_hat: State
     :param x_hat: Actual/Measured state
     :type  x_hat: State
-    :returns: error generated from a quaternion multiplicative error
+    :return: error generated from a quaternion multiplicative error
               and body rate diff
     :rtype: State
     """
@@ -602,6 +786,13 @@ def StateError(x_hat, x):
 class Plant(object):
     """
     Tracks the full system state of the TableSat
+
+    :param I: the 3x3 moment of intertia matrix
+    :type  I: np.matrix or list of lists
+    :param x: initial condition
+    :type  x: State
+    :param clock: The system clock to quantify the time steps
+    :type  clock: Clock.Metronome
     """
 
     def __init__(self, I, x, clock):
@@ -610,6 +801,13 @@ class Plant(object):
 
     @property
     def x(self):
+        """
+        Combine the quaternion and body rate from the QuaternionDynamics
+        and Euler Moment Equations instances.
+
+        :return: Current plant state
+        :rtype: State
+        """
         return State(self.pos.q, self.vel.w)
 
     def set_state(self, x):
@@ -674,24 +872,32 @@ class Moment(object):
     float_threshold = 1e-12
 
     def __init__(self, M=None):
-
         if M is None:
             M = [0, 0, 0]
 
         self.M = np.mat(M, dtype=np.float)
-
         if self.M.shape == (1, 3):
             self.M = self.M.T
 
     def __add__(self, M):
         """
         Sum two moments
+
+        :param M: moment to be added to the current instance
+        :type  M: Moment
+        :return: The summed moment
+        :rtype: Moment
         """
         return Moment(self.M + M.M)
 
     def __sub__(self, M):
         """
         Diff of two moments
+
+        :param M: moment to be subtracted from the current instance
+        :type  M: Moment
+        :return: The moment difference
+        :rtype: Moment
         """
         return Moment(self.M - M.M)
 
@@ -699,6 +905,11 @@ class Moment(object):
         """
         Useful if adding deltas to an existing moments instead of creating
         a new instance each time.
+
+        :param M: moment to be added to the current instance
+        :type  M: Moment
+        :return: The summed moment
+        :rtype: Moment
         """
         self.M += M.M
         return self
@@ -706,6 +917,11 @@ class Moment(object):
     def __eq__(self, M):
         """
         Helper function to test for equality considering floating point errors
+
+        :param M: moment to be compared to the current instance
+        :type  M: Moment
+        :return: Are they equal within a threshold?
+        :rtype: bool
         """
         return np.sum(np.abs(self.M - M.M)) < self.float_threshold
 
