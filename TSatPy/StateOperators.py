@@ -87,8 +87,8 @@ class QuaternionGain(object):
         """
         Update the gain matrix
 
-        :param K: 3x3 matrix for scaling the rotational quaternion
-        :type  K: list
+        :param K: scalar value for scaling the rotational quaternion
+        :type  K: numeric
         """
         self.K = K
 
@@ -166,8 +166,16 @@ class StateGain(object):
         self.Kw = Kw
 
     def __mul__(self, x):
-        q_new = self.Kq * x.q
-        w_new = self.Kw * x.w
+        if self.Kq is None:
+            q_new = State.Quaternion()
+        else:
+            q_new = self.Kq * x.q
+
+        if self.Kw is None:
+            w_new = State.BodyRate()
+        else:
+            w_new = self.Kw * x.w
+
         return State.State(q_new, w_new)
 
     def __str__(self):
@@ -270,3 +278,89 @@ class StateSaturation(object):
         return '<%s <Sq %s>, <Sw = %s>>' % (
             self.__class__.__name__,
             str(self.Sq), str(self.Sw))
+
+
+class BodyRateToMoment(object):
+    """
+    Create the mapping between a body rate measure (or error) to
+    an associated moment tuple.
+
+    :param K: 3x3 gain matrix for the straight forward multiplication
+    :type  K: numpy.matrix
+    """
+    def __init__(self, K):
+        self.K = K
+
+    def __mul__(self, w):
+        return State.Moment(self.K * w.w)
+
+    def __str__(self):
+        """
+        Return a string representation of the gain numpy matrix.
+
+        :return: gain matrix representation
+        :rtype: str
+        """
+        K_str = str(self.K).replace('\n', ' ')
+        while '  ' in K_str:
+            K_str = K_str.replace('  ', ' ')
+        return '<%s <K %s>>' % (
+            self.__class__.__name__, K_str)
+
+
+class QuaternionToMoment(object):
+    """
+    Take the error between two quaternion states and generate a moment
+    that will converge the two
+    """
+    def __init__(self, K):
+        self.update_gain(K)
+
+    def update_gain(self, K):
+        """
+        Update the gain matrix
+
+        :param K: scalar quantity for scaling the moment required
+        :type  K: list
+        """
+        self.K = K
+
+    def __mul__(self, q):
+        """
+        Convert a quaternion representing the difference in attitudes to
+        a moment couple that would converge the two.
+
+        :param q: Quaternion error instance
+        :type  q: Quaternion
+        """
+        e, r = q.to_rotation()
+        return State.Moment(-e * r * self.K)
+
+    def __str__(self):
+        """
+        Return a string representation of the gain numpy matrix.
+
+        :return: gain matrix representation
+        :rtype: str
+        """
+        return str(self.K)
+
+
+class StateToMoment(object):
+
+    def __init__(self, Kq=None, Kw=None):
+        self.Kq = Kq
+        self.Kw = Kw
+
+    def __mul__(self, x):
+        M = State.Moment()
+        if self.Kq is not None:
+            M += self.Kq * x.q
+        if self.Kw is not None:
+            M += self.Kw * x.w
+        return M
+
+    def __str__(self):
+        return '<%s <Kq %s>, <Kw = %s>>' % (
+            self.__class__.__name__,
+            str(self.Kq), str(self.Kw))

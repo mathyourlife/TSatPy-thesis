@@ -1,6 +1,6 @@
 import unittest
 from mock import patch
-from TSatPy import State, StateOperators, Estimator
+from TSatPy import State, StateOperators as SO, Estimator
 from TSatPy.Clock import Metronome
 import numpy as np
 
@@ -10,9 +10,9 @@ class TestPID(unittest.TestCase):
     def test_str(self):
         k = 3
         c = Metronome()
-        Kq = StateOperators.QuaternionGain(k)
-        Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
-        Kp = StateOperators.StateGain(Kq, Kw)
+        Kq = SO.QuaternionGain(k)
+        Kw = SO.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
+        Kp = SO.StateGain(Kq, Kw)
 
         pid = Estimator.PID(c)
         pid.set_Kp(Kp)
@@ -29,9 +29,9 @@ class TestPID(unittest.TestCase):
     def test_p_estimator(self):
         c = Metronome()
         k = 0.2
-        Kq = StateOperators.QuaternionGain(k)
-        Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
-        Kp = StateOperators.StateGain(Kq, Kw)
+        Kq = SO.QuaternionGain(k)
+        Kw = SO.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
+        Kp = SO.StateGain(Kq, Kw)
 
         pid = Estimator.PID(c)
         pid.set_Kp(Kp)
@@ -51,11 +51,11 @@ class TestPID(unittest.TestCase):
     def test_p_estimator_with_ic(self):
         c = Metronome()
         k = 0.2
-        Kq = StateOperators.QuaternionGain(k)
-        Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
-        Kp = StateOperators.StateGain(Kq, Kw)
+        Kq = SO.QuaternionGain(k)
+        Kw = SO.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
+        Kp = SO.StateGain(Kq, Kw)
         ic = State.State(
-            State.Quaternion([0,0,1],radians=np.pi/10),
+            State.Quaternion([0,0,1],radians=0.1),
             State.BodyRate([0,0,1])
         )
 
@@ -63,13 +63,13 @@ class TestPID(unittest.TestCase):
         pid.set_Kp(Kp)
 
         x = State.State(
-            State.Quaternion([0,0,1],radians=6*np.pi/10),
+            State.Quaternion([0,0,1],radians=0.6),
             State.BodyRate([0.1,2,3])
         )
         x_hat = pid.update(x)
 
         x_expected = State.State(
-            State.Quaternion([0,0,1],radians=2*np.pi/10),
+            State.Quaternion([0,0,1],radians=0.2),
             State.BodyRate([0.02,0.4,1.4]))
 
         self.assertEquals(x_hat, x_expected)
@@ -81,9 +81,9 @@ class TestPID(unittest.TestCase):
 
         c = Metronome()
         k = 0.5
-        Kq = StateOperators.QuaternionGain(k)
-        Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
-        Ki = StateOperators.StateGain(Kq, Kw)
+        Kq = SO.QuaternionGain(k)
+        Kw = SO.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
+        Ki = SO.StateGain(Kq, Kw)
 
         pid = Estimator.PID(c)
         pid.set_Ki(Ki)
@@ -116,16 +116,16 @@ class TestPID(unittest.TestCase):
         self.assertEquals(x_hat, x_hat_expected)
 
     @patch('time.time')
-    def test_d_estimator(self, mock_time):
+    def test_d_estimator_no_time_change(self, mock_time):
 
         mock_time.return_value = 1234
 
         c = Metronome()
 
         k = 4
-        Kq = StateOperators.QuaternionGain(k)
-        Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
-        Kd = StateOperators.StateGain(Kq, Kw)
+        Kd = SO.StateGain(
+            SO.QuaternionGain(k),
+            SO.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]]))
 
         pid = Estimator.PID(c)
         pid.set_Kd(Kd)
@@ -147,9 +147,9 @@ class TestPID(unittest.TestCase):
 
         c = Metronome()
         k = 3
-        Kq = StateOperators.QuaternionGain(k)
-        Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
-        Kd = StateOperators.StateGain(Kq, Kw)
+        Kd = SO.StateGain(
+            SO.QuaternionGain(k),
+            SO.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]]))
 
         pid = Estimator.PID(c)
         pid.set_Kd(Kd)

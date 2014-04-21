@@ -13,7 +13,7 @@ class Estimator(object):
 
     def add(self, type, plant, kwargs):
         """
-        Add an estimator to the array of estimators
+        Add an configured estimator to the array of estimators
         """
         if type.lower() == 'pid':
             est = self.config_pid(plant, **kwargs)
@@ -76,29 +76,19 @@ class Estimator(object):
 
 class EstimatorBase(object):
 
-    def __init__(self, clock, propagate_every=None, plant=None, ic=None):
+    def __init__(self, clock, plant=None, ic=None):
         self.clock = clock
         self.last_update = None
-        self.I = [[4, 0, 0], [0, 4, 0], [0, 0, 4]]
-        if ic is None:
-            self.x_hat = State.State()
-        else:
-            self.x_hat = ic
         self.plant = plant
-        self.propagate_every = propagate_every
-
-        if self.propagate_every is not None:
-            self.timers = {
-                'propagate': LoopingCall(self.propagate)
-            }
-            self.start_propagation()
-
-    def start_propagation(self):
-        if self.propagate_every is not None:
-            self.timers['propagate'].start(self.propagate_every)
-
-    def propagate(self, M=None):
-        pass
+        if plant:
+            if ic is not None:
+                self.plant.set_state(ic)
+            self.x_hat = plant.x
+        else:
+            if ic is None:
+                self.x_hat = State.State()
+            else:
+                self.x_hat = ic
 
     def update(self, x, M=None):
         pass
@@ -142,7 +132,6 @@ class PID(EstimatorBase):
             self.x_hat.q.vector = x_hat_pre.q.vector
             self.x_hat.q.scalar = x_hat_pre.q.scalar
             self.x_hat.w.w = x_hat_pre.w.w
-
 
         x_err = State.StateError(self.x_hat, x)
         x_adj = State.State()
@@ -191,7 +180,7 @@ class PID(EstimatorBase):
 
 class SMO(EstimatorBase):
     """
-
+    A sliding mode observer takes the form of
     x(k+1) = x(k) + L*x_e(k) + K*1s(x_e(k))
     """
 

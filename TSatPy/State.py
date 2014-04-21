@@ -151,8 +151,8 @@ class Quaternion(object):
 
         v = v / np.sqrt((v.T * v)[0, 0])
 
-        self.vector = v * np.sin(-radians / 2)
-        self.scalar = np.cos(-radians / 2)
+        self.vector = v * np.sin(-float(radians) / 2)
+        self.scalar = np.cos(-float(radians) / 2)
 
     def to_rotation(self):
         """
@@ -219,7 +219,7 @@ class Quaternion(object):
 
             q_n.vector = -q_n.vector
 
-        return q_r, q_n
+        return q_r, -q_n
 
     @property
     def mat(self):
@@ -449,7 +449,7 @@ class BodyRate(object):
 
     def latex(self):
         """
-        Create a LaTeX representation of the current state of the quaternion
+        Create a LaTeX representation of the current state of the body rate
 
         :return: LaTeX quaternion str
         :rtype: str
@@ -503,11 +503,11 @@ class EulerMomentEquations(object):
             return self.w
 
         w_dot = BodyRate([
-            (M[0] - (self.I[2, 2] - self.I[1, 1]) *
+            (M.M[0, 0] - (self.I[2, 2] - self.I[1, 1]) *
                 self.w.w[1, 0] * self.w.w[2, 0]) / self.I[0, 0],
-            (M[1] - (self.I[0, 0] - self.I[2, 2]) *
+            (M.M[1, 0] - (self.I[0, 0] - self.I[2, 2]) *
                 self.w.w[0, 0] * self.w.w[2, 0]) / self.I[1, 1],
-            (M[2] - (self.I[1, 1] - self.I[0, 0]) *
+            (M.M[2, 0] - (self.I[1, 1] - self.I[0, 0]) *
                 self.w.w[0, 0] * self.w.w[1, 0]) / self.I[2, 2],
         ])
 
@@ -637,7 +637,7 @@ class Plant(object):
         """
 
         if M is None:
-            M = [0, 0, 0]
+            M = Moment([0, 0, 0])
         w = self.vel.propagate(M)
         q = self.pos.propagate(w)
         return q, w
@@ -660,5 +660,75 @@ class Plant(object):
         return "<%s %s, %s>" % (
             self.__class__.__name__,
             self.pos.q, self.vel.w)
+
+    __repr__ = __str__
+
+
+class Moment(object):
+    """
+    Represents moment couples about the body's principal axes.
+
+    :param M: moments about each axis (3x1) (Mx, My, Mz)
+    :type  M: list
+    """
+
+    float_threshold = 1e-12
+
+    def __init__(self, M=None):
+
+        if M is None:
+            M = [0, 0, 0]
+
+        self.M = np.mat(M, dtype=np.float)
+
+        if self.M.shape == (1, 3):
+            self.M = self.M.T
+
+    def __add__(self, M):
+        """
+        Sum two moments
+        """
+        return Moment(self.M + M.M)
+
+    def __sub__(self, M):
+        """
+        Diff of two moments
+        """
+        return Moment(self.M - M.M)
+
+    def __iadd__(self, M):
+        """
+        Useful if adding deltas to an existing moments instead of creating
+        a new instance each time.
+        """
+        self.M += M.M
+        return self
+
+    def __eq__(self, M):
+        """
+        Helper function to test for equality considering floating point errors
+        """
+        return np.sum(np.abs(self.M - M.M)) < self.float_threshold
+
+    def latex(self):
+        """
+        Create a LaTeX representation of the moment array
+
+        :return: LaTeX quaternion str
+        :rtype: str
+        """
+        msg = '%g \\boldsymbol{i} %+g \\boldsymbol{j} %+g \\boldsymbol{k}' % (
+            self.M[0, 0], self.M[1, 0], self.M[2, 0],
+        )
+        return msg
+
+    def __str__(self):
+        """
+        :return: representation of the moment
+        :rtype:  str
+        """
+        return "<%s [%g %g %g]>" % (
+            self.__class__.__name__,
+            self.M[0, 0], self.M[1, 0], self.M[2, 0])
 
     __repr__ = __str__

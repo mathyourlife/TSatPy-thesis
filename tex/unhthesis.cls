@@ -86,12 +86,12 @@
                                 %
 \oddsidemargin   1.500in        % Bound side of page has 1.5 inch margin.
 % \topmargin       0.500in        % Header box is half inch from page top.
-\topmargin       0.000in        % Header moved due to minted.sty interference.
+\topmargin       -0.500in        % Header moved due to minted.sty interference.
 \headheight      0.250in        % Large enough for 11pt type.
 \headsep         0.250in        % This should place body 1in from top of page.
 \textwidth       6.000in        % 8.5 page width - \oddsidemargin.
 % \textheight      9.000in        % 11.0 page height - (1in top + 1in bot)
-\textheight      9.500in        % page height due to minted.sty interference 
+\textheight      9.500in        % page height due to minted.sty interference
 \footskip        0.500in        % Place bottom numbers 1/2 inch from bottom.
 
 
@@ -282,16 +282,17 @@
        \end{singlespace}
        \vspace*{\fill}
     \end{approvalpage}
+    \thispagestyle{empty}
    }
 
 
 
 \def\dedication
    {\vspace*{0.5in}             % Major sections have 1.5in top margins.
-    \thispagestyle{plain}       % Put the page number on the bottom.
-    \chapter*{Dedication}       % Don't change section counter or display it.
+    \chapter*{DEDICATION}       % Don't change section counter or display it.
     \addcontentsline{toc}       % But *do* put an entry for this page into
-       {section}{Dedication}    % the table of contents.
+       {section}{DEDICATION}    % the table of contents.
+    \thispagestyle{plain}       % Put the page number on the bottom.
     \@normalsize                %
    }                            %
 
@@ -302,8 +303,8 @@
 \def\acknowledgments
    {\vspace*{0.5in}
     \thispagestyle{plain}
-    \chapter*{Acknowledgments}
-    \addcontentsline{toc}{section}{Acknowledgments}
+    \chapter*{ACKNOWLEDGMENTS}
+    \addcontentsline{toc}{section}{ACKNOWLEDGMENTS}
     \@normalsize
    }
 
@@ -325,7 +326,7 @@
 
 \def\abstract
    {\small
-    \addcontentsline{toc}{section}{Abstract}
+    \addcontentsline{toc}{section}{ABSTRACT}
     \@normalsize
    }
 
@@ -341,6 +342,7 @@
                             {\large{\bf \@title} \\
                                      by \\
                                   \@author \\
+                                \vspace*{12pt}
                             }
                       \def\baselinestretch{1}\@normalsize
                       \Unh, \@degreemonth, \@degreeyear
@@ -351,9 +353,18 @@
 
 \def\endabstractpage
    {\end{abstract}
-    \newpage
    }
 
+\def\nomenclature
+   {\vspace*{0.5in}
+    \thispagestyle{plain}
+    \chapter*{NOMENCLATURE}
+    \addcontentsline{toc}{section}{NOMENCLATURE}
+    \@normalsize
+    \parindent 0pt                      % Don't indent 'paragraphs'.
+   }
+
+\def\endnomenclature{\par}
 
 
 \newenvironment{Squote}%

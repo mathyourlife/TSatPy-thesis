@@ -1,13 +1,12 @@
-import sys
-from TSatPy import Estimator, State, StateOperators
-from TSatPy.Clock import Metronome
-import numpy as np
-import matplotlib.pyplot as plt
 import time
 import random
+import numpy as np
+import matplotlib.pyplot as plt
+from TSatPy import Estimator, State, StateOperators
+from TSatPy.Clock import Metronome
 
 
-print('Integrated State Error')
+print('PID with prediction')
 
 speed = 10
 c = Metronome()
@@ -60,6 +59,7 @@ def integrate_error(p,i,d):
 
     I = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
     plant = State.Plant(I, x_m, c)
+    plant_est = State.Plant(I, State.State(), c)
 
     kp = {'q': p, 'w': 0.7}
     Kp = StateOperators.StateGain(
@@ -74,7 +74,7 @@ def integrate_error(p,i,d):
         StateOperators.QuaternionGain(kd['q']),
         StateOperators.BodyRateGain(np.eye(3) * kd['w']))
 
-    pid = Estimator.PID(c)
+    pid = Estimator.PID(c, plant=plant_est)
     pid.set_Kp(Kp)
     pid.set_Ki(Ki)
     pid.set_Kd(Kd)
@@ -94,26 +94,23 @@ def integrate_error(p,i,d):
     dts = [0.8, 1.2]
     end_time = c.tick() + 120
     while c.tick() < end_time:
-        # sys.stdout.write("\b\b\b\b%s" % int(c.tick() - start_time))
-        # sys.stdout.flush()
-
-        q, w = plant.propagate()
+        plant.propagate()
 
         # Create measurement noise
         offset = np.random.randn() * 20 / 180.0 * np.pi
-        q_noise = State.Quaternion([0,0,1], radians=offset) * q
+        q_noise = State.Quaternion([0,0,1], radians=offset) * plant.x.q
 
-        x_m = State.State(q_noise, w)
+        x_m = State.State(q_noise, plant.x.w)
         pid.update(x_m)
 
         ts.append(c.tick() - start_time)
 
-        e, r = q.to_rotation()
+        e, r = plant.x.q.to_rotation()
         q_tracking['measured'].append(r)
         e, r = pid.x_hat.q.to_rotation()
         q_tracking['estimated'].append(r)
 
-        q_e = State.QuaternionError(pid.x_hat.q, q)
+        q_e = State.QuaternionError(pid.x_hat.q, plant.x.q)
         e, r = q_e.to_rotation()
         q_tracking['err'].append(r)
 
@@ -129,25 +126,47 @@ def integrate_error(p,i,d):
 
 
 def vals():
-    for p in range(0, -3, -1):
-        for i in range(-3, -5, -1):
-            for d in range(-3, -5, -1):
+    # for p in range(-14, -24, -1):
+    for p in [p / 100.0 for p in range(7, 18)]:
+        # for i in range(-6, -12, -1):
+        for i in [i / 1000.0 for i in range(0, 9)]:
+            # for d in range(-6, -12, -1):
+            for d in [d / 1000.0 for d in range(0, 17)]:
                 yield p, i, d
 
 def gradient_desc():
-    pbase = 1.01
-    ibase = 10
-    dbase = 10
-    for p, i, d in vals():
-        ts, q_tracking, w_tracking = run_test(pbase**p,ibase**i,dbase**d)
-        err = np.array(q_tracking['err'])
-        print "%g,%g,%g,%g,%g" % (
-            err.std(), err.mean(), pbase**p, ibase**i, dbase**d)
+    pbase = 1.1
+    ibase = 2
+    dbase = 2
+    with open('%s-gradient-descent.csv' % __file__, 'a') as f:
+        for p, i, d in vals():
+            # ts, q_tracking, w_tracking = run_test(pbase**p,ibase**i,dbase**d)
+            ts, q_tracking, w_tracking = run_test(p,i,d)
+            err = np.array(q_tracking['err'])
+            # f.write("%g,%g,%g,%g,%g\n" % (
+            #     err.std(), err.mean(), pbase**p, ibase**i, dbase**d))
+            f.write("%g,%g,%g,%g,%g\n" % (
+                err.std(), err.mean(), p, i, d))
+            f.flush()
+
+def test():
+    I = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
+    plant_est = State.Plant(I, State.State(), c)
+    print plant_est
+
+    x_m = State.State(
+        State.Quaternion([0,0,1], radians=np.pi/4),
+        State.BodyRate([0,0,0.314]))
+    plant_est.set_state(x_m)
+
+    print plant_est
 
 
 def main():
+    # test()
     # gradient_desc()
-    run_test(0.98, 0.001,0.001, True)
+    run_test(0.0735230667, 0.0008635413, 0.0081208333, True)
+
     return 0
 
 if __name__ == "__main__":

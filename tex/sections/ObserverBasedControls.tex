@@ -1,5 +1,5 @@
 
-\chapter{Observer Based Controls}
+\chapter{OBSERVER BASED CONTROLS}
 \label{chap:ObserverBasedControls}
 
 Chapter \ref{chap:UNHTableSat1A} detailed how TableSat's sensor readings could be quantified and represented in terms of engineering units.  Chapter \ref{chap:SatelliteAttitudeModeling} established the state representation of the system and the chosen dynamic equations used to model it's behavior.  This chapter will focus on the estimation techniques to improve the accuracy of the state representations, and control techniques to guide the system into the desired state.
@@ -383,8 +383,8 @@ The section will cover the final version of the quaternion adjustment calculatio
 
 \begin{equation}
   \begin{aligned}
-    \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot \cos^{-1} (q_0))  \end{bmatrix} \\
-    \text{where } \gamma &= \sqrt{\frac{\bs{v}^T \cdot \bs{v}}{\sin^2 ( k \cdot \cos^{-1} (q_0))}} \\
+    \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot 2\cos^{-1} (q_0))  \end{bmatrix} \\
+    \text{where } \gamma &= \sqrt{\frac{\bs{v}^T \cdot \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}} \\
     \bs{q} &= \begin{bmatrix} \bs{v} \\ q_0  \end{bmatrix}
   \end{aligned}
   \label{eqn:PSI}
@@ -449,8 +449,8 @@ Adjustment Quaternions
 \begin{equation}
   \begin{aligned}
     \bs{q}_{adj} &= \bs{\psi}(\bs{q}_e, K_{qp}) \\
-    \text{where } \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot \cos^{-1} (q_0))  \end{bmatrix} \\
-    \gamma &= \sqrt{\frac{\bs{v}^T \cdot \bs{v}}{\sin^2 ( k \cdot \cos^{-1} (q_0))}} \\
+    \text{where } \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot 2\cos^{-1} (q_0))  \end{bmatrix} \\
+    \gamma &= \sqrt{\frac{\bs{v}^T \cdot \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}} \\
     \bs{q} &= \begin{bmatrix} \bs{v} \\ q_0  \end{bmatrix}
   \end{aligned}
 \end{equation}
@@ -792,14 +792,14 @@ This thesis takes the discretized form of Equation \ref{eqn:SMOContinuous} with 
     \bs{\hat{q}}(t_{k+1}) &= \bs{\psi} (\bs{1}_s\big(\bs{q}_{e}(t_k)\big), K_q) \otimes \bs{\psi}(\bs{q}_e(t_{k}), L_{q})  \otimes \bs{\hat{q}}(t_{k+1})^- \\
     \bs{\hat{\omega}}(t_{k+1}) &= \bs{\hat{\omega}}(t_{k+1})^- + \bs{L}_{\omega} \bs{\omega}_e(t_{k}) + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e(t_{k}) \big)
   \end{align}
-  \label{eqn:PIDEstimatorwithPredictionUnforcedMotion}
+  \label{eqn:SMOEstimatorwithPredictionUnforcedMotion}
 \end{subequations}
 
 where
 
 \begin{subequations}
   \begin{align}
-    \bs{1}_s\big(\bs{q}_{e}(t_k) \big) &= \begin{bmatrix} \bs{v_e} \\ sat\left( \frac{\cos^{-1} q_{0e} }{S_{q}} \right) \end{bmatrix} \\
+    \bs{1}_s\big(\bs{q}_{e}(t_k) \big) &= \begin{bmatrix} \bs{v_e} \\ sat\left( \frac{2\cos^{-1} q_{0e} }{S_{q}} \right) \end{bmatrix} \\
     \bs{1}_s \big(\bs{\omega}_e(t_{k}) \big) &= sat\left( \frac{\bs{\omega}_e(t_{k})}{S_{\omega}} \right) \\
     \bs{L}_{\omega} &= L_\omega \cdot \bs{I} \\
     \bs{K}_{\omega} &= K_\omega \cdot \bs{I}
@@ -929,30 +929,427 @@ if __name__ == '__main__':
 \nocite{minted}
 \end{singlespace}
 
-
-
-
 \section{Controllers}
 \label{sec:Controller}
-From the MMS requirements, the body rate portion of the desired state is taken as a 3rpm (0.31416 rad/sec) rotation about the satellite's $z$-axis with zero body rates about the $x$ and $y$ axes.
+
+The TableSat 1A controller has performance requirements based off of NASA MMS's mission parameters.  Section \ref{subsec:ComparativeEstimationTests} demonstrated that multiple estimators can be run in parallel during both simulations and experimental runs.  As discussed above, this allows for a better insight into performance differences in estimation methods.  An additional benefit to running the controller through TSatPy is the ability to perform estimator scheduling.  Like gain scheduling which for an estimator or controller can modify what gains it uses depending on the current performance, estimator scheduling allows for switching between disparate estimation techniques during run-time.  For example, one estimator tuned for responding to large errors and run along side an estimator tuned for steady state performance.  The control algorithm can then receive more accurate state estimates on a wider range of environmental conditions.
+
+The control requirements for TableSat 1A can be simplified into three main goals.
+
+First is to maintain a steady spin rate of 3 rpm (0.31416 rad/sec).  Given the relative success of the body rate estimation in section \ref{sec:Estimators}, this goal should not be that difficult and likely will not need a complicated control model.
+
+Second is to correct for any nutation out of the spin plane detected by the estimator.  This can take the form of both driving body rates $\omega_y$ and $\omega_z$ to zero, and ensuring the estimated quaternion has an Euler axis is kept in parallel with the global $z$-axis.
+
+Third is to prevent oscillations in the ADP and SDP booms or attenuate any existing oscillations.  Out of the three, this performance goal has the largest set of dependencies for success.  This level of control is reliant on effective actuators along with reliable state estimates based on an accurate system model including boom dynamics.
+
+\subsection{Actuators}
+\label{subsec:Actuators}
+
+The actuators in use on TableSat 1A consists of four single directional computer fans.  Two oriented for rate control and two for nutation corrections.  Rate control fans are mounted on opposite sides of the deck in opposing directions.  The two nutation fans are mounted at 90 degree angles and both have their thrust pointing down.  The fans are assumed to be mounted so that the rotation and nutation moments are applied about orthogonal axes, and that the thrust applied is tangential to the body's center of mass.  This initially simplifies the controller's voltage calculations for each fan which can be revisited if testing shows the effects are not negligible.
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/tsat_thrusters.eps,height=3in}}
+  \caption{TableSat 1A thrusters}
+  \label{fig:TSatThrusters}
+\end{figure}
+
+With this arrangement, actuators are identified by their center, direction of thrust related to the body reference frame, and the maximum force the actuator can produce.
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/tsat_body_axes.eps,height=3in}}
+  \caption{TableSat Body Axes}
+  \label{fig:TableSatBodyAxes}
+\end{figure}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{c|c|c|c|c}
+    Fan & Center $\bs{f_c}$ (m) & Direction $\bs{n}$ & $F$ (N) & Max Moment $\frac{F \bs{n} \times \bs{f_c}}{|\bs{n}|}$ (Nm) \\ \hline
+    1 & $(0.2474, -0.2474, 0)$ & $(-1, -1, 0)$ & 0.08 & $(0, 0, 0.039598)$ \\
+    2 & $(-0.2474, 0.2474, 0)$ & $(-1, -1, 0)$ & 0.08 & $(0, 0, -0.039598)$ \\
+    3 & $(0.25, 0, 0)$ & $(0, 0, -1)$ & 0.08 & $(0.02, 0, 0)$ \\
+    4 & $(0, 0.25, 0)$ & $(0, 0, -1)$ & 0.08 & $(0, -0.02, 0)$ \\
+  \end{tabular}
+  \caption{Actuator configuration}
+  \label{tbl:ActuatorConfiguration}
+\end{table}
+
+
+The role of the actuator module is to accept a desired moment in $\Re^3$ about the body's frame of reference and return what moment is capable with the limited actuator configuration and single direction fans.  The configuration listed in lines 4-13 represent the fan configuration displayed in Figure \ref{fig:TSatThrusters} with the addition of a hypothetical second clockwise fan to demonstrate how the request can be distributed among multiple fans if available.
+
+In the ``setup\_actuators'' function, each fan configuration is fed into the module which calculates the maximum possible moment using the fan's location, direction, and force.
 
 \begin{equation}
-  \bs{\omega}_d = \begin{bmatrix} 0 & 0 & 0.31416 \end{bmatrix}^T
-  \label{eqn:DesiredBodyRate}
+  M = \frac{F \bs{n} \times \bs{f_c}}{|\bs{n}|}
 \end{equation}
 
-Since the satellite is spin stabilized, the desired quaternion is not as straight forward.  With a goal of keeping the body's $z$-axis aligned with the global reference frame's $z$-axis the $q_3$ and $q_0$ quaternion values should be allowed to vary as $q_1$ and $q_2$ should remain at zero if no nutation exists.
+Lines 31-36 list the potential moments for each of the actuators loaded.  Lines 26-28 simulate a request by the controller module for a $(0.03, 0.01, 0.07)$ Nm moment.  Since the fans are mounted to create moments about one of the body reference frame axes, each component of the request is considered separately.  The $M_x = 0.03 Nm$ request can only be partially fulfilled by the Nx fan at max thrust producing a $0.02 Nm$ moment.  The $M_y = 0.01 Nm$ request is within the limits of the Ny fan but because the fan is single directional, the request can not be filled.  The $M_z = 0.07 Nm$ request can not be served by either the CCW1 or CCW2 fans alone but can be generated by both fans if they share the load.  The actuator module splits the request equally between the two CCW fans at 88\% of their max capacity.  In the end, of the initial $(0.03, 0.01, 0.07) Nm$ request is reduced to an attainable moment of $(0.02, 0, 0.07) Nm$.  At this point the information is provided to both``set\_level'' function that would relay the appropriate voltage requirements to the TableSat.  To finish up the request, the actuator module returns the attained moment which can enter a feedback to the estimator and control modules for more accurate system modeling.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+import numpy as np
+from TSatPy.Actuator import Actuator
+
+configs = [{'type': 'fan', 'args': {'name': 'CW',
+  'center': (0.2474, -0.2474, 0), 'direction': (-1, -1, 0), 'F': 0.08}
+},{'type': 'fan', 'args': {'name': 'CCW1',
+  'center': (-0.2474, 0.2474, 0), 'direction': (-1, -1, 0), 'F': 0.08}
+},{'type': 'fan', 'args': {'name': 'CCW2',
+  'center': (-0.2474, -0.2474, 0), 'direction': (1, -1, 0), 'F': 0.08}
+},{'type': 'fan', 'args': {'name': 'NY', 'center': (0.25, 0, 0),
+  'direction': (0, 0, 1), 'F': 0.08}
+},{'type': 'fan', 'args': {'name': 'NX', 'center': (0, 0.25, 0),
+  'direction': (0, 0, 1), 'F': 0.08}}]
+
+def set_level(act, power_level):
+    print 'Setting power level=%g for: %s' % (power_level, act)
+
+def setup_actuators(configs):
+    act = Actuator()
+    for config in configs:
+        act.add(config['type'], set_level, config['args'])
+    return act
+
+act = setup_actuators(configs)
+print(act)
+M = np.mat([0.03, 0.11, 0.07]).T
+print("Request moment: %s" % (M.T))
+print("Applied moment: %s" % (act.request_moment(M).T))
+
+# Prints Out
+# Actuator
+#  <Fan CW moment=(0, -0, -0.0279901)>
+#  <Fan CCW1 moment=(0, 0, 0.0279901)>
+#  <Fan CCW2 moment=(0, 0, 0.0279901)>
+#  <Fan NY moment=(0, -0.02, 0)>
+#  <Fan NX moment=(0.02, 0, 0)>
+# Request moment: [[ 0.03  0.11  0.07]]
+# Setting power level=1 for: <Fan NX moment=(0.02, 0, 0)>
+# Setting power level=1 for: <Fan CCW1 moment=(0, 0, 0.0279901)>
+# Setting power level=1 for: <Fan CCW2 moment=(0, 0, 0.0279901)>
+# Applied moment: [[ 0.02        0.          0.05598023]]
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+Prior implementations of TableSat generally stuck with a static actuator layout which requires a significant portion of time to rewrite code and/or rewire electronics to assess variations on the actuator layout.  With the use of TSatPy, most modifications to the actuators during testing can be done with just a change to the config structure that provides a much faster turn around time between tests.
+
+\subsection{Rate Control}
+\label{subsec:RateControl}
+
+The first of the three controls goals introduced at the start of Section \ref{sec:Controller}, is the rate control of the TableSat/MMS to control the $\omega_z$ body rate at a slow and steady $0.314$ rad/s while any body rates about the $\omega_x$ and $\omega_z$ axes be removed.  The rate controller works on the premise of accepting the estimator's guess at the state of the system and comparing that to a desired state.  Correction moments, $\bs{M}$, are calculated based on any differences in the estimated and desired states.
 
 \begin{equation}
-  \bs{q}_d = 0 \bs{i} + 0 \bs{j} + q_3 \bs{k} + q_0
-  \label{eqn:DesiredQuaternion}
+  \bs{M}(t_{k+1}) = f(\bs{\hat{x}}(t_{k+1}), \bs{x}_d, t)
+  \label{eqn:GeneralRateControl}
 \end{equation}
 
-\subsection{Quaternion Decomposition}
+\subsubsection{PID Rate Control}
+\label{subsubsec:PIDRateControl}
+
+A PID rate controller works very similar to the PID estimator.  The input to the estimator is two states with one composite state as the output.  The PID controller takes two states as input as well, but creates moments about the principle axes $M_x, M_y, M_z$.
+
+\begin{equation}
+  \bs{M}_{\omega}(t_{k+1}) = \bs{K}_{\omega p} \left( \bs{\omega}_d - \bs{\hat{\omega}}(t_{k+1}) \right)
+  \label{eqn:PIDRateControl}
+\end{equation}
+
+A proportional controller governed by Equation \ref{eqn:GeneralRateControl} is more than adequate level of control for a system with perfect measurements since the proportional component is not corrupted by noise.  Figure \ref{fig:PRateControl} shows the response to a randomly assigned initial body rates and how they converge to the desired state of $\omega_z = 0.314$ rad/sec, $\omega_x = \omega_y = 0$ rad/sec, and the proportion gain of
+
+\begin{equation}
+  \bs{K}_{\omega p} = \begin{bmatrix} 0.404 & 0 & 0 \\ 0 & 0.463 & 0 \\ 0 & 0 & 0.428 \end{bmatrix}
+\end{equation}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/p_rate_control.eps,width=6in}}
+  \caption{P rate control}
+  \label{fig:PRateControl}
+\end{figure}
+
+Expanding the proportional controller to include the integral and derivative term as shown in Equation \ref{eqn:PIDRateControl} can improve the performance slightly.  The addition correction terms generally reduce the overshoot of the response, but do not significantly shorten the time to bring the system to a steady state.
+
+\begin{equation}
+  \begin{aligned}
+    \bs{M}_{\omega}(t_{k+1}) &= \bs{K}_{\omega p} \bs{\omega}_e(t_{k+1}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k+1}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k+1}) \\
+    \bs{\omega}_e(t_{k+1}) &= \bs{\omega}_d - \bs{\hat{\omega}}(t_{k+1}) \\
+  \end{aligned}
+  \label{eqn:PRateControl}
+\end{equation}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/pid_rate_control.eps,width=6in}}
+  \caption{PID rate control}
+  \label{fig:PIDRateControl}
+\end{figure}
+
+The response curve in Figure \ref{fig:PIDRateControl} was generated with a random initial condition, and with the PID gains (Equation \ref{PIDRateControlGains}) tuned through a gradient descent iteration based off the total control effort.
+
+\begin{subequations}
+  \begin{align}
+    \bs{K}_{\omega p} &= \begin{bmatrix} 0.597 & 0 & 0 \\ 0 & 0.643 & 0 \\ 0 & 0 & 0.450 \end{bmatrix} \\
+    \bs{K}_{\omega i} &= \begin{bmatrix} 0.364 & 0 & 0 \\ 0 & 0.372 & 0 \\ 0 & 0 & 0.328 \end{bmatrix} \\
+    \bs{K}_{\omega d} &= \begin{bmatrix} 0.435 & 0 & 0 \\ 0 & 0.357 & 0 \\ 0 & 0 & 0.392 \end{bmatrix}
+  \end{align}
+  \label{PIDRateControlGains}
+\end{subequations}
+
+\subsubsection{Sliding Mode Controller}
+\label{subsubsec:SlidingModeController}
+
+The Sliding Mode Controller (SMC) has a similar format to the Sliding Mode Observer (SMO) in Section \ref{subsec:SlidingModeObserver}.  Since the estimator contains a state prediction component, it is not required in the controller, and since the attitude is not under consideration for the rate controller, the quaternion adjustment terms are also removed.
+
+\begin{subequations}
+  \begin{align}
+    \bs{M}_{\omega}(t_{k+1}) &= \bs{L}_{\omega} \bs{\omega}_e(t_{k+1}) + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e(t_{k+1}) \big)
+  \end{align}
+  \label{eqn:SMOControllerwithPredictionUnforcedMotion}
+\end{subequations}
+
+where
+
+\begin{equation}
+  \bs{1}_s \big(\bs{\omega}_e(t_{k+1}) \big) = sat \begin{bmatrix} \omega_{ex}(t_{k+1}) / S_{\omega} &0 &0 \\ 0 & \omega_{ey}(t_{k+1}) / S_{\omega} & 0 \\ 0 & 0 & \omega_{ez}(t_{k+1}) / S_{\omega} \end{bmatrix}
+\end{equation}
+
+Unlike the comparison of the PID estimator with the Sliding Mode Observer where they're performances were very similar, the parameter tuned SMC clearly out performs the parameter tuned PID controller for rate control with perfect estimates.  Figure \ref{fig:SMCRateControl} shows the response of the rate control SMC where the response time is approximately half the time of the PID controller, and also with consistently less overshoot.
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/smc_rate_control.eps,width=6in}}
+  \caption{SMC rate control}
+  \label{fig:SMCRateControl}
+\end{figure}
+
+The SMC in Figure \ref{fig:SMCRateControl}, was run with the following parameters tuned through a gradient descent algorithm.
+
+\begin{equation}
+    \bs{L}_{\omega} = \begin{bmatrix} 0.370 & 0 & 0 \\ 0 & 0.508 & 0 \\ 0 & 0 & 0.451 \end{bmatrix},
+    \bs{K}_{\omega} = \begin{bmatrix} 0.428 & 0 & 0 \\ 0 & 0.424 & 0 \\ 0 & 0 & 0.549 \end{bmatrix},
+    S_{\omega} = 0.511
+  \label{SMCRateControlGains}
+\end{equation}
+
+While the SMC seems the clear preference for rate control, the two methods will need to be reevaluated when combined with each of the estimation techniques running off of noisy measurements.
+
+\subsection{Nutation Correction}
+\label{subsec:NutationCorrection}
+
+Section \ref{subsubsec:PIDRateControl} covered the design of the rate controller which addresses the first goal of the controller to maintain a spin rate of $\omega_z = 3$ rpm.  This section will focus on the nutation control problem that to simplicity the overall controller design is decoupled from the rate control.  The combined control effort would be
+
+\begin{equation}
+    \bs{M}(t_{k+1}) = \bs{M}_{q}(t_{k+1}) + \bs{M}_{\omega}(t_{k+1})
+\end{equation}
+
+The nutation control will focus or the differences between the estimated quaternion attitude and the desired quaternion attitude.  The addition of the desired body rates of $\omega_x = \omega_y = 0$ can be added later if needed.  Since the work in Section \ref{sec:StateError} shows that working with the radian measure of the rotational quaternion had significant benefits over the traditional full state difference method, a similar approach will be used for the nutation control.
+
+\subsubsection{P Attitude Control}
+\label{subsubsec:PAttitudeControl}
+
+Starting with a simplest design of the proportional attitude control where the error quaternion $\bs{q}_e$ is defined in terms of the estimated quaternion $\bs{\hat{q}}$ and the desired quaternion attitude $\bs{q}_d$ as
+
+\begin{equation}
+  \bs{q}_e = \bs{\hat{q}}^* \otimes \bs{q}_d
+\end{equation}
+
+To generate the moments needed to correct for the error in attitude, the P controller can take advantage of the quaternion notation where the vector portion identifies the Euler axis, and whose components can be used as the basis for the correction moment by scaling them by the radian angular measurement of the error and a proportional gain.
+
+\begin{subequations}
+  \begin{align}
+    \bs{M}_{q}(t_{k+1}) &= \left[-2 K_{qp} \cos^{-1} \big(\hat{q}_{e0}(t_{k+1}) \big) \right] \bs{\hat{e}}_e(t_{k+1}) \\
+    \text{where } \bs{\hat{e}}_e(t_{k+1}) &= \frac{\bs{\hat{v}}_e(t_{k+1})}{|\bs{\hat{v}}_e(t_{k+1})|}
+  \end{align}
+  \label{eqn:PAttitudeControl}
+\end{subequations}
+
+To assess the basic functionality of the proportional quaternion in Equation \ref{eqn:PAttitudeControl}, the controller was run with $K_{qp} = 0.01$ and told to return the quaternion to the standard state with the body's reference frame aligned with the global reference frame.  The TableSat was given an initial condition of
+
+\begin{subequations}
+  \begin{align}
+    \bs{\hat{v}}_e &= 0\bs{i}+0.1\bs{j}+1 \bs{k}\\
+    \theta &= 1 \text{ rad} \\
+    \bs{\omega} &= \begin{bmatrix} 0 \\ -0.01 \\ 0.2 \end{bmatrix} \text{ rad/sec}
+  \end{align}
+\end{subequations}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/p_attitude_control.eps,width=6in}}
+  \caption{P Attitude Control}
+  \label{fig:PAttitudeControl}
+\end{figure}
+
+The results shown in \ref{fig:PAttitudeControl} are very promising.  The full three degree of freedom (DOF) object with an initial out of plane offset and initial body rates is able to oscillate about the desired set point with the use of a single gain being combined with the components of the current step's quaternion attitude.
+
+Combining the proportional attitude control in Equation \ref{eqn:PAttitudeControl} with the proportional body rate control in Equation \ref{eqn:PRateControl} gives
+
+\begin{subequations}
+  \begin{align}
+    \bs{M}(t_{k+1}) &= \left[-2 K_{qp} \cos^{-1} \big(\hat{q}_{e0}(t_{k+1}) \big) \right] \bs{\hat{e}}_e(t_{k+1}) + \bs{K}_{\omega p} \bs{\omega}_e(t_{k+1})\\
+    \text{where } \bs{\hat{e}}_e(t_{k+1}) &= \frac{\bs{\hat{v}}_e(t_{k+1})}{|\bs{\hat{v}}_e(t_{k+1})|} \\
+    \bs{\omega}_e(t_{k+1}) &= \bs{\omega}_d - \bs{\hat{\omega}}(t_{k+1})
+  \end{align}
+  \label{eqn:PAttitudeAndRateControl}
+\end{subequations}
+
+After an iterative gradient descent to minimize the control effort, the following gains provided the best performance against a variety of initial conditions.
+
+\begin{equation}
+  K_{qp} = 0.0912, \bs{K}_{\omega p} = \begin{bmatrix} 0.494 & 0 & 0 \\ 0 & 0.583 & 0 \\ 0 & 0 & 0.624 \end{bmatrix}
+\end{equation}
+
+Figure \ref{fig:PAttitudeRateControl} shows the system's response when bringing a system into the standard orientation from an initial condition of
+
+\begin{equation}
+  \bs{x}_0 = \begin{bmatrix} -0.202 \bs{i} -0.0581 \bs{j} -0.222 \bs{k} +0.952 \\ 0.585 \bs{i} +0.0919 \bs{j} +0.999 \bs{k} \end{bmatrix}
+\end{equation}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/p_attitude_and_rate_control.eps,width=6in}}
+  \caption{P Attitude and Rate Control}
+  \label{fig:PAttitudeRateControl}
+\end{figure}
+
+Another random initial condition test run under the same parameters, provides additional support for the choice of the multiplicative quaternion corrections and error quaternions.  With the system initialed to the state
+
+\begin{equation}
+  \bs{x}_0 = \begin{bmatrix} -0.0134 \bs{i} -0.0611 \bs{j} -0.0347 \bs{k} +0.997 \\ 0.259 \bs{i} +0.899 \bs{j} +0.402 \bs{k} \end{bmatrix}
+\end{equation}
+
+The response in Figure \ref{fig:PAttitudeRateControlWithAntipodalRollOver} shows that at about five seconds into the control run, the control effort moments jump.  This can happen when the system passes close to a point antipodal from the desired orientation.  The proportional rate controller is slowing down the initial body rates while the quaternion proportional controller is attempting to unwind the angle to bring the system back to the desired orientation.  At about five seconds into the test run, the rate controller has reduced much of the initial spin rate.  At that same time the attitude quaternion angle shows it is passing a point that requires a 3.14 radian turn to bring it back to the desired orientation.  At this point it is more efficient to allow the rotation around the rest of the rotation and ease it into the desired state rather that bringing the system to a halt and unwinding the whole way.  This behavior in advantageous, but the additional benefit of using the quaternion multiplicative correction is that it is built into the rotational quaternion that 0 and $2\pi$ are the same orientation.  So even though the desired orientation is a zero degree angle as was performed in Figure \ref{fig:PAttitudeRateControl}, this test converges the system to the more efficient $2\pi$ orientation as shown in the center graph in Figure \ref{fig:PAttitudeRateControlWithAntipodalRollOver}.
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/p_attitude_and_rate_control_with_180_roll_over.eps,width=6in}}
+  \caption{P Attitude and Rate Control with Antipodal Roll Over}
+  \label{fig:PAttitudeRateControlWithAntipodalRollOver}
+\end{figure}
+
+This proportional attitude controller has shown to work extremely well at correcting for a variety of conditions, but unlike the needs of the TableSat/MMS mission it's target attitude was the standard orientation of body rates aligned with the global reference frame and with no body rates.  The following sections will attempt to isolate and correct for a nutation outside of the spin plane independent of the rotation about the $z$-axis.
+
+\subsubsection{Quaternion Decomposition}
+% Not actually a subsection, but is worth a note in the table of contents for easy reference
+\addcontentsline{toc}{subsection}{\hspace*{2cm}Quaternion Decomposition}
 \label{subsec:QuaternionDecomposition}
 
-\section{Simulations}
-\label{sec:Simulations}
+In order to proceed with isolating and correcting for nutations out side of the global $xy$ spin plane, a method for quantifying the nutation from the quaternion attitude is required.  From Equation \ref{eqn:RotationalQuaternionDefinition}, the definition of the rotational quaternion shows that if the system is in a non-nutated state the $q_1$ and $q_2$ components must be zero.
 
-\section{Experimental Validation}
-\label{sec:ExperimentalValidation}
+\begin{equation}
+  \bs{q}_dn = 0 \bs{i} + 0 \bs{j} +q_3 \bs{k} + q_0
+  \label{eqn:NutationDesiredQuaternion}
+\end{equation}
+
+Since the state quaternion represents a single rotation about the Euler axis and a rotational quaternion can be composed from multiple quaternions through a quaternion multiplication (Section \ref{subsubsec:QuaternionMultiplication}), the attitude quaternion could be created from a rotation about the $z$ axis and a nutation.  The rotation $\bs{q}_r$ and nutation $\bs{q}_n$ quaternion are defined as
+
+\begin{subequations}
+  \begin{align}
+    \bs{q}_r &= 0 \bs{i} + 0 \bs{j} + r_3 \bs{k} + r_0\\
+    \bs{q}_n &= -n_1 \bs{i} - n_2 \bs{j} + 0 \bs{k} - n_0 \\
+    \text{where: } n_1 &= Q \cdot n_2 \\
+    n_2 &= \sqrt{\frac{1 - n_0^2}{Q^2 + 1}} \\
+    Q &= \frac{q_0 q_1 - q_2 q_3}{q_0 q_2 + q_1 q_3} \\
+    r_3 &= q_3 / n_0 \\
+    r_0 &= q_0 / n_0 \\
+    n_0 &= \sqrt{q_0^2 + q_3^2}
+  \end{align}
+  \label{eqn:DecomposeQuaternion}
+\end{subequations}
+
+This thesis will refer to the method decomposition of a quaternion through the method in equation \ref{eqn:DecomposeQuaternion} as
+
+\begin{subequations}
+  \begin{align}
+  \bs{\chi}_r(\bs{q}) &= \bs{q}_r \\
+  \bs{\chi}_n(\bs{q}) &= \bs{q}_n \\
+  \text{where: } \bs{q} &= \bs{q}_n \otimes \bs{q}_r
+  \end{align}
+\end{subequations}
+
+Equation \ref{eqn:DecomposeQuaternion} has been built into the TSatPy library for use in the controller.  The code snippet below demonstrates the decompose method at work.  Lines 3-4 define a known rotation and nutation.  At line 8 the normal multiplication operation has been converted to a quaternion multiplication to combine quaternions into a single attitude quaternion that may be encountered in a simulation or experimental test.  Recall from Section \ref{subsec:QuaternionAttitude} that the quaternion multiplication is not commutative, so this combination represents a rotation first then a nutation.  At line 11, the single quaternion representation is asked to break itself into a rotation and nutation quaternion according as defined in Equation \ref{eqn:DecomposeQuaternion}.  The resulting decomposition can been seen in lines 16-22 to match the chosen rotation and nutation.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.State import Quaternion
+
+q_r1 = Quaternion([0,0,1], radians=1.2)
+q_n1 = Quaternion([1,-1,0], radians=-0.2)
+print("q_r1: %s" % (q_r1))
+print("q_n1: %s" % (q_n1))
+
+q = q_n1 * q_r1
+print("q:    %s" % (q))
+
+q_r2, q_n2 = q.decompose()
+print("q_r2: %s" % q_r2)
+print("q_r2: %s" % q_n2)
+
+# Prints Out
+# q_r1: <Quaternion [-0 -0 -0.564642], 0.825336>
+# q_n1: <Quaternion [0.0705929 -0.0705929 0], 0.995004>
+
+# q:    <Quaternion [0.0981226 -0.0184031 -0.561822], 0.821212>
+
+# q_r2: <Quaternion [0 0 -0.564642], 0.825336>
+# q_r2: <Quaternion [0.0705929 -0.0705929 -0], 0.995004>
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+Now that there is a defined method for separating the allowed rotation from the unwanted nutations, the next section will incorporate it into a attitude controller.
+
+\subsubsection{P Nutation Control}
+\label{subsubsec:PNutationControl}
+
+Since the previous section's P-controller proved very successful at attitude control, this section will attempt to loosen the restrictions on the desired attitude to allow for free rotation about the global reference frame's $z$-axis while correcting for nutations out of the spin plane making use of the quaternion decomposition in Equation \ref{eqn:DecomposeQuaternion}.
+
+In this test, a random attitude was chosen and the controller's task was to bring the satellite level regardless of the point in the rotation about the $z$-axis.  From Equation \ref{eqn:PAttitudeControl},    As with previous test runs, parameters were tuned to obtain a minimum control effort.
+
+\begin{subequations}
+  \begin{align}
+    \bs{M}_{q} &= \left[-2 K_{qp} \cos^{-1} (q_{0}) \right] \bs{\hat{e}} \\
+    \text{where: } \bs{v} + q_0 &= \bs{\chi}_n(\bs{\hat{q}}_e)\\
+    \bs{\hat{e}} &= \frac{\bs{v}}{|\bs{v}|}
+  \end{align}
+  \label{eqn:PNutationControl}
+\end{subequations}
+
+The test was initialized at rest at an orientation of a 1.26 radian rotation about $-0.25 \bs{i} -0.406\bs{j} -0.879\bs{k}$.  With a proportional gain $K_{qp} = 0.152$, the P-controller behaved as a normal by oscillating back and forth about the desired orientation.  What is notable though is that even though the system was in a state rotated away from the standard orientation, the $M_z$ term remains 0 since the controller only uses the nutation portion of the quaternion state.
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/p_nutation_control.eps,width=6in}}
+  \caption{P Nutation Control}
+  \label{fig:PNutationControl}
+\end{figure}
+
+While this controller is correctly pushing the state to the spin plane there is no mechanism to damp out the oscillations.
+
+\subsubsection{P Rate and Nutation Control Starting at Rest}
+\label{subsubsec:PRateNutationControlStartingatRest}
+
+Since the proportional attitude control converged to the desired state through the addition of a proportional body rate controller, this section will add a body rate controller to the P-Nutation controller from the previous section.  Figure \ref{fig:PNutationRateControl} shows the result of a test with an initial conditions of $\bs{q}_0 = -0.289\bs{i} -0.0130 \bs{j} -0.154 \bs{k} + 0.945$ and body rates $\omega_x = \omega_f = \omega_z = 0$.  The proportional nutation and body rate controllers are run with the parameters
+
+\begin{equation}
+  K_{qp} = 0.268, \bs{K}_{\omega p} = \begin{bmatrix} 0.414 & 0 & 0 \\ 0 & 0.559 & 0 \\ 0 & 0 & 0.418 \end{bmatrix}
+\end{equation}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/p_nutation_and_rate_control.eps,width=6in}}
+  \caption{P Nutation and Rate Control}
+  \label{fig:PNutationRateControl}
+\end{figure}
+
+\subsubsection{P Rate and Nutation Control}
+\label{subsubsec:PRateNutationControl}
+
+\TODO{With initial spin}
+
+\subsubsection{PID Rate and Nutation Control}
+\label{subsubsec:PIDRateandNutationControl}
+
+\TODO{this}
+
+\subsubsection{SMC Rate and Nutation Control}
+\label{subsubsec:SMC}
+
+\TODO{this}
+
+\section{Nutation and Rate Control for Estimation Based Controllers}
+\label{sec:NutationandRateControlforEstimationBasedControllers}
+
+\TODO{Finish this}

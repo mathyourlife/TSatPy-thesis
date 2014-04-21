@@ -34,6 +34,29 @@ def TSatPyTeX():
             tex.write('\section*{TSatPy/%s}\label{code:TSatPy/%s}\n' % (fn.replace('_', '\_'), fn))
             tex.write('\inputminted[linenos,fontsize=\scriptsize]{python}{%s}\n' % f)
 
+
+def TSatPySamples():
+    sample_script_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), '../tex/sample_scripts'))
+    src_tex = os.path.join(os.path.dirname(__file__), 'sections/TSatPySamples.tex')
+
+    header = """
+\chapter{TSatPy Sample Scripts}
+\label{chap:tsatpy_samples}
+
+\linespread{1}
+"""
+
+    with open(src_tex, 'w') as tex:
+        tex.write(header)
+
+        for f in sorted(glob.glob('%s/*.py' % sample_script_dir)):
+            fn = f[len(sample_script_dir)+1:]
+            tex.write('\n')
+            tex.write('\pagebreak\n')
+            tex.write('\section*{%s}\label{code:TSatPySamples/%s}' % (fn.replace('_', '\_'), fn))
+            tex.write('\inputminted[linenos,fontsize=\scriptsize]{python}{%s}\n' % f)
+
+
 def MatlabOOTeX():
     code_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), '../beta_versions/matlab_object_oriented'))
     src_tex = os.path.join(os.path.dirname(__file__), 'sections/MatlabOOSource.tex')
@@ -64,4 +87,5 @@ def MatlabOOTeX():
 
 if __name__ == "__main__":
     TSatPyTeX()
+    TSatPySamples()
     MatlabOOTeX()

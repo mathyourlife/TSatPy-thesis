@@ -1,4 +1,31 @@
-\chapter{Conclusions}
+\chapter{CONCLUSIONS}
 \label{chap:Conclusions}
 
 The goal of this thesis was to determine the viability of the TableSat 1A's platform for comparison and experimental verification of various observer-based controllers.
+
+\TODO{Finish this}
+
+Estimator:
+  SMO bettor for initial response
+  Toss up between SMO/PID for ss response, SMO update state sooner, PID less error
+
+Controller:
+  SMC rate controller performs far better with perfect estimates
+
+State Error
+  Multiplicative quaternion corrections
+  Scaling based or the represented angle rather than the quaternion scalar
+  Estimating the vector quantities of the quaternion can interfere with the angular component, only control the use of the angular component (fewer parameters to tune)
+
+Python so much better than matlab for programming
+Slow progress to establish the foundation, but became faster as building blocks were created and vetted through unit tests
+
+run-time feedback ++
+
+Attitude control
+  Surprising level of control with just a single gain in a P-controller!!!
+
+
+Antipodal response with P-attitude and body rate control
+
+Quaternion decomposition Equation \ref{eqn:DecomposeQuaternion}

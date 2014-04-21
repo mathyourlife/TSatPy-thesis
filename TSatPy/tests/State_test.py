@@ -483,12 +483,14 @@ class TestEulerMomentEquations(unittest.TestCase):
 
         # Initial propagate to set the last time updated
         MockTime.return_value = 13
-        w = eme.propagate([-0.08125, 1.15125, 1.075])
+        M = State.Moment([-0.08125, 1.15125, 1.075])
+        w = eme.propagate(M)
         self.assertEquals(w, State.BodyRate([0.5, 0.1, 0.75]))
 
         # First propagate
         MockTime.return_value = 14
-        w = eme.propagate([-0.08125, 1.15125, 1.075])
+        M = State.Moment([-0.08125, 1.15125, 1.075])
+        w = eme.propagate(M)
 
         # Some floating point errors exist so account for slight variations
         w_check = State.BodyRate([0.51, 0.13, 1.25])
@@ -646,9 +648,10 @@ class TestPlant(unittest.TestCase):
 
         p = State.Plant(I, x, clock)
 
+        M = State.Moment([0, 0, 10])
         while clock.tick() <= end_time:
             MockTime.return_value += dt
-            p.propagate([0, 0, 10])
+            p.propagate(M)
 
         err = np.sum(np.abs(p.vel.w.w - State.BodyRate([0, 0, 20]).w))
 
