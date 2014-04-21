@@ -52,7 +52,7 @@ class PID(ControllerBase):
     Proportional-Integral-Derivative controller.
 
     Gains Kp, Ki, and Kd can be all or none defined.  Integral and derivative
-    calcualtions are time dependent so reference the `clock` instance as it
+    calcualtions are time dependent so reference the 'clock' instance as it
     can alter it's speed during a run.
 
     M = Kp * xe + Ki * sum(xe) + Kd * (xe - xe_last)
