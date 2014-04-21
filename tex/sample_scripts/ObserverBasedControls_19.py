@@ -3,7 +3,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 from TSatPy import Controller, State
-from TSatPy import StateOperators as SO
+from TSatPy import StateOperator as SO
 from TSatPy.Clock import Metronome
 from GradientDescent import GradientDescent
 

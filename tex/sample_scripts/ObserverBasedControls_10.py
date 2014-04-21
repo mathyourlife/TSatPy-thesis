@@ -1,5 +1,5 @@
 import sys
-from TSatPy import Estimator, State, StateOperators
+from TSatPy import Estimator, State, StateOperator
 from TSatPy.Clock import Metronome
 import numpy as np
 import matplotlib.pyplot as plt
@@ -65,16 +65,16 @@ def test(Lq, Lw, Kq, Kw, Sq, Sw):
     plant = State.Plant(I, x_ic, c)
     plant_est = State.Plant(I, State.State(), c)
 
-    L = StateOperators.StateGain(
-        StateOperators.QuaternionGain(Lq),
-        StateOperators.BodyRateGain(np.eye(3) * Lw))
-    K = StateOperators.StateGain(
-        StateOperators.QuaternionGain(Kq),
-        StateOperators.BodyRateGain(np.eye(3) * Kw))
+    L = StateOperator.StateGain(
+        StateOperator.QuaternionGain(Lq),
+        StateOperator.BodyRateGain(np.eye(3) * Lw))
+    K = StateOperator.StateGain(
+        StateOperator.QuaternionGain(Kq),
+        StateOperator.BodyRateGain(np.eye(3) * Kw))
 
-    Sx = StateOperators.StateSaturation(
-        StateOperators.QuaternionSaturation(Sq),
-        StateOperators.BodyRateSaturation(Sw))
+    Sx = StateOperator.StateSaturation(
+        StateOperator.QuaternionSaturation(Sq),
+        StateOperator.BodyRateSaturation(Sw))
 
     smo = Estimator.SMO(c, plant=plant_est)
     smo.set_S(Sx)

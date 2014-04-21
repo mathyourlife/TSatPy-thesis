@@ -2,7 +2,7 @@
 import time
 import numpy as np
 from TSatPy.Clock import Metronome
-from TSatPy import State, StateOperators, Estimator
+from TSatPy import State, StateOperator, Estimator
 
 c = Metronome()
 
@@ -22,16 +22,16 @@ def setup_pid():
     pid = Estimator.PID(c)
 
     k = 0.05
-    Kq = StateOperators.QuaternionGain(0.05)
-    Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
-    Kp = StateOperators.StateGain(Kq, Kw)
+    Kq = StateOperator.QuaternionGain(0.05)
+    Kw = StateOperator.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
+    Kp = StateOperator.StateGain(Kq, Kw)
 
     pid.set_Kp(Kp)
 
     k = 2
-    Kq = StateOperators.QuaternionGain(0)
-    Kw = StateOperators.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
-    Ki = StateOperators.StateGain(Kq, Kw)
+    Kq = StateOperator.QuaternionGain(0)
+    Kw = StateOperator.BodyRateGain([[k,0,0],[0,k,0],[0,0,k]])
+    Ki = StateOperator.StateGain(Kq, Kw)
 
     pid.set_Ki(Ki)
 

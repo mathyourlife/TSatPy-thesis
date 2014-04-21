@@ -472,7 +472,7 @@ The following snippet will demonstrate the implementation of the chosen state pa
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
 from TSatPy.State import State, Quaternion, BodyRate
-from TSatPy.StateOperators import QuaternionGain, BodyRateGain, StateGain
+from TSatPy.StateOperator import QuaternionGain, BodyRateGain, StateGain
 import numpy as np
 
 k_q = 0.25
@@ -535,7 +535,7 @@ The proportional estimator defined in Equation \ref{eqn:PEstimator} was implemen
 
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
-from TSatPy import StateOperators, Estimator, State
+from TSatPy import StateOperator, Estimator, State
 from TSatPy.Clock import Metronome
 import numpy as np
 
@@ -545,9 +545,9 @@ x_ic = State.State(
 print("x_ic:    %s" % (x_ic))
 
 k = 0.2
-Kp = StateOperators.StateGain(
-    StateOperators.QuaternionGain(k),
-    StateOperators.BodyRateGain(np.eye(3) * k))
+Kp = StateOperator.StateGain(
+    StateOperator.QuaternionGain(k),
+    StateOperator.BodyRateGain(np.eye(3) * k))
 print("Kp:  %s" % (Kp))
 
 c = Metronome()

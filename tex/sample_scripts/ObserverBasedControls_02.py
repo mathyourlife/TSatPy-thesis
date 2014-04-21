@@ -1,5 +1,5 @@
 from TSatPy.State import State, Quaternion, BodyRate
-from TSatPy.StateOperators import QuaternionGain, BodyRateGain, StateGain
+from TSatPy.StateOperator import QuaternionGain, BodyRateGain, StateGain
 import numpy as np
 
 k_q = 0.25

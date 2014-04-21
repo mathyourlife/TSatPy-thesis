@@ -2,7 +2,7 @@ import time
 import random
 import numpy as np
 import matplotlib.pyplot as plt
-from TSatPy import Estimator, State, StateOperators
+from TSatPy import Estimator, State, StateOperator
 from TSatPy.Clock import Metronome
 
 
@@ -62,17 +62,17 @@ def integrate_error(p,i,d):
     plant_est = State.Plant(I, State.State(), c)
 
     kp = {'q': p, 'w': 0.7}
-    Kp = StateOperators.StateGain(
-        StateOperators.QuaternionGain(kp['q']),
-        StateOperators.BodyRateGain(np.eye(3) * kp['w']))
+    Kp = StateOperator.StateGain(
+        StateOperator.QuaternionGain(kp['q']),
+        StateOperator.BodyRateGain(np.eye(3) * kp['w']))
     ki = {'q': i, 'w': 0.0}
-    Ki = StateOperators.StateGain(
-        StateOperators.QuaternionGain(ki['q']),
-        StateOperators.BodyRateGain(np.eye(3) * ki['w']))
+    Ki = StateOperator.StateGain(
+        StateOperator.QuaternionGain(ki['q']),
+        StateOperator.BodyRateGain(np.eye(3) * ki['w']))
     kd = {'q': d, 'w': 0.0}
-    Kd = StateOperators.StateGain(
-        StateOperators.QuaternionGain(kd['q']),
-        StateOperators.BodyRateGain(np.eye(3) * kd['w']))
+    Kd = StateOperator.StateGain(
+        StateOperator.QuaternionGain(kd['q']),
+        StateOperator.BodyRateGain(np.eye(3) * kd['w']))
 
     pid = Estimator.PID(c, plant=plant_est)
     pid.set_Kp(Kp)

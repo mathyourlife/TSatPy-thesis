@@ -1,4 +1,4 @@
-from TSatPy import StateOperators, Estimator, State
+from TSatPy import StateOperator, Estimator, State
 from TSatPy.Clock import Metronome
 import numpy as np
 
@@ -8,9 +8,9 @@ x_ic = State.State(
 print("x_ic:    %s" % (x_ic))
 
 k = 0.2
-Kp = StateOperators.StateGain(
-    StateOperators.QuaternionGain(k),
-    StateOperators.BodyRateGain(np.eye(3) * k))
+Kp = StateOperator.StateGain(
+    StateOperator.QuaternionGain(k),
+    StateOperator.BodyRateGain(np.eye(3) * k))
 print("Kp:  %s" % (Kp))
 
 c = Metronome()

@@ -1,22 +1,66 @@
+"""
+Use this to communicate with the TableSat
+
+Example::
+
+    def got_it(*args):
+        print 'got_it'
+
+    import time
+    bind_port = 9877
+    send_to = ('127.0.0.1', 9878)
+    u = UDP(bind_port, send_to)
+
+    u.add_callback(104, got_it)
+
+    with open('104.msg') as f:
+        msg104 = f.read()
+    with open('63.msg') as f:
+        msg63 = f.read()
+    with open('64.msg') as f:
+        msg64 = f.read()
+
+    u.send(104, 1)
+    time.sleep(0.1)
+    u.recieve()
+    print u.msg
+
+    u.send(104, 1)
+    time.sleep(0.1)
+    u.recieve()
+    print u.msg
+
+"""
 
 import socket
 import struct
+import time
 from io import BytesIO
 from collections import defaultdict
 
 
 def ReadAckMsg(msg):
+    """
+    A read ack message handler
+    """
     return msg[0] == 1
 
 
 def EndDataMsg(msg):
+    """
+    End of data message handler
+    """
     pass
 
 
 def ReadRawData(msg):
+    """
+    Raw data message handler
+    """
     return [float(v) for v in msg]
 
 
+# Define the prearranged message structure
 MSG_HANDLERS = {
     2:   ['!B', 1, ReadAckMsg, 'Set run mode'],
     4:   ['!B', 1, None, 'Set run mode'],
@@ -45,6 +89,15 @@ class UDP_Payload_Size(UDP_Err):
 
 
 class UDP(object):
+    """
+    Define the UDP message interface.  Data gets packed in a [msglen][msgdata]
+    structure in the same manner as a DNS packet.
+
+    :param bind_port: receive UDP messages on this port
+    :type  bind_port: integer
+    :param send_to: the destination address (host, port)
+    :type  send_to:
+    """
 
     HEADER_FMT = '!5B'
 
@@ -59,6 +112,9 @@ class UDP(object):
         self.sock.setblocking(0)
 
     def set_fan(self, v):
+        """
+        Helper method to send desired voltages
+        """
         self.send(18, v)
 
     def send(self, msg_num, msg_data):
@@ -112,31 +168,3 @@ class UDP(object):
 
     def remove_callback(self, msg_num, callback):
         self.callbacks[msg_num].add(callback)
-
-
-# def got_it(*args):
-#     print 'got_it'
-
-# import time
-# bind_port = 9877
-# send_to = ('127.0.0.1', 9878)
-# u = UDP(bind_port, send_to)
-
-# u.add_callback(104, got_it)
-
-# with open('104.msg') as f:
-#     msg104 = f.read()
-# with open('63.msg') as f:
-#     msg63 = f.read()
-# with open('64.msg') as f:
-#     msg64 = f.read()
-
-# u.send(104, 1)
-# time.sleep(0.1)
-# u.recieve()
-# print u.msg
-
-# u.send(104, 1)
-# time.sleep(0.1)
-# u.recieve()
-# print u.msg

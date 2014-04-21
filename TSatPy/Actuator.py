@@ -88,7 +88,7 @@ class Actuator(object):
         :type  direction: list/tuple
         :param F: max force capable
         :type  F: numeric
-        :returns: configured fan instance
+        :return: configured fan instance
         :rtype: Actuator.Fan
         """
         # No pre processing needed here yet
@@ -108,7 +108,7 @@ class Actuator(object):
 
         :param M: moment requested (3x1)
         :type  M: numpy.matrix
-        :returns: Actual moment (3x1)
+        :return: Actual moment (3x1)
         :rtype: numpy.matrix
         """
         levels = []
@@ -116,25 +116,25 @@ class Actuator(object):
         for idx in xrange(3):
             members = []
             # define the axis being calculated
-            axis = np.mat([0,0,0], dtype=np.float).T
+            axis = np.mat([0, 0, 0], dtype=np.float).T
             axis[idx, 0] = 1.0
 
             # Find actuators that can contribute and the max
             # if they were all on
             total = 0
             for act in self.actuators:
-                if M[idx,0] == 0:
+                if M[idx, 0] == 0:
                     continue
-                if not np.sign(M[idx,0]) == np.sign(act.moment[idx,0]):
+                if not np.sign(M[idx, 0]) == np.sign(act.moment[idx, 0]):
                     continue
-                total += act.moment[idx,0]
+                total += act.moment[idx, 0]
                 members.append(act)
 
             # Calculate the percent of the total moment needed
             if total == 0:
                 levels.append((0, 0))
                 continue
-            level = min(M[idx,0] / total, 1.0)
+            level = min(M[idx, 0] / total, 1.0)
 
             # Send the level needed via callback method
             for act in members:
@@ -149,6 +149,12 @@ class Actuator(object):
         ])
 
     def __str__(self):
+        """
+        Pretty print version of the object
+
+        :return: readable instance
+        :rtype: str
+        """
         act_str = [self.__class__.__name__]
         for act in self.actuators:
             act_str.append(' ' + str(act))
@@ -159,6 +165,12 @@ class ActuatorBase(object):
     """
     Base level actuator
     """
+    def _set_level(self, *args, **kwargs):
+        """
+        Empty method to be overridden
+        """
+        pass
+
     def set_level(self, act, level):
         """
         Helper method so the instance and level can be passed back
@@ -197,7 +209,7 @@ class Fan(ActuatorBase):
 
         # Make sure the direction is a unit vector or the answer will
         # get scaled incorrectly
-        self.direction = self.direction/np.sqrt(
+        self.direction = self.direction / np.sqrt(
             self.direction.T * self.direction)
 
         # Calculate the max moment possible via moment arm
@@ -209,8 +221,14 @@ class Fan(ActuatorBase):
             raise ActuatorException(msg)
 
     def __str__(self):
+        """
+        Pretty print version of this instance
+
+        :return: readable instance
+        :rtype: str
+        """
         moment = '(%g, %g, %g)' % (
-            self.moment[0,0], self.moment[1,0], self.moment[2,0])
+            self.moment[0, 0], self.moment[1, 0], self.moment[2, 0])
         fan_str = '<%s %s moment=%s>' % (
             self.__class__.__name__, self.name, moment)
         return fan_str
