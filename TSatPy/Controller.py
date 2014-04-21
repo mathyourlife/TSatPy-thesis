@@ -55,6 +55,8 @@ class PID(ControllerBase):
     calcualtions are time dependent so reference the `clock` instance as it
     can alter it's speed during a run.
 
+    M = Kp * xe + Ki * sum(xe) + Kd * (xe - xe_last)
+
     :param clock: system clock that can run at different speeds
     :type  clock: Metronome.Clock
     """
@@ -168,8 +170,14 @@ class PID(ControllerBase):
 
 class SMC(ControllerBase):
     """
-    A sliding mode observer takes the form of
-    x(k+1) = x(k) + L*x_e(k) + K*1s(x_e(k))
+    A sliding mode controller starts as a proportional controller, but
+    is also offset by a saturation based function.
+
+    Luenberger gain plus a saturation function
+    M = L*x_e + K*1s(x_e)
+
+    :param clock: system clock that can run at different speeds
+    :type  clock: Metronome.Clock
     """
 
     def __init__(self, clock):
