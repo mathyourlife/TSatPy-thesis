@@ -1,3 +1,17 @@
+"""
+StateOperators module
+
+This module contains definitions for methods that can be applied to items
+from the TSatPy.State module.  The logic here is all meant to either modify
+the existing form of the instance or convert it to a new type of object.
+A common use case is for gains.  Since the objects in the State module are
+not generally just a matrix transformation this will ensure the modifications
+are made in a consistent and robust manner.
+
+
+
+"""
+
 
 import numpy as np
 from TSatPy import State
@@ -110,7 +124,7 @@ class QuaternionGain(object):
         kpc = self.K * np.arccos(s)
         if kpc == 0:
             return State.Identity()
-        gamma = np.sqrt((q.vector.T * q.vector)[0,0] / (np.sin(kpc))**2)
+        gamma = np.sqrt((q.vector.T * q.vector)[0, 0] / (np.sin(kpc)) ** 2)
 
         return State.Quaternion(
             q.vector / gamma,
@@ -238,7 +252,7 @@ class BodyRateSaturation(object):
         :param rho: threshold for saturation function
         :type  rho: numeric
         """
-        self.rho = np.ones((3,1)) * float(rho)
+        self.rho = np.ones((3, 1)) * float(rho)
 
     def __mul__(self, w):
         """
@@ -253,7 +267,7 @@ class BodyRateSaturation(object):
         return State.BodyRate(w_sat)
 
     def __str__(self):
-        return '<%s <rho %s>>' % (self.__class__.__name__, str(self.rho[0,0]))
+        return '<%s <rho %s>>' % (self.__class__.__name__, str(self.rho[0, 0]))
 
 
 class StateSaturation(object):

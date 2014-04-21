@@ -8,6 +8,7 @@ to push the current state to the desired.
 import numpy as np
 from TSatPy import State, StateOperators as SO
 
+
 class ControllerException(Exception):
     pass
 
@@ -21,7 +22,6 @@ class ControllerBase(object):
         # Default desired state
         self.x_d = State.State()
 
-
     def set_desired_state(self, x_d):
         # A straight replacement could destroy uses of references to the
         # object.  Replace underlying data instead.
@@ -31,6 +31,7 @@ class ControllerBase(object):
 
     def update(self, x, M=None):
         pass
+
 
 class PID(ControllerBase):
     def __init__(self, clock, **kwargs):
@@ -157,5 +158,3 @@ class SMC(ControllerBase):
         gains.append(' K %s' % self.K)
         gains.append(' S %s' % self.S)
         return '\n'.join(gains)
-
-

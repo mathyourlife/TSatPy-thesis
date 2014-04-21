@@ -166,7 +166,7 @@ class Quaternion(object):
         v = self.vector
         v_mag = np.sqrt((v.T * v)[0, 0])
         if v_mag == 0:
-            v = np.mat([0,0,0]).T
+            v = np.mat([0, 0, 0]).T
         else:
             v = v / v_mag
 
@@ -263,11 +263,10 @@ class Quaternion(object):
         :return: LaTeX quaternion str
         :rtype: str
         """
-        msg = '%g \\boldsymbol{i} %+g \\boldsymbol{j} %+g \\boldsymbol{k} %+g' % (
-            self.vector[0, 0], self.vector[1, 0], self.vector[2, 0],
-            self.scalar
-        )
-        return msg
+        msg = '%g \\boldsymbol{i} %+g \\boldsymbol{j} %+g \\boldsymbol{k} %+g'
+        data = (self.vector[0, 0], self.vector[1, 0], self.vector[2, 0],
+            self.scalar)
+        return msg % data
 
     def __str__(self):
         """

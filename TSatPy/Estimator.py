@@ -73,7 +73,6 @@ class Estimator(object):
         return '\n'.join(est_str)
 
 
-
 class EstimatorBase(object):
 
     def __init__(self, clock, plant=None, ic=None):
@@ -243,5 +242,3 @@ class SMO(EstimatorBase):
         gains.append(' K %s' % self.K)
         gains.append(' S %s' % self.S)
         return '\n'.join(gains)
-
-
