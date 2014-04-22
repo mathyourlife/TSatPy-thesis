@@ -46,7 +46,7 @@ class TestQuaternionBasics(unittest.TestCase):
     def test_latex(self):
         vec = [1, 2, 3]
         q = State.Quaternion(vec,  4)
-        q_str = '1 \\boldsymbol{i} +2 \\boldsymbol{j} +3 \\boldsymbol{k} +4'
+        q_str = r'1 \boldsymbol{i} +2 \boldsymbol{j} +3 \boldsymbol{k} +4'
         self.assertEquals(q_str, q.latex())
 
     def test_definition(self):
@@ -476,7 +476,8 @@ class TestBodyRate(unittest.TestCase):
 
     def test_latex(self):
         w = State.BodyRate([1, -2, 3.5])
-        self.assertEquals('1 \\boldsymbol{i} -2 \\boldsymbol{j} +3.5 \\boldsymbol{k}', w.latex())
+        latex = r'1 \boldsymbol{i} -2 \boldsymbol{j} +3.5 \boldsymbol{k}'
+        self.assertEquals(latex, w.latex())
 
 
 class TestEulerMomentEquations(unittest.TestCase):
@@ -587,6 +588,16 @@ class TestState(unittest.TestCase):
         self.assertEquals(x, x1)
         self.assertEquals(pre_id, id(x1))
 
+    def test_latex(self):
+        vec = [1, 2, 3]
+        q = State.Quaternion(vec,  4)
+        w = State.BodyRate([1, -2, 3.5])
+        x = State.State(q, w)
+
+        latex = (r'1 \boldsymbol{i} +2 \boldsymbol{j} +3 \boldsymbol{k} +4',
+            r'1 \boldsymbol{i} -2 \boldsymbol{j} +3.5 \boldsymbol{k}')
+        self.assertEquals(latex, x.latex())
+
 
 class TestStateError(unittest.TestCase):
     def test_state_error(self):
@@ -637,8 +648,8 @@ class TestPlant(unittest.TestCase):
 
         p = State.Plant(I, x, clock)
         expected = {
-            'q': '-0.5 \\boldsymbol{i} -2.5 \\boldsymbol{j} +1 \\boldsymbol{k} -3',
-            'w': '0 \\boldsymbol{i} +0 \\boldsymbol{j} -2 \\boldsymbol{k}',
+            'q': r'-0.5 \boldsymbol{i} -2.5 \boldsymbol{j} +1 \boldsymbol{k} -3',
+            'w': r'0 \boldsymbol{i} +0 \boldsymbol{j} -2 \boldsymbol{k}',
         }
         self.assertEquals(p.latex(), expected)
 
@@ -694,7 +705,7 @@ class TestPlant(unittest.TestCase):
 
         self.assertEquals(p.x, x_pre)
 
-class TestPlant(unittest.TestCase):
+class TestMoment(unittest.TestCase):
 
     def test_init(self):
         M = State.Moment([1,2,3])
@@ -731,17 +742,10 @@ class TestPlant(unittest.TestCase):
 
     def test_latex(self):
         M = State.Moment([3,-5.2,6])
-        msg = '3 \boldsymbol{i} -5.2 \boldsymbol{j} +6 \boldsymbol{k}'
+        msg = r'3 \boldsymbol{i} -5.2 \boldsymbol{j} +6 \boldsymbol{k}'
         self.assertEquals(M.latex(), msg)
 
-    def test_latex(self):
+    def test_str(self):
         M = State.Moment([3,-5.2,6])
         msg = '<Moment [3 -5.2 6]>'
         self.assertEquals(str(M), msg)
-
-
-
-
-
-
-
