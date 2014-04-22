@@ -43,6 +43,7 @@ class Estimator(object):
     Example::
 
         # Setup a PID and SMO estimator to run in parallel
+        clock = Metronome()
         configs = [{'type': 'pid',
          'args': {'kpq': 0.0735,'kpw': 0.7,'kiq': 0.000863,
                   'kiw': 0,'kdq': 0.00812,'kdw': 0}
@@ -50,9 +51,9 @@ class Estimator(object):
          'args': {'Lq': 0.3619,'Lw': 0.3752,'Kq': 0.3076,
                    'Kw': 0.4994,'Sq': 0.4191,'Sw': 0.0052}}]
 
-        est = Estimator(configs)
+        est = Estimator(clock)
         for config in configs:
-            est.add(config['type'], plant_est, config['args'])
+            est.add(config['type'], plant, config['args'])
 
         est.update(x_m)
 
