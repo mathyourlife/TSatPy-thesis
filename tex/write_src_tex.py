@@ -62,8 +62,8 @@ def MatlabOOTeX():
     src_tex = os.path.join(os.path.dirname(__file__), 'sections/MatlabOOSource.tex')
 
     header = """
-\chapter{Matlab Object Oriented Source Code}
-\label{ch:MatlabObjectOrientedSourceCode}
+\chapter{NSS Object Oriented Source Code}
+\label{ch:NSSObjectOrientedSourceCode}
 
 \linespread{1}
 """
@@ -78,7 +78,7 @@ def MatlabOOTeX():
             fn = f[len(code_dir)+1:]
             tex.write('\n')
             tex.write('\pagebreak\n')
-            tex.write('\section*{MatlabOO/%s}\label{code:MatlabOO/%s}\n' % (fn.replace('_', '\_'), fn))
+            tex.write('\section*{NSS/%s}\label{code:NSS/%s}\n' % (fn.replace('_', '\_'), fn))
             tex.write('\inputminted[linenos,fontsize=\scriptsize]{matlab}{%s}\n' % f)
 
             # tex.write('\section{MatlabOO/%s}\label{code:MatlabOO/%s}\n' % (fn.replace('_', '\_'), fn))

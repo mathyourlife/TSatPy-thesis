@@ -1,5 +1,5 @@
 
-\chapter{Estimators}
+\chapter{ESTIMATORS}
 \label{chap:Estimators}
 
 Section \ref{chap:StateError} explained the rationale for the state representations and how adjustments can be applied to them in a manner than preserves the integrity of it's connection to the TableSat/MMS's physical orientation.  Usage of the gains are also done to make the effects of gain tuning more intuitive.
@@ -419,3 +419,5 @@ if __name__ == '__main__':
   \end{minted}
 \nocite{minted}
 \end{singlespace}
+
+The TableSat 1A controller has performance requirements based off of NASA MMS's mission parameters.  Section \ref{sec:ComparativeAnalysysofPIDandSMOEstimators} demonstrated that multiple estimators can be run in parallel during both simulations and experimental runs.  As discussed above, this allows for a better insight into performance differences in estimation methods.  An additional benefit to running the controller through TSatPy is the ability to perform estimator scheduling.  Like gain scheduling which for an estimator or controller can modify what gains it uses depending on the current performance, estimator scheduling allows for switching between disparate estimation techniques during run-time.  For example, one estimator tuned for responding to large errors and run along side an estimator tuned for steady state performance.  The control algorithm can then receive more accurate state estimates on a wider range of environmental conditions.

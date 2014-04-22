@@ -173,22 +173,7 @@ One point of confusion when working with quaternions is the placement of the sca
   \bs{q} = \bs{v} + q_0 = q_1 \bs{i} + q_2 \bs{j} + q_3 \bs{k} + q_0
 \end{equation}
 
-In academic literature, the difference is not terribly significant as the notation is generally defined by the author or the reader can recognize the variation in structure.  For example in Equation \ref{eqn:OmegaMatrix}, written in a scalar last format, is composed from a 3x3, 3x1, 1x3, and 1x1.  During implementation, mixing of scalar first matrices with scalar last matrices can be a troublesome source of error.  As will be described more in Chapter \ref{chap:TSatPy}, the implementation in this thesis is done in an object oriented manner so it can handle either the scalar first or scalar last format.
-
-\begin{singlespace}
-  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
-from TSatPy.State import Quaternion
-q = Quaternion(vector=[1,2,3], scalar=4)
-print(q)
-q = Quaternion(scalar=0, vector=[1,2,3])
-print(q)
-
-# Prints Out
-# <Quaternion [1 2 3], 4>
-# <Quaternion [1 2 3], 0>
-  \end{minted}
-  \nocite{minted}
-\end{singlespace}
+In academic literature, the difference is not terribly significant as the notation is generally defined by the author or the reader can recognize the variation in structure.  For example in Equation \ref{eqn:OmegaMatrix}, written in a scalar last format, is composed from a 3x3, 3x1, 1x3, and 1x1.  During implementation, mixing of scalar first matrices with scalar last matrices can be a troublesome source of error.
 
 \subsubsection{Rotational Quaternion}
 \label{subsubsec:RotationalQuaternion}
@@ -210,53 +195,12 @@ A $-\theta$ is used rather than a the positive value to represents points on the
   \left| \hat{\bs{e}} \sin \left( \frac{-\theta}{2} \right) + \cos \left( \frac{-\theta}{2} \right) \right| = \left| \hat{\bs{e}} \right|  \sin^2 \left( \frac{-\theta}{2} \right) + \cos^2 \left( \frac{-\theta}{2} \right) = 1
 \end{equation}
 
-Creating a rotational quaternion from the TSatPy (Chapter \ref{chap:TSatPy}) is done with
-
-\begin{singlespace}
-  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
-from TSatPy.State import Quaternion
-
-q = Quaternion(vector=[1,2,3], radians=4)
-e, theta = q.to_rotation()
-
-print(q)
-print("Euler axis: <%g, %g, %g>" % (e[0,0], e[1,0], e[2,0]))
-print("Rotation: %g radians" % theta)
-
-# Prints Out
-# <Quaternion [-0.24302 -0.48604 -0.72906], -0.416147>
-# Euler axis: <-0.267261, -0.534522, -0.801784>
-# Rotation: 4 radians
-  \end{minted}
-  \nocite{minted}
-\end{singlespace}
-
-
 \subsubsection{Quaternion Multiplication}
 \label{subsubsec:QuaternionMultiplication}
 
 The quaternion multiplication noted with the infix operator $\otimes$, is the keystone to the attitude state manipulation and is used to produce incremental changes in the satellite's attitude.  If $\bs{a}$ represents a $n$ degree rotation about axis $\hat{e}$, then a $4n$ degree rotation about axis $\hat{e}$ can be represented as $\bs{a} \otimes \bs{a} \otimes \bs{a} \otimes \bs{a}$.
 
-The example below shows how this incremental changes holds true with the TSatPy library.
-
-\begin{singlespace}
-  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
-from TSatPy.State import Quaternion
-
-a = Quaternion([1,2,3], radians=0.5)
-b = Quaternion([1,2,3], radians=2)
-print("a             = %s" % a)
-print("a * a * a * a = %s" % (a * a * a * a))
-print("b             = %s" % b)
-# Prints Out
-# a             = <Quaternion [-0.0661215 -0.132243 -0.198364], 0.968912>
-# a * a * a * a = <Quaternion [-0.224893 -0.449785 -0.674678], 0.540302>
-# b             = <Quaternion [-0.224893 -0.449785 -0.674678], 0.540302>
-  \end{minted}
-  \nocite{minted}
-\end{singlespace}
-
-Let $\bs{a}$ and $\bs{b}$ represent two quaternions where
+Let two quaternions $\bs{a}$ and $\bs{b}$ be represented as
 
 \begin{subequations}
 \begin{align}
@@ -326,19 +270,12 @@ From here, the square matrix can be decomposed into sections based on if they ge
   \label{eqn:QuaternionMultiplicationDerived}
 \end{equation}
 
-This quaternion class for TSatPy as will be covered in Chapter \ref{chap:TSatPy} allows for the a very close representation of Equation \ref{eqn:QuaternionMultiplicationDerived}.  Section \ref{subsubsec:QuaternionMultiplication} includes a small example of quaternion multiplication and the following snippet is the implementation of the quaternion multiplication which reads and is used similarly to how the quaternion algebra is written.
+This quaternion class for TSatPy as will be covered in Chapter \ref{chap:TSatPy} allows for the a very close representation of Equation \ref{eqn:QuaternionMultiplicationDerived}.
 
-\begin{singlespace}
-  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
-class Quaternion(object):
-    def __mul__(self, q):
-        v = (self.x + np.eye(3) * self.scalar) * q.vector
-        v += self.vector * q.scalar
-        s = self.scalar * q.scalar - (self.vector.T * q.vector)[0, 0]
-        return Quaternion(v, s)
-  \end{minted}
-  \nocite{minted}
-\end{singlespace}
+% The advantage to this notation is that is much easier to run in a matlab or other scripting language, but its layout is specific to our definition of the matrix where the scalar value follows the vector.  There is not clear consensus from the boader community on whether the vector or scalar should come first.  This can cause large issues when implementing a system using a externally provided library since both implementations expect a 4x4 matrix, and combining the logic from the two systems would require either rewritting of systems or spending extra cycles on the interface between the two systems converting the matrices from a scalar first to a scalar last layout and vice versa.
+
+% The object oriented nature of the code written for this thesis reduces or eliminates the confusion.  When an instance of a quaternion class is created, the vector and scalar values are set as separate parameters on the object regardless of order.  So when used in computation the $\Re^3$ and $\Re^1$ values can be referenced directly through the vector and scalar properties respectively.  Chapter \ref{ch:object_oriented} will cover the structure of the code developed for the thesis in greater detail.  The specific code that governs interactions between quaternions in the model is in section \ref{code:lib/@quaternion/quaternion.m}.
+
 
 \subsubsection{Rotating a Point with Quaternions}
 \label{subsubsec:RotatingaPointwithQuaternions}
@@ -367,31 +304,15 @@ For the visualization, a point $A (2, 4, -1)$ that in the standard orientation o
   A' = \bs{R_q} A = \begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \\\end{bmatrix} \begin{bmatrix} 2 \\ 4 \\ -1 \end{bmatrix} = \begin{bmatrix} -4 \\ 2 \\ -1 \end{bmatrix}
 \end{equation}
 
-The equivalent TSatPy implementation of this point rotation is
-
-\begin{singlespace}
-  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
-from TSatPy.State import Quaternion
-import numpy as np
-
-A = np.mat([2, 4, -1]).T
-q = Quaternion([0,0,1], radians=np.pi/2)
-
-print(q.rmatrix * A)
-
-# Prints out
-# [[-4.]
-#  [ 2.]
-#  [-1.]]
-  \end{minted}
-  \nocite{minted}
-\end{singlespace}
-
-
 \subsubsection{Quaternion-based Attitude Visualization}
 \label{subsubsec:QuaternionbasedAttitudeVisualization}
 
+% One of the largest challenges with running both simulations and live control models is having access to meaningful representations of how the system is performing.  Matlab simulations are generally performed through either running of m-file scripts and analyzing logged data in a batch format after the run, or using Matlab Simulink to produce line plots of values tracked during the simulation run.
+
+
 Now that we have a method for calculating the new position of a point from an initial position, we can extend the process to a collection of points that create a wireframe for the TableSat model.  Once this base wireframe is defined, the estimated attitude of the system can be visualized.  The if the system's estimator determines that TableSat is at an attitude of $\bs{q} = -0.38\bs{i}-0.07\bs{j}+0.91\bs{k}+0.16$, that is equivalent to a 161 degree rotation about the axis $\bs{\hat{e}} = <0.38, 0.07, -0.92>$.  Figure \ref{fig:TSatWireframe} shows the TableSat wireframe in its default configuration with body axes align with the global reference frame.  The red dashed line shown is the axis of rotation.
+
+% Ideally, generating and updating a rendered model of the system at simulation time can improve the ability to attain the desired system behavior.
 
 \begin{figure}[H]
   \centerline{\psfig{file=figures/q_rotation_start.eps,height=3in}}
@@ -408,8 +329,8 @@ The collection of the points in the TableSat wireframe can be rotated as the sin
 \end{figure}
 
 
-\subsubsection{Incremental Rotations}
-\label{subsubsec:IncrementalRotations}
+\subsubsection{Incremental Quaternion Rotations}
+\label{subsubsec:IncrementalQuaternionRotations}
 
 The quaternion's definition based on Euler's theorem of a rotation about a single axis makes tracking the orientation of a spin stabilized satellite an easier process.  NASA's MMS mission has a target spin rate of 3 rpm (~0.314 rad/sec).  A rotational quaternion representing the per second rotation about the z-axis is
 
@@ -430,48 +351,189 @@ In an open loop system, the best estimate of the systems state would be to apply
   \label{eqn:3rpmQuaternionEquation}
 \end{equation}
 
-Using the TSatPy code, equation \ref{eqn:3rpmQuaternionEquation} can be implemented as
+\subsubsection{Quaternion Decomposition}
+\label{subsubsec:QuaternionDecomposition}
 
-\begin{singlespace}
-  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
-from TSatPy.State import Quaternion
-import time
-import numpy as np
+The attitude of TSat is represented by a single quaternion.  The change in attitude between two states can be modeled by the a rotation about a single axis.  Figure \ref{fig:PreDecomposedQuaternion} show the attitude of a system described by the quaternion $\bs{q} = [\alpha, \beta, \phi], 0.16953$ which is a rotation of 2.8 radians about the axis $[\alpha, \beta, \phi]^T$.  For control purposes, decomposing the single quaternion into one representing a rotation about the z-axis and a second rotation about an axis in the x-y plane as shown in Figure \ref{fig:PostDecomposedQuaternion}.
 
-q_rps = Quaternion([0,0,1], radians=np.pi/10)
-print('Quaternion spin rate (rad/sec)\n %s' % q_rps)
+\begin{figure}[H]
+  \begin{subfigure}[h!]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{figures/quaternion_decompose_pre.eps}
+    \caption{Quaternion State}
+    \label{fig:PreDecomposedQuaternion}
+  \end{subfigure}
+  ~
+  \begin{subfigure}[h!]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{figures/quaternion_decompose_post.eps}
+    \caption{Decomposed State}
+    \label{fig:PostDecomposedQuaternion}
+  \end{subfigure}
+  \caption{Decomposing a Quaternion into Rotation and Nutation}
+  \label{fig:QuaternionDecomposition}
+\end{figure}
 
-q_state = Quaternion([0,0,1], radians=np.pi/2)
-print('Initial state of TableSat\n t=0: %s' % q_state)
+The quaternion that describes TSat's attitude $\bs{q}$ can be written as a sequence of two rotations.  A quaternion rotation about the z-axis $\bs{q_r}$ followed by the quaternion rotation about an axis in the x-y plane that creates a nutation $\bs{q_n}$.  Resultant rotations are performed through a left quaternion multiplication.
+\begin{equation}
+  \bs{q} = \bs{q_n} \otimes \bs{q_r} = \begin{bmatrix} \bs{v}_n \\ q_{0n} \end{bmatrix} \otimes \begin{bmatrix} \bs{v}_r \\ q_{0r} \end{bmatrix}
+\end{equation}
+\begin{equation}
+  \begin{bmatrix}\bs{v} \\ q_{0} \end{bmatrix} =
+  \begin{bmatrix} \bs{v}_n q_{0r} + \bs{v}_r q_{0n} + \bs{v}_n \times \bs{v}_r \\  q_{0n} q_{0r} - \bs{v}_n \cdot \bs{v}_r \end{bmatrix}
+  \label{eqn:rot_nut_product}
+\end{equation}
+Expanding the vector components out creates the equation.
+\begin{equation}
+  \begin{bmatrix}
+    q_{1} \\
+    q_{2} \\
+    q_{3} \\
+    q_{0}
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    \begin{bmatrix}
+      q_{1n} \\
+      q_{2n} \\
+      q_{3n} \\
+    \end{bmatrix} q_{0r} + \begin{bmatrix}
+      q_{1r} \\
+      q_{2r} \\
+      q_{3r} \\
+    \end{bmatrix} q_{0n} + \begin{bmatrix}
+      q_{1n} \\
+      q_{2n} \\
+      q_{3n} \\
+    \end{bmatrix} \times \begin{bmatrix}
+      q_{1r} \\
+      q_{2r} \\
+      q_{3r} \\
+    \end{bmatrix}
+    \\
+    q_{0n} q_{0r} - \begin{bmatrix}
+      q_{1n} \\
+      q_{2n} \\
+      q_{3n} \\
+    \end{bmatrix} \cdot \begin{bmatrix}
+      q_{1r} \\
+      q_{2r} \\
+      q_{3r} \\
+    \end{bmatrix} \\
+  \end{bmatrix}
+\end{equation}
+and through simplification becomes
+\begin{equation}
+  \begin{bmatrix}
+    q_{1} \\
+    q_{2} \\
+    q_{3} \\
+    q_{0}
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    q_{1n} q_{0r} + q_{1r} q_{0n} + q_{2n} q_{3r} - q_{3n} q_{2r} \\
+    q_{2n} q_{0r} + q_{2r} q_{0n} + q_{3n} q_{1r} - q_{1n} q_{3r} \\
+    q_{3n} q_{0r} + q_{3r} q_{0n} + q_{1n} q_{2r} - q_{2n} q_{1r} \\
+  q_{0n} q_{0r} - (q_{1n} q_{1r} + q_{2n} q_{2r} + q_{3n} q_{3r} ) \\
+  \end{bmatrix}
+  \label{eqn:rot_nut_product_simplified}
+\end{equation}
+Now that we have an expanded representation of the resultant quaternion, we can use the restriction from the desired spin stabilized state for TableSat/MMS.  The rotational quaternion is allowed to move freely about the $z$-axis but should not have any displacement about the $x$ and $y$ axes.  From Equation \ref{eqn:RotationalQuaternionDefinition}, $q_{1r} = q_{2r} = 0$.
+\begin{equation}
+  \bs{q_{r}}
+  = q_{1r} \bs{i} + q_{2r} \bs{j} + q_{3r} \bs{k} + q_{0r}
+  = 0 \bs{i} + 0 \bs{j} + q_{3r} \bs{k} + q_{0r}
+  \label{eqn:rotation_quaternion_defined}
+\end{equation}
+The nutation quaternion has the opposite restrictions where rotation is allowed about the $x$ and $y$ axes but not about the $z$ axis.  From Equation \ref{eqn:RotationalQuaternionDefinition}, $q_{3n} = 0$.
+\begin{equation}
+  \bs{q_{n}}
+  = q_{1n} \bs{i} + q_{2n} \bs{j} + q_{3n} \bs{k} + q_{0n}
+  = q_{1n} \bs{i} + q_{2n} \bs{j} + 0 \bs{k} + q_{0n}
+  \label{eqn:nutation_quaternion_defined}
+\end{equation}
+Substituting equations \eqref{eqn:rotation_quaternion_defined} and \eqref{eqn:nutation_quaternion_defined} into \eqref{eqn:rot_nut_product_simplified} yields.
+\begin{equation}
+  \begin{bmatrix}
+    q_{1} \\
+    q_{2} \\
+    q_{3} \\
+    q_{0}
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    q_{1n} q_{0r} + 0             + q_{2n} q_{3r} - 0 \\
+    q_{2n} q_{0r} + 0             + 0             - q_{1n} q_{3r} \\
+    0             + q_{3r} q_{0n} + 0             - 0 \\
+  q_{0n} q_{0r} - (q_{1n} 0 + q_{2n} 0 + 0 q_{3r} ) \\
+  \end{bmatrix}
+\end{equation}
+\begin{subequations}
+  \begin{align}
+    q_{1} &= q_{1n} q_{0r} + q_{2n} q_{3r} \label{eqn:rot_nut_1_1} \\
+    q_{2} &= q_{2n} q_{0r} - q_{1n} q_{3r} \label{eqn:rot_nut_1_2} \\
+    q_{3} &= q_{3r} q_{0n} \label{eqn:rot_nut_1_3} \\
+    q_{0} &= q_{0n} q_{0r} \label{eqn:rot_nut_1_0}
+  \end{align}
+\end{subequations}
+Solving \ref{eqn:rot_nut_1_3} and \ref{eqn:rot_nut_1_0} for $q_{3r}$ and $q_{0r}$ and substituting into \ref{eqn:rot_nut_1_1} and \ref{eqn:rot_nut_1_2}
+\begin{subequations}
+  \begin{align}
+    q_{0n} q_{1} &= q_{1n} q_{0} + q_{2n} q_{3} \label{eqn:rot_nut_2_1} \\
+    q_{0n} q_{2} &= q_{2n} q_{0} - q_{1n} q_{3} \label{eqn:rot_nut_2_2}
+  \end{align}
+\end{subequations}
+combining \ref{eqn:rot_nut_2_1} and \ref{eqn:rot_nut_2_2}
+\begin{equation}
+  0 = (q_{0}q_{2} + q_{1}q_{3}) q_{1n} + (q_{2}q_{3} - q_{0}q_{1}) q_{2n}
+\end{equation}
+\begin{subequations}
+  \begin{align}
+    q_{1n} &= Q \cdot q_{2n} \\
+    \text{where } Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
+  \end{align}
+  \label{eqn:nutation_parameter_ratio}
+\end{subequations}
+The additional restriction than rotational quaternions have a unit norm can be leveraged in finding solutions
+\begin{equation}
+  \left\| \bs{q} \right\| = \sqrt{\bs{v} \cdot \bs{v} + q_0^2} = \sqrt{q_1^2+q_2^2+q_3^2+q_0^2}
+  \label{eqn:quaternion_norm}
+\end{equation}
+Taking the norm of the rotational quaternion in Equation \ref{eqn:rotation_quaternion_defined} and substituting $q_{3r}$ and $q_{0r}$ from Equations \ref{eqn:rot_nut_1_3} and \ref{eqn:rot_nut_1_0} becomes
+\begin{equation}
+  (0)^2 + (0)^2 + \left( \frac{q_3}{q_{0n}} \right)^2 + \left( \frac{q_0}{q_{0n}} \right)^2 = 1
+\end{equation}
+solving for $q_{n0}$
+\begin{equation}
+  q_{n0} = \pm \sqrt{q_3^2 + q_0^2}
+  \label{eqn:nutation_scalar}
+\end{equation}
+substituting \ref{eqn:nutation_parameter_ratio} and \ref{eqn:nutation_scalar} into \ref{eqn:nutation_quaternion_defined}
+\begin{equation}
+  \bs{q_{n}}
+  = Q \cdot q_{2n} \bs{i} + q_{2n} \bs{j} + 0 \bs{k} \pm \sqrt{q_3^2 + q_0^2}
+\end{equation}
+and as this is a rotational quaternion, its norm should always equal one
+\begin{equation}
+  (Q \cdot q_{2n})^2 + (q_{2n})^2 + (q_3^2 + q_0^2) = 1
+\end{equation}
+which can be solved for the nutation quaternion's $q_{2n}$ term
+\begin{equation}
+  q_{2n} = \pm \sqrt{ \frac{1  - q_3^2 - q_0^2}{Q^2 + 1} }
+  \label{eqn:qn2_solution}
+\end{equation}
 
+We now have a mapping of the original state quaternion $\bs{q}$ to its decomposed rotation $\bs{q}_r$ and nutation $\bs{q}_n$ quaternions.  The ability to break the attitude parameters into these two quantities is particularly useful for spin-stabilized satellites as it decouples the rate and attitude controllers.  Normally the attitude controller would need to propagate the desired quaternion attitude with input from the body rates. In this approach, the controller can ignore continuously changing rotational component $\bs{q}_r$, and limit its focus on driving the nutation error $\bs{q}_n$ to zero (Figure \ref{fig:PostDecomposedQuaternion}).
+\begin{subequations}
+  \begin{align}
+    q_{1n} &= Q \cdot q_{2n} \\
+    q_{2n} &= \sqrt{ \frac{1  - q_3^2 - q_0^2}{Q^2 + 1} }\\
+    q_{n0} &= \sqrt{q_3^2 + q_0^2} \\
+    q_{3r} &= \frac{q_3}{q_{0n}} \\
+    q_{0r} &= \frac{q_0}{q_{0n}} \\
+    \text{where } Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
+  \end{align}
+\end{subequations}
 
-print('Starting Open Loop State Tracking')
-for k in range(1,11):
-    time.sleep(1)
-    q_state *= q_rps
-    print(' t=%s: %s' % (k, q_state))
-
-# Prints Out
-# Quaternion spin rate (rad/sec)
-#  <Quaternion [-0 -0 -0.156434], 0.987688>
-# Initial state of TableSat
-#  t=0: <Quaternion [-0 -0 -0.707107], 0.707107>
-# Starting Open Loop State Tracking
-#  t=1: <Quaternion [0 0 -0.809017], 0.587785>
-#  t=2: <Quaternion [0 0 -0.891007], 0.45399>
-#  t=3: <Quaternion [0 0 -0.951057], 0.309017>
-#  t=4: <Quaternion [0 0 -0.987688], 0.156434>
-#  t=5: <Quaternion [0 0 -1], 1.11022e-16>
-#  t=6: <Quaternion [0 0 -0.987688], -0.156434>
-#  t=7: <Quaternion [0 0 -0.951057], -0.309017>
-#  t=8: <Quaternion [0 0 -0.891007], -0.45399>
-#  t=9: <Quaternion [0 0 -0.809017], -0.587785>
-#  t=10: <Quaternion [0 0 -0.707107], -0.707107>
-  \end{minted}
-  \nocite{minted}
-\end{singlespace}
-
-This implementation has both a big control theory and implementation issue.  The control theory concern is the estimate is running in an open loop without ever receiving corrections so the myriad of additional factors that affect a real system would quickly invalidate the accuracy of the estimate in this approach.  The implementation issue deals with the time step.  Even if TableSat/MMS spun perfectly at 3 rpm the state will not be updated exactly on each second.  A busy processor, numerical drift, and execution time will prevent the desired fixed step size of 1 sec.  In some of the earlier implementations of the base station controller discussed in Chapter \ref{chap:StandardTools} dropped UDP messages caused the control loop to execute on an inconsistent interval and prevent accurate state estimates.  Handling of the variability in timesteps will be covered Section \ref{sec:SatelliteDynamics}
 
 \section{Satellite Dynamics}
 \label{sec:SatelliteDynamics}
@@ -481,12 +543,11 @@ The goal in creating an accurate satellite dynamics model is it's ability to pre
 \subsection{System Clock}
 \label{subsec:SystemClock}
 
-As was mentioned at the end of section \ref{subsubsec:IncrementalRotations}, perfectly timed updates are highly unlikely.  Small variations in the timestep size will cause predicted state errors.  A state update running every 1.0001 seconds instead of every second would accumulate over a six degree error after tracking TableSat's state for an hour.  Linearized model would also be affected because the expected timestep size is incorporated as part of the discretization processes.
+As was mentioned at the end of section \ref{subsubsec:IncrementalQuaternionRotations}, perfectly timed updates are highly unlikely.  Small variations in the timestep size will cause predicted state errors.  A state update running every 1.0001 seconds instead of every second would accumulate over a six degree error after tracking TableSat's state for an hour.  Linearized model would also be affected because the expected timestep size is incorporated as part of the discretization processes.
 
 The preset fixed timestep is also not very fault tolerant.  When controlling the state of a stable, slow moving system the state tracking rate could be slowed down to conserve system resources.  In this circumstance a missed or series of missed updates due to faults can cause the predicted state to be several $\Delta t$ behind where it should be.  A solution built for variable steps can improve the robustness against these errors.
 
 The ability to slow down a simulation to closely watch the initial transient behavior followed speeding up the simulation to inspect long term stability hold benefits for both outreach and research purposes.  The TSatPy system was built with this idea in mind which addresses the previous two issues as the system by design needs to be able to smoothly transition between variations in step sizes in a single run.
-
 
 \begin{equation}
   \begin{aligned}
@@ -497,113 +558,11 @@ The ability to slow down a simulation to closely watch the initial transient beh
   \label{eqn:SystemTime}
 \end{equation}
 
-The system clock defined in Equation \ref{eqn:SystemTime} starts at zero and accumulates time depending on the set rate.  TSatPy implements this concept through the Metronome class.  An instance of this class serves as the reference frame for all rate calculations.  During the simulation, the clock is able to slow and quicken based on the set speed.
-
-\begin{singlespace}
-  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
-from TSatPy.Clock import Metronome
-import time
-
-c = Metronome()
-print("Start Time: system=%s, real=%s" % (c, time.time()))
-time.sleep(2)
-print("Lock step:  system=%s, real=%s" % (c, time.time()))
-c.set_speed(0.1)
-time.sleep(30)
-print("Slow-mo:    system=%s, real=%s" % (c, time.time()))
-c.set_speed(100)
-time.sleep(4)
-print("FFW:        system=%s, real=%s" % (c, time.time()))
-
-# Prints Out
-# Start Time: system=7.86781e-06s, real=1396147884.5
-# Lock step:  system=2.00162s, real=1396147886.5
-# Slow-mo:    system=5.00364s, real=1396147916.52
-# FFW:        system=405.292s, real=1396147920.52
-  \end{minted}
-  \nocite{minted}
-\end{singlespace}
-
+The system clock defined in Equation \ref{eqn:SystemTime} starts at zero and accumulates time depending on the set rate.
 
 \subsection{Body Rate and Quaternion Propagation}
 \label{subsec:BodyRateQuaternionPropagation}
 
 Predicting the body rates, $\omega_x, \omega_y, \omega_z$, for TableSat requires knowledge about the body dynamics, the last calculated body rate, time elapsed since last update, and any applied moments.  Equation \ref{eqn:DiscreteEulerMomentEquations} is used to propagate the body rate in a variable step.
 
-\begin{singlespace}
-  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
-from TSatPy.Clock import Metronome
-from TSatPy import State
-import time
-
-clock = Metronome()
-
-M = [0, 0, 0.5]
-w = State.BodyRate([0, 0, 0])
-eme = State.EulerMomentEquations([[10, 0, 0], [0, 10, 0], [0, 0, 10]], w, clock)
-
-for k in range(5):
-    w = eme.propagate(M)
-    print(w)
-    time.sleep(1)
-
-# Prints Out
-# <BodyRate [0 0 0]>
-# <BodyRate [0 0 0.0500562]>
-# <BodyRate [0 0 0.10012]>
-# <BodyRate [0 0 0.150189]>
-# <BodyRate [0 0 0.200252]>
-  \end{minted}
-\nocite{minted}
-\end{singlespace}
-
-The quaternion propagation operates in the same way as the body rate propagation, and Equation \ref{eqn:DiscreteQuaternionPropagation} is implemented in the QuaternionDynamics class.  The sample simulation below describes a basic quaternion propagation where the TableSat/MMS model is tracking a 0.1 rad/sec rotation about the $+z$ axis.  The system clock initially tracks with the real time, so about a second of real elapsed time equates to the equivalent system time change.  After each update the angle increases by about 0.1 rad.  After a four second transient response period the system clock is sped up by a factor of five (line 19).  After that each step simulates a 0.5 rad increase from when the clock speed changed.
-
-\begin{singlespace}
-  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
-
-from TSatPy.Clock import Metronome
-from TSatPy import State
-import time
-
-c = Metronome()
-print("Setting spin rate of 0.1 rad/sec about +z")
-w = State.BodyRate([0, 0, 0.1])
-q_ic = State.Identity()
-
-qd = State.QuaternionDynamics(q_ic, c)
-
-for _ in range(4):
-    time.sleep(1)
-    e, theta = qd.propagate(w).to_rotation()
-    print(" Rotation Angle: %s" % theta)
-
-print("Initial transient response inspection complete.")
-print("Speed up 5x for steady state response.")
-c.set_speed(5)
-
-for _ in range(4):
-    time.sleep(1)
-    e, theta = qd.propagate(w).to_rotation()
-    print(" Rotation Angle: %s" % theta)
-
-# Prints Out
-# Setting spin rate of 0.1 rad/sec about +z
-#  Rotation Angle: 0.0
-#  Rotation Angle: 0.100147199631
-#  Rotation Angle: 0.203001904488
-#  Rotation Angle: 0.303643703461
-# Initial transient response inspection complete.
-# Speed up 5x for steady state response.
-#  Rotation Angle: 0.804805707932
-#  Rotation Angle: 1.30787069798
-#  Rotation Angle: 1.81127579212
-#  Rotation Angle: 2.3147197485
-  \end{minted}
-  \nocite{minted}
-\end{singlespace}
-
-
 In Chapter \ref{chap:ObserverBasedControls} these quaternion and body rate propagation techniques will be incorporated into the observer based control system.
-
-\TODO{How do we incorporate the videos demonstrating the plant state propagation with input moments? Unforced propagation https://vimeo.com/68018120. Applied moments https://vimeo.com/42960673 }
