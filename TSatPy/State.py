@@ -4,6 +4,20 @@ Satellite state classes
 This logic is targeted mainly for rotational quaternions and
 angular body rates which make up the system's state,
 but can be used for more general calculations.
+
+System property                       Class
+------------------------------------------------------------------
+Attitude                              Quaternion
+Spin rates                            BodyRate
+Difference in attitudes               QuaternionError
+How body rates change the attitude    QuaternionDynamics
+How moments change the body rates     EulerMomentEquations
+Position and velocity                 State - Couples the position (Quaternion)
+                                       with velocity (BodyRate)
+Differences in position and velocity  StateError
+In-memory model of the satellite      Plant
+Applied torques                       Moment
+
 """
 
 import numpy as np

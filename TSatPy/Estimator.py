@@ -1,7 +1,11 @@
 """
-The TSatPy.Estimator module is responsible for providing methods that
-take the noisy measured states of a system and attempt to make the
-best guess at the system's true state.
+This module contains the algorithm that take the measured state from the
+sensor model which jumps around a lot because of the noise in the originating
+signal and attempts to eliminate the noise and create an accurate representation
+of the true state of the system.
+
+* input: measured state (x)
+* output: estimated true state (x_hat)
 
 Example::
 

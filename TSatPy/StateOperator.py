@@ -1,15 +1,30 @@
 """
-StateOperator module
+This module contains classes that are designed to modify instances from the
+State module or convert between them.  For example a quaternion can represent
+the difference between two attitudes.  In an estimator or controller we
+don't want to always just jump all the way to the new state because of noise
+in the readings.  With a QuaternionGain we can scale back the difference and
+adjust our attitude based on a fraction of the difference which over time will
+reduce the overall error between the states.  In the case of the controller,
+the state instance needs to be converted to a Moment by a StateToMoment class.
 
-This module contains definitions for methods that can be applied to items
-from the TSatPy.State module.  The logic here is all meant to either modify
-the existing form of the instance or convert it to a new type of object.
-A common use case is for gains.  Since the objects in the State module are
-not generally just a matrix transformation this will ensure the modifications
-are made in a consistent and robust manner.
+ Class                 What it does
+-------------------------------------------------------
+BodyRateGain          Scale a BodyRate instance
+QuaternionGain        Scale a Quaternion instance
+StateGain             Scale the State instance (Wrapper for
+                       QuaternionGain, BodyRateGain)
+QuaternionSaturation  Saturate a Quaternion
+BodyRateSaturation    Saturate a BodyRate
+StateSaturation       Saturate a State (Wrapper for
+                       QuaternionSaturation, BodyRateSaturation)
+BodyRateToMoment      Convert a BodyRate to a Moment
+QuaternionToMoment    Convert a Quaternion to a Moment
+StateToMoment         Convert a State to a Moment (Wrapper for
+                       QuaternionToMoment, BodyRateToMoment)
 
-Example Quaternion Gain::
-
+* input: An instance from the State module
+* output: A modified instance or the conversion to a new State instance
 
 """
 

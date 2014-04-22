@@ -1,3 +1,17 @@
+"""
+This module receives raw voltage measurements from either a simulated
+truth model of the system or from the Comm module polling sensor voltage
+data off the experimental system.
+
+Each class represents a different sensor type (course sun sensor,
+magnetometer, gyroscope, ...) and contain the logic to convert sensor
+readings from that sensor into a state representation x with quaternion
+and body rates.
+
+* input: voltages (V)
+* output: measured state (x)
+
+"""
 
 import numpy as np
 from TSatPy.State import State

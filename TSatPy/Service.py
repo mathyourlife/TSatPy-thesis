@@ -1,7 +1,10 @@
 """
-Create a twisted daemon service to run on the host that ingests
-postfix log lines over tcp to a parse port and provides an api
-interface to query current state information.
+Based off a twisted daemon.  This module contains the logic setting up the
+daemon and establishing the socket interfaces with the physical model.
+
+* input: run configuration
+* output: twisted daemon config
+
 """
 
 from __future__ import print_function

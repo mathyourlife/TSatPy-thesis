@@ -126,6 +126,9 @@ the actuators follow the following logic:
     * the plant for theoretical simulations
 * Report the actual applied moments back to the estimator for state propagation
 
+input: Moment desired
+output: Voltages and actual moment delivered
+
 ### ADCS
 
 This module is the parent container for all the observer based controls,
