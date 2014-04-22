@@ -1,6 +1,6 @@
 # TSatPy
 
-TSatPy is a library written by Daniel R. Couture for my thesis "Development of a Modular Application for Observer Based Control Systems for NASA's Spin Stabilized MMS Mission Spacecraft" in partial fulfillment for a Master's degree in Mechanical Engineering at the University of New Hampshire.  The general purpose of TSatPy is to create an application developed for initial use with TableSat (a small model of NASA's MMS mission s/c), but can be reused for a wide variety of spin stabilized systems.
+TSatPy is a library written by Daniel R. Couture for my thesis "Development of a Modular Application for Observer Based Control Systems for NASA's Spin-Stabilized MMS Mission Spacecraft" in partial fulfillment for a Master's degree in Mechanical Engineering at the University of New Hampshire.  The general purpose of TSatPy is to create an application developed for initial use with TableSat (a small model of NASA's MMS mission s/c), but can be reused for a wide variety of spin stabilized systems.
 
 **Important Links**
 
