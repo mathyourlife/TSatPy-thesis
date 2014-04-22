@@ -928,6 +928,19 @@ class Moment(object):
         self.M += M.M
         return self
 
+    def __isub__(self, M):
+        """
+        Useful if deduct deltas from an existing moments instead of creating
+        a new instance each time.
+
+        :param M: moment to be subtracted from the current instance
+        :type  M: Moment
+        :return: moment difference
+        :rtype: Moment
+        """
+        self.M -= M.M
+        return self
+
     def __eq__(self, M):
         """
         Helper function to test for equality considering floating point errors

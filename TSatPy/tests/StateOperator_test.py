@@ -53,6 +53,18 @@ class TestQuaternionGain(unittest.TestCase):
         q_expected = State.Identity()
         self.assertEquals(q_new, q_expected)
 
+        q = State.Quaternion([0,0,0], -1 - 2.22044604925e-16)
+        qg = StateOperator.QuaternionGain(0.25)
+        q_new = (qg * q)
+        q_expected = State.Identity()
+        self.assertEquals(q_new, q_expected)
+
+        q = State.Quaternion([0,0,1E-14], 1)
+        qg = StateOperator.QuaternionGain(0.25)
+        q_new = (qg * q)
+        q_expected = State.Identity()
+        self.assertEquals(q_new, q_expected)
+
 
 class TestStateGain(unittest.TestCase):
     def test_init(self):
@@ -82,6 +94,33 @@ class TestStateGain(unittest.TestCase):
         x_expected = State.State(q_expected, w_expected)
 
         self.assertEquals(x_expected, Kx * x)
+
+    def test_no_Kq(self):
+        w = State.BodyRate([1,-1,0])
+        q = State.Quaternion([0,0,1], radians=np.pi/10)
+        x = State.State(q, w)
+        Kw = StateOperator.BodyRateGain([[1,2,3],[4,5,6],[10,8,9]])
+        Kx = StateOperator.StateGain(None, Kw)
+
+        w_expected = State.BodyRate([-1,-1,2])
+        q_expected = State.Identity()
+        x_expected = State.State(q_expected, w_expected)
+
+        self.assertEquals(x_expected, Kx * x)
+
+    def test_no_Kw(self):
+        w = State.BodyRate([1,-1,0])
+        q = State.Quaternion([0,0,1], radians=np.pi/10)
+        x = State.State(q, w)
+        Kq = StateOperator.QuaternionGain(0.25)
+        Kx = StateOperator.StateGain(Kq, None)
+
+        w_expected = State.BodyRate()
+        q_expected = State.Quaternion([0,0,1], radians=np.pi/40)
+        x_expected = State.State(q_expected, w_expected)
+
+        self.assertEquals(x_expected, Kx * x)
+
 
 
 class TestQuaternionSaturation(unittest.TestCase):
@@ -146,6 +185,90 @@ class TestBodyRateSaturation(unittest.TestCase):
         self.assertEquals(State.BodyRate([-1,-1.3,1.3]), w_sat)
 
 
+
+class TestStateSaturation(unittest.TestCase):
+
+    def test_init(self):
+        Sq = StateOperator.QuaternionSaturation(4)
+        Sw = StateOperator.BodyRateSaturation(0.3)
+        Sx = StateOperator.StateSaturation(Sq, Sw)
+        self.assertEquals(4.0, Sx.Sq.rho)
+        self.assertTrue(np.all(Sx.Sw.rho == np.mat([0.3,0.3,0.3]).T))
+
+    def test_str(self):
+        Sq = StateOperator.QuaternionSaturation(4)
+        Sw = StateOperator.BodyRateSaturation(0.3)
+        Sx = StateOperator.StateSaturation(Sq, Sw)
+
+        msg = '<StateSaturation <Sq <QuaternionSaturation <rho 4.0>>>, ' \
+            '<Sw = <BodyRateSaturation <rho 0.3>>>>'
+        self.assertEquals(str(Sx), msg)
+
+    def test_limit(self):
+        Sq = StateOperator.QuaternionSaturation(1.1)
+        Sw = StateOperator.BodyRateSaturation(1.3)
+        Sx = StateOperator.StateSaturation(Sq, Sw)
+
+        x = State.State(
+            State.Quaternion([0,0,1], radians=1.7),
+            State.BodyRate([-1,-2,3]))
+        x_sat = Sx * x
+        x_expected = State.State(
+            State.Quaternion([0,0,1], radians=1.1),
+            State.BodyRate([-1,-1.3,1.3]))
+
+        self.assertEquals(x_expected, x_sat)
+
+    def test_no_q(self):
+        Sw = StateOperator.BodyRateSaturation(1.3)
+        Sx = StateOperator.StateSaturation(None, Sw)
+
+        x = State.State(
+            State.Quaternion([0,0,1], radians=1.7),
+            State.BodyRate([-1,-2,3]))
+        x_sat = Sx * x
+        x_expected = State.State(
+            State.Quaternion([0,0,1], radians=1.7),
+            State.BodyRate([-1,-1.3,1.3]))
+
+        self.assertEquals(x_expected, x_sat)
+
+    def test_no_w(self):
+        Sq = StateOperator.QuaternionSaturation(1.1)
+        Sx = StateOperator.StateSaturation(Sq, None)
+
+        x = State.State(
+            State.Quaternion([0,0,1], radians=1.7),
+            State.BodyRate([-1,-2,3]))
+        x_sat = Sx * x
+        x_expected = State.State(
+            State.Quaternion([0,0,1], radians=1.1),
+            State.BodyRate([-1,-2,3]))
+
+        self.assertEquals(x_expected, x_sat)
+
+
+class TestQuaternionToMoment(unittest.TestCase):
+
+    def test_init(self):
+        qm = StateOperator.QuaternionToMoment(0.4)
+        self.assertEquals(0.4, qm.K)
+
+    def test_str(self):
+        qm = StateOperator.QuaternionToMoment(0.4)
+        msg = '<QuaternionToMoment <K 0.4>>'
+        self.assertEquals(str(qm), msg)
+
+    def test_mul(self):
+        qm = StateOperator.QuaternionToMoment(0.5)
+
+        q = State.Quaternion([0.1, -0.2, 0], radians=3)
+
+        M = qm * q
+        v = q.vector / np.sqrt(q.vector.T * q.vector)
+        self.assertTrue(np.all(M.M == (-v * 0.5 * 3)))
+
+
 class TestBodyRateToMoment(unittest.TestCase):
 
     def test_init(self):
@@ -162,3 +285,65 @@ class TestBodyRateToMoment(unittest.TestCase):
         br2m = StateOperator.BodyRateToMoment(np.eye(3) * 3.2)
         w = State.BodyRate([3, -1, 8])
         self.assertEquals(br2m * w, State.Moment([9.6, -3.2, 25.6]))
+
+
+class TestStateToMoment(unittest.TestCase):
+
+    def test_init(self):
+        qm = StateOperator.QuaternionToMoment(0.4)
+        br2m = StateOperator.BodyRateToMoment(np.eye(3) * 3.2)
+        xm = StateOperator.StateToMoment(qm, br2m)
+
+        self.assertEquals(0.4, xm.Kq.K)
+        self.assertTrue(np.all(xm.Kw.K == np.eye(3) * 3.2))
+
+    def test_str(self):
+        qm = StateOperator.QuaternionToMoment(0.4)
+        br2m = StateOperator.BodyRateToMoment(np.eye(3) * 3.2)
+        xm = StateOperator.StateToMoment(qm, br2m)
+
+        msg = '<StateToMoment <Kq <QuaternionToMoment <K 0.4>>>, ' \
+            '<Kw = <BodyRateToMoment <K [[ 3.2 0. 0. ] ' \
+            '[ 0. 3.2 0. ] [ 0. 0. 3.2]]>>>>'
+        self.assertEquals(str(xm), msg)
+
+    def test_mul(self):
+        qm = StateOperator.QuaternionToMoment(0.5)
+        br2m = StateOperator.BodyRateToMoment(np.eye(3) * 3.2)
+        xm = StateOperator.StateToMoment(qm, br2m)
+
+        q = State.Quaternion([0.1, -0.2, 0], radians=3)
+        w = State.BodyRate([3, -1, 8])
+        x = State.State(q, w)
+
+        v = q.vector / np.sqrt(q.vector.T * q.vector)
+        M = State.Moment(-v * 0.5 * 3)
+        M += State.Moment([9.6, -3.2, 25.6])
+
+        self.assertEquals(xm * x, M)
+
+    def test_no_kq(self):
+        br2m = StateOperator.BodyRateToMoment(np.eye(3) * 3.2)
+        xm = StateOperator.StateToMoment(None, br2m)
+
+        q = State.Quaternion([0.1, -0.2, 0], radians=3)
+        w = State.BodyRate([3, -1, 8])
+        x = State.State(q, w)
+
+        M = State.Moment([9.6, -3.2, 25.6])
+
+        self.assertEquals(xm * x, M)
+
+    def test_no_kw(self):
+        qm = StateOperator.QuaternionToMoment(0.5)
+        xm = StateOperator.StateToMoment(qm, None)
+
+        q = State.Quaternion([0.1, -0.2, 0], radians=3)
+        w = State.BodyRate([3, -1, 8])
+        x = State.State(q, w)
+
+        v = q.vector / np.sqrt(q.vector.T * q.vector)
+        M = State.Moment(-v * 0.5 * 3)
+
+        self.assertEquals(xm * x, M)
+

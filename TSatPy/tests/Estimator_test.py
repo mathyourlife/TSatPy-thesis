@@ -5,6 +5,90 @@ from TSatPy.Clock import Metronome
 import numpy as np
 
 
+class TestEstimator(unittest.TestCase):
+
+    def test_init(self):
+        c = Metronome()
+        pid = Estimator.Estimator(c)
+        self.assertEquals(pid.estimators, [])
+
+    def test_add_pid(self):
+        c = Metronome()
+        config = {'type': 'pid',
+         'args': {'kpq': 0.0735,'kpw': 0.7,'kiq': 0.000863,
+                  'kiw': 0,'kdq': 0.00812,'kdw': 0}}
+        x = State.State()
+        I = [[4, 0, 0], [0, 4, 0], [0, 0, 4]]
+        p = State.Plant(I, x, c)
+        est = Estimator.Estimator(c)
+        est.add(config['type'], p, config['args'])
+
+        self.assertEquals(len(est.estimators), 1)
+        self.assertEquals(type(est.estimators[0]), Estimator.PID)
+
+    def test_add_smo(self):
+        c = Metronome()
+        config = {'type': 'smo',
+         'args': {'Lq': 0.3619,'Lw': 0.3752,'Kq': 0.3076,
+                   'Kw': 0.4994,'Sq': 0.4191,'Sw': 0.0052}}
+        x = State.State()
+        I = [[4, 0, 0], [0, 4, 0], [0, 0, 4]]
+        p = State.Plant(I, x, c)
+
+        est = Estimator.Estimator(c)
+        est.add(config['type'], p, config['args'])
+
+        self.assertEquals(len(est.estimators), 1)
+        self.assertEquals(type(est.estimators[0]), Estimator.SMO)
+
+    @patch('TSatPy.Estimator.SMO.update')
+    @patch('TSatPy.Estimator.PID.update')
+    def test_all_updates(self, mock_pid_update, mock_smo_update):
+        c = Metronome()
+        configs = [{'type': 'pid',
+         'args': {'kpq': 0.0735,'kpw': 0.7,'kiq': 0.000863,
+                  'kiw': 0,'kdq': 0.00812,'kdw': 0}
+        },{'type': 'smo',
+         'args': {'Lq': 0.3619,'Lw': 0.3752,'Kq': 0.3076,
+                   'Kw': 0.4994,'Sq': 0.4191,'Sw': 0.0052}}]
+        x = State.State()
+        I = [[4, 0, 0], [0, 4, 0], [0, 0, 4]]
+        p = State.Plant(I, x, c)
+        est = Estimator.Estimator(c)
+        for config in configs:
+            est.add(config['type'], p, config['args'])
+
+        self.assertEquals(len(est.estimators), 2)
+
+        self.assertFalse(mock_pid_update.called)
+        self.assertFalse(mock_smo_update.called)
+
+        est.update(x)
+
+        self.assertTrue(mock_pid_update.called)
+        self.assertTrue(mock_smo_update.called)
+
+    def test_str(self):
+        c = Metronome()
+        config = {'type': 'pid',
+         'args': {'kpq': 0.0735,'kpw': 0.7,'kiq': 0.000863,
+                  'kiw': 0,'kdq': 0.00812,'kdw': 0}}
+        x = State.State()
+        I = [[4, 0, 0], [0, 4, 0], [0, 0, 4]]
+        p = State.Plant(I, x, c)
+        est = Estimator.Estimator(c)
+        self.assertEquals('Estimator', str(est))
+        est.add(config['type'], p, config['args'])
+
+        msg = """Estimator
+PID
+ x_hat <Quaternion [0 0 0], 1>, <BodyRate [0 0 0]>
+ Ki <StateGain <Kq 0.000863>, <Kw = [[ 0. 0. 0.] [ 0. 0. 0.] [ 0. 0. 0.]]>>
+ Kp <StateGain <Kq 0.0735>, <Kw = [[ 0.7 0. 0. ] [ 0. 0.7 0. ] [ 0. 0. 0.7]]>>
+ Kd <StateGain <Kq 0.00812>, <Kw = [[ 0. 0. 0.] [ 0. 0. 0.] [ 0. 0. 0.]]>>"""
+        self.assertEquals(msg, str(est))
+
+
 class TestPID(unittest.TestCase):
 
     def test_str(self):
