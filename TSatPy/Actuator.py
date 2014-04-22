@@ -1,10 +1,19 @@
 """
-The Actuator module is responsible for converting a moment that the
-active control algorithm is requesting and figure out which actuators
-are required to fulfill that request.  If the request is not possible,
-attempt to create a moment that is close to the one requested.  Return
-the actual moment applied to the estimator, controller for feedback loop.
+This module defines the output of the controller.  The actuator instance
+on initialization, is supplied with the physical arrangement of the actuators
+and when activated, what moments they are able to produce.  During run-time
+the actuators follow the following logic:
 
+* Accept a R^3 moment from the controller
+* Determine the actual moment that is possible from the physical arrangement
+* Convert the desired moments to voltage settings
+* Submit the actuator voltage settings to
+    * the Comm for transmission to the experimental setup _or_
+    * the plant for theoretical simulations
+* Report the actual applied moments back to the estimator for state propagation
+
+input: Moment desired
+output: Voltages and actual moment delivered
 
 Example::
 

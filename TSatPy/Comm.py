@@ -1,6 +1,24 @@
 """
 Use this to communicate with the TableSat
 
+This module handles the interface between the the control system and either
+the physical system or the theoretical model.  With the physical system, a
+UDP socket is opened and either listens for packets transmitted from the
+sensors or submits voltage packets to set actuator voltages.  When running
+in simulations, the module submits and receives the voltage messages to
+an in-memory model of the system that contains the system dynamics and can
+return mocked sensor voltages based on the behavior.
+
+**From Controller to Satellite**
+
+* input: Voltage setting determined by the actuator
+* output: UDP packet to the system or in-memory model
+
+**From Satellite to Controller**
+
+* input: Sensor voltages from the system or in-memory model
+* output: Sensor data to submit to sensor class for conversion to a state
+
 Example::
 
     def got_it(*args):

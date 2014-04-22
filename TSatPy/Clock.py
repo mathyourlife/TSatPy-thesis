@@ -1,7 +1,16 @@
 """
 Simulation clock.
 
-Control the flow of time.
+This module governs the system clock of the ADCS system and should be
+referenced by any logic in the observer or controller that is time dependent
+such as calculations reliant on integrals or derivatives of parameters.
+The metronome class by default track seconds since the initialization of the
+clock, but when running simulations can have it's speed dynamically altered
+to either run faster for long term simulations or run slower to get better
+inspection of an event.
+
+* input: None
+* output: elapsed time
 
 Example::
 

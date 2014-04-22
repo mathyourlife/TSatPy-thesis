@@ -1,5 +1,10 @@
 """
-Run the logic behind parsing postfix log lines for sender information
+This module defined the classes that will receive requests from the API
+interface and the UDP socket.
+
+* input: API or UDP request
+* output: twisted daemon config
+
 """
 
 import cgi

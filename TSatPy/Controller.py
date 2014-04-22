@@ -1,8 +1,18 @@
 """
-The TSatPy.Controller module is responsible for taking the estimated state
-of the system from the TSatPy.Estimator instance, comparing it to the
-state of the system desired by the user and calculating a moment required
-to push the current state to the desired.
+This module contains the algorithms that take what we have estimated the
+system to be doing, compare it to what we want it to do, and determine
+what moments need to be applied to make the system behave as desired.
+
+The master control instance governs the interface between the incoming
+estimator state and the outgoing actuator moments.  The master controller
+can run multiple control algorithms simultaneously which can be individually
+tuned to different types of system behaviors like one that can handle
+large errors and one for the soft corrections at steady state.
+
+* input: configuration of what types of control algorithms should be used
+         and the parameters required to set them up
+* output: a desired moment based on the active control algorithm's calculations
+
 """
 
 import numpy as np
