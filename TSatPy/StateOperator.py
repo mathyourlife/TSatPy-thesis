@@ -137,15 +137,17 @@ class QuaternionGain(object):
         else:
             s = q.scalar
 
+        dot = (q.vector.T * q.vector)[0, 0]
+        if dot == 0:
+            return State.Identity()
+
         kpc = self.K * np.arccos(s)
+
         if kpc == 0:
             return State.Identity()
-        gamma = np.sqrt((q.vector.T * q.vector)[0, 0] / (np.sin(kpc)) ** 2)
+        gamma = np.sqrt(dot / (np.sin(kpc)) ** 2)
 
-        return State.Quaternion(
-            q.vector / gamma,
-            np.cos(kpc)
-        )
+        return State.Quaternion(q.vector / gamma, np.cos(kpc))
 
     def __str__(self):
         """
@@ -197,7 +199,7 @@ class StateGain(object):
 
     def __mul__(self, x):
         if self.Kq is None:
-            q_new = State.Quaternion()
+            q_new = State.Identity()
         else:
             q_new = self.Kq * x.q
 
@@ -296,12 +298,12 @@ class StateSaturation(object):
         try:
             q_new = self.Sq * x.q
         except TypeError:
-            q_new = State.Identity()
+            q_new = x.q
 
         try:
             w_new = self.Sw * x.w
         except TypeError:
-            w_new = State.BodyRate()
+            w_new = x.w
         return State.State(q_new, w_new)
 
     def __str__(self):
@@ -373,7 +375,8 @@ class QuaternionToMoment(object):
         :return: gain matrix representation
         :rtype: str
         """
-        return str(self.K)
+        return '<%s <K %s>>' % (
+            self.__class__.__name__, str(self.K))
 
 
 class StateToMoment(object):
