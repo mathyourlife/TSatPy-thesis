@@ -180,6 +180,15 @@ class TestQuaternionAngles(unittest.TestCase):
         self.assertTrue(r_err < State.Quaternion.float_threshold)
         self.assertTrue(np.all(np.mat([0,0,0]).T == v))
 
+    def test_to_rotation_scalar_float(self):
+        q = State.Quaternion([0,0,0], 1 + 1E15)
+        e, r = q.to_rotation()
+        self.assertEquals(r, 0)
+
+        q = State.Quaternion([0,0,0], -1 - 1E15)
+        e, r = q.to_rotation()
+        self.assertEquals(r, 2 * np.pi)
+
     def test_partial_turn(self):
         q1 = State.Quaternion([0, 0, 1], radians=np.pi/2)
         q2 = State.Quaternion([0, 0, 1], radians=np.pi/2 + np.pi * 2)
@@ -641,9 +650,9 @@ class TestPlant(unittest.TestCase):
         duration = 4
         end_time = clock.tick() + duration
 
-        q = State.Quaternion([0, 0, 1], radians=0)
-        w = State.BodyRate([0, 0, 0])
-        x = State.State(q, w)
+        x = State.State(
+            State.Quaternion([0, 0, 1], radians=0),
+            State.BodyRate([0, 0, 0]))
         I = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
 
         p = State.Plant(I, x, clock)
@@ -656,3 +665,83 @@ class TestPlant(unittest.TestCase):
         err = np.sum(np.abs(p.vel.w.w - State.BodyRate([0, 0, 20]).w))
 
         self.assertLess(err, 1e-12)
+
+    def test_set_state(self):
+
+        clock = Metronome()
+        I = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
+        p = State.Plant(I, State.State(), clock)
+
+        x = State.State(
+            State.Quaternion([2, 4, 1], radians=4),
+            State.BodyRate([3, 4, 5]))
+
+        p.set_state(x)
+
+        self.assertEquals(p.x, x)
+
+    @patch('time.time', return_value=12)
+    def test_propagate(self, MockTime):
+        clock = Metronome()
+        x = State.State(
+            State.Quaternion([0, 5, 1], radians=40),
+            State.BodyRate([0, 0, 1]))
+        I = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
+        p = State.Plant(I, x, clock)
+
+        x_pre = p.x
+        p.propagate()
+
+        self.assertEquals(p.x, x_pre)
+
+class TestPlant(unittest.TestCase):
+
+    def test_init(self):
+        M = State.Moment([1,2,3])
+        self.assertTrue(np.all(M.M == np.mat([1,2,3]).T))
+        M = State.Moment()
+        self.assertTrue(np.all(M.M == np.mat([0,0,0]).T))
+
+    def test_moment_sum_diff(self):
+        M1 = State.Moment([1,-2,3])
+        M2 = State.Moment([3,-5,6])
+
+        self.assertEquals(M1 + M2, State.Moment([4,-7,9]))
+        self.assertEquals(M1 - M2, State.Moment([-2,3,-3]))
+
+    def test_iadd(self):
+        M1 = State.Moment([1,-2,3])
+        M2 = State.Moment([3,-5,6])
+
+        m1id = id(M1)
+        M1 += M2
+
+        self.assertEquals(m1id, id(M1))
+        self.assertEquals(M1, State.Moment([4,-7,9]))
+
+    def test_iadd(self):
+        M1 = State.Moment([1,-2,3])
+        M2 = State.Moment([3,-5,6])
+
+        m1id = id(M1)
+        M1 -= M2
+
+        self.assertEquals(m1id, id(M1))
+        self.assertEquals(M1, State.Moment([-2,3,-3]))
+
+    def test_latex(self):
+        M = State.Moment([3,-5.2,6])
+        msg = '3 \boldsymbol{i} -5.2 \boldsymbol{j} +6 \boldsymbol{k}'
+        self.assertEquals(M.latex(), msg)
+
+    def test_latex(self):
+        M = State.Moment([3,-5.2,6])
+        msg = '<Moment [3 -5.2 6]>'
+        self.assertEquals(str(M), msg)
+
+
+
+
+
+
+
