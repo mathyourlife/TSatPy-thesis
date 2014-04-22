@@ -59,7 +59,7 @@ def TSatPySamples():
 
 def MatlabOOTeX():
     code_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), '../beta_versions/matlab_object_oriented'))
-    src_tex = os.path.join(os.path.dirname(__file__), 'sections/MatlabOOSource.tex')
+    src_tex = os.path.join(os.path.dirname(__file__), 'sections/NSSSource.tex')
 
     header = """
 \chapter{NSS Object Oriented Source Code}

@@ -5,7 +5,7 @@
 \section{Simulink}
 \label{sec:Simulink}
 
-Slight variation of the ``open loop'' control system used in part of Melissa Vess' TableSat research.  Huge problem with fault tolerance.  The format chosen for relaying messages resulted in an unreliable exchange of data between the base station (laptop) and the TableSat.  These error were compounded with Matlab Simulink's inability to handle the unexpected lack of message data.
+Slight variation of the ``open loop'' control system used in part of Melissa Vess' TableSat research.  Huge problem with fault tolerance.  The format chosen for relaying messages resulted in an unreliable exchange of data between the base station (laptop) and the TableSat.  These error were compounded with the Numerical Simulation Software's inability to handle the unexpected lack of message data.
 
 \TODO{More detail here on the Simulink side.  Specify pros of this design.  Include screen shot of simulink diagram for a P controller.}
 
@@ -13,6 +13,6 @@ Slight variation of the ``open loop'' control system used in part of Melissa Ves
 \section{TSat Message Center}
 \label{sec:TSatMessageCenter}
 
-This was the first full rework of the control system.  The focus of this design was to eliminate the use of Matlab Simulink diagrams, and directly control the messages transmitted and received.
+This was the first full rework of the control system.  The focus of this design was to eliminate the use of NSS diagrams, and directly control the messages transmitted and received.
 
 \TODO{Elaborate on the failures of the design.  Inability to handle two tasks at one.  State persistence.  No visualization.  }
