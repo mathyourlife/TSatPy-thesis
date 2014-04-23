@@ -19,7 +19,7 @@ Sections \ref{sec:StateDifference} through \ref{subsec:ThetaMultiplierWithQuater
   \label{eqn:PEstimatorStateDiff}
 \end{equation}
 
-This simple estimation technique has some notable deficiencies when applied to the attitude parameters of a spin stabilized satellite.  These parameters are expected to change as the satellite rotates, but this model has no method for predicting the change in parameters so will rely solely on the state error to correct $\bs{\hat{x}(t_{k+1})}$.  After an adequate method is established for calculating the state error, later sections will address improving upon the proportional estimator.
+This simple estimation technique has some notable deficiencies when applied to the attitude parameters of a spin-stabilized satellite.  These parameters are expected to change as the satellite rotates, but this model has no method for predicting the change in parameters so will rely solely on the state error to correct $\bs{\hat{x}(t_{k+1})}$.  After an adequate method is established for calculating the state error, later sections will address improving upon the proportional estimator.
 
 The sample error calculation in this section will be based off a last estimated state, $\bs{\hat{x}}(t_{k})$, of a $190^o$ rotation about $+z$-axis and a body rate of $\omega_z = 3$ rad/sec.  The associated the measured state, $\bs{x}(t_{k})$, is a $44^o$ rotation about the axis $0 \bs{i} + 0.1 \bs{j} + 1\bs{k}$ and a body rate of $\omega_z = 3.1$ rad/sec.
 

@@ -2,12 +2,12 @@
 \chapter{SATELLITE ATTITUDE MODELING}
 \label{chap:SatelliteAttitudeModeling}
 
-This chapter will cover the analytical work behind in this thesis.  Starting with the choice of attitude and body rate representations in Section \ref{sec:StateRepresentation} and how the application was written to incorporate its use.  Next, a review of some of the estimation-based control methods used including variations on their use to target their use on spin stabilized satellites such as NASA's MMS mission.  Then a summary of simulations run to validate the analytical model along with new tools used to visualize the system in ``run-time''.  Finally, testing of the analytical model against the physical system.
+This chapter will cover the analytical work behind in this thesis.  Starting with the choice of attitude and body rate representations in Section \ref{sec:StateRepresentation} and how the application was written to incorporate its use.  Next, a review of some of the estimation-based control methods used including variations on their use to target their use on spin-stabilized satellites such as NASA's MMS mission.  Then a summary of simulations run to validate the analytical model along with new tools used to visualize the system in ``run-time''.  Finally, testing of the analytical model against the physical system.
 
 \section{State Representation}
 \label{sec:StateRepresentation}
 
-To represent the general state of a spin stabilized satellite, are often accomplished using one of two representations.  Either body rates with Euler angles or body rates with quaternions with Euler angles being slightly more common among control theory specialists and quaternions used more in the implementation of the control systems.  Euler angles with rigid body dynamics and quaternions were chosen for the state representation.  Quaternions provided unique advantages over Euler angles that will be expanded on in Sections \ref{subsec:BodyRate} and \ref{subsec:QuaternionAttitude}.
+To represent the general state of a spin-stabilized satellite, are often accomplished using one of two representations.  Either body rates with Euler angles or body rates with quaternions with Euler angles being slightly more common among control theory specialists and quaternions used more in the implementation of the control systems.  Euler angles with rigid body dynamics and quaternions were chosen for the state representation.  Quaternions provided unique advantages over Euler angles that will be expanded on in Sections \ref{subsec:BodyRate} and \ref{subsec:QuaternionAttitude}.
 
 \subsection{Body Rates}
 \label{subsec:BodyRate}
@@ -182,7 +182,7 @@ Euler's rotation theorem states:
 
 \begin{quote}{``\textsl{If $\bs{R}$ is a 3x3 orthogonal matrix $( \bs{R}^T \bs{R} = \bs{R}\bs{R}^T = \bs{I} )$ and $\bs{R}$ is proper $( det \bs{R} = +1 )$, then there is a nonzero vector $\bs{v}$ satisfying $\bs{Rv} = \bs{v}$}''~\cite{euler_theorem}}\end{quote}
 
-With a 3x3 rotational matrix, this means there is a line of points that do not change position and create an axis of rotation.  Incorporating this idea into any spin stabilized satellite like NASA's MMS mission yields that any arbitrary attitude can be represented as a single rotation from a common starting orientation.  The axis $\hat{e}$ and the angle of rotation $\theta$ can express the satellite's attitude with a rotational quaternion as
+With a 3x3 rotational matrix, this means there is a line of points that do not change position and create an axis of rotation.  Incorporating this idea into any spin-stabilized satellite like NASA's MMS mission yields that any arbitrary attitude can be represented as a single rotation from a common starting orientation.  The axis $\hat{e}$ and the angle of rotation $\theta$ can express the satellite's attitude with a rotational quaternion as
 
 \begin{equation}
   \bs{q} = \bs{v} + q_0 = \hat{\bs{e}} \sin \left( \frac{-\theta}{2} \right) + \cos \left( \frac{-\theta}{2} \right)
@@ -332,7 +332,7 @@ The collection of the points in the TableSat wireframe can be rotated as the sin
 \subsubsection{Incremental Quaternion Rotations}
 \label{subsubsec:IncrementalQuaternionRotations}
 
-The quaternion's definition based on Euler's theorem of a rotation about a single axis makes tracking the orientation of a spin stabilized satellite an easier process.  NASA's MMS mission has a target spin rate of 3 rpm (~0.314 rad/sec).  A rotational quaternion representing the per second rotation about the z-axis is
+The quaternion's definition based on Euler's theorem of a rotation about a single axis makes tracking the orientation of a spin-stabilized satellite an easier process.  NASA's MMS mission has a target spin rate of 3 rpm (~0.314 rad/sec).  A rotational quaternion representing the per second rotation about the z-axis is
 
 \begin{equation}
   \begin{aligned}
@@ -437,7 +437,7 @@ and through simplification becomes
   \end{bmatrix}
   \label{eqn:rot_nut_product_simplified}
 \end{equation}
-Now that we have an expanded representation of the resultant quaternion, we can use the restriction from the desired spin stabilized state for TableSat/MMS.  The rotational quaternion is allowed to move freely about the $z$-axis but should not have any displacement about the $x$ and $y$ axes.  From Equation \ref{eqn:RotationalQuaternionDefinition}, $q_{1r} = q_{2r} = 0$.
+Now that we have an expanded representation of the resultant quaternion, we can use the restriction from the desired spin-stabilized state for TableSat/MMS.  The rotational quaternion is allowed to move freely about the $z$-axis but should not have any displacement about the $x$ and $y$ axes.  From Equation \ref{eqn:RotationalQuaternionDefinition}, $q_{1r} = q_{2r} = 0$.
 \begin{equation}
   \bs{q_{r}}
   = q_{1r} \bs{i} + q_{2r} \bs{j} + q_{3r} \bs{k} + q_{0r}
