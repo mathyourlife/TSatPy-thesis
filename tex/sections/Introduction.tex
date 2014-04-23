@@ -24,19 +24,22 @@ A reconnection event occurs when magnetic field lines cross allowing energetic p
   \label{fig:magneticfields}
 \end{figure}
 
-Despite the widely experienced effects of reconnection events, very little about the microphysics inside its the diffusion region has been adequately measured.  Magnetometers, spectrometers, and other equipment currently in orbit are only able to capture a small fraction of the event's behavior.  Most equipment collect data from a single point or direction in space or some can get a $360^o$ view of space by applying a slow spin to the spacecraft.  Both of these measurement methods are insufficient at capturing the structure of the diffusion region as it passes.
+Despite the widely experienced effects of reconnection events, very little about the microphysics inside its the diffusion region has been adequately quantified.  Magnetometers, spectrometers, and other equipment currently in orbit are only able to capture a small fraction of the event's behavior.  Most equipment collect data from a single point or direction in space or some can get a $360^o$ view of space by applying a slow spin to the spacecraft.  Both of these measurement methods are insufficient at capturing the structure of the diffusion region as it passes.
 
-MMS's four satellites are equipped with instrumentation mounted at the end of six boom extending out from the spacecraft's body along each major axis.  Four boom are the Spin Plane Double Probes (SDP) and two Axial Double Probes (ADP).  Figure \ref{fig:booms}, created by Neil Mushaweh \ref{mushawehthesis}, shows a scale model of one of the MMS satellites.  Mushaweh conducted research on finite element analysis of the boom dynamics and simulation based comparisons of nonlinear observer-based controllers.  His research unveiled a major shortcoming with current numerical simulation software needed for the rotating body with flexible booms.
+MMS's four satellites are equipped with instrumentation mounted at the end of six boom extending out from the spacecraft's body along each major axis.  Four Spin Plane Double Probes (SDP) booms and two Axial Double Probes (ADP) booms.  This configuration along with high resolution electron and ion spectrometers gives the constellation a new insight into the internal structure of the diffusion region.
 
-\begin{quote}{``While attempting to rotate the satellite model at 3 rotations per minute about [the $z$-axis], the inability of the software to transform coordinates after 90 degrees of rotation caused the rotation to cease. When such constraints on coordinate transformations are removed, or when the coordinate system is changed to cylindrical coordinates, the model began to expand in the radial direction. These inaccurate simulation results indicate that there are numerical instabilities that occur in dynamic transient simulations in which rotational motion is experienced. This numerical instability was confirmed by MSC support engineers, and proven to be insurmountable in the scope of this research. Overcoming this numerical instability in dynamic transient analysis through future research could have implications on several design and analysis situations in which coordinate transformations can cause inaccurate results.''~\cite{mushawehthesis}}\end{quote}
+Placing the instrumentation at the ends of the booms is an advantage to the science portion of the mission but creates a unique challenge for the Attitude Determination and Control Systems (ADCS).  The satellites are spin-stabilized at a rate of 3 rpm, and disturbances to the rotation could translate into undesirable boom dynamics and body nutations.
 
 \begin{figure}[H]
-  \centerline{\psfig{file=figures/booms.eps,height=1.6in}}
-  \caption{MMS Boom Configuration \ref{mushawehthesis}}
+  \centerline{\psfig{file=figures/booms.eps,height=2in}}
+  \caption{MMS Boom Configuration \cite{mushawehthesis}}
   \label{fig:booms}
 \end{figure}
 
-This configuration along with high resolution electron and ion spectrometers gives the constellation a new insight into the internal structure of the diffusion region.  The instrumentation at the ends of the boom are an advantage to the science portion of the mission but create a unique challenge for the Attitude Determination and Control Systems (ADCS).  The satellites are spin-stabilized at a rate of 3 rpm.  Disturbances to the rotation could translate into undesirable boom dynamics and nutations.
+Figure \ref{fig:booms}, created by Neil Mushaweh \cite{mushawehthesis}, shows a scale model of one of the MMS satellites.  Mushaweh performed finite element analysis of the boom dynamics and simulation based comparisons of nonlinear observer-based controllers.  His research unveiled a major shortcoming in the current numerical simulation software needed for analyzing the dynamics of a NASA MMS satellite's rotating body with flexible booms.
+
+\begin{quote}{``While attempting to rotate the satellite model at 3 rotations per minute about [the $z$-axis], the inability of the software to transform coordinates after 90 degrees of rotation caused the rotation to cease. When such constraints on coordinate transformations are removed, or when the coordinate system is changed to cylindrical coordinates, the model began to expand in the radial direction. These inaccurate simulation results indicate that there are numerical instabilities that occur in dynamic transient simulations in which rotational motion is experienced. This numerical instability was confirmed by MSC support engineers, and proven to be insurmountable in the scope of this research. Overcoming this numerical instability in dynamic transient analysis through future research could have implications on several design and analysis situations in which coordinate transformations can cause inaccurate results.''~\cite{mushawehthesis}}\end{quote}
+
 
 % Science questions to answer \cite{mms_website}
 %     What determines when reconnection starts and how fast it proceeds?
@@ -127,18 +130,18 @@ This configuration along with high resolution electron and ion spectrometers giv
 \section{Research Objective}
 \label{sec:ResearchObjective}
 
-This thesis utilizes an experimental table top satellite prototype (NASA TableSat1A) to span two main efforts.  The first is to create a physical model of a satellite for NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control systems (ADCS) techniques.  The ADCS maintains the TableSat constant 3 rpm rotation, prevents boom oscillations, and detects and corrects for unwanted nutation.  The second effort is a software system that can be used to implement theoretical and experimental models.  The system provides near ``real-time'' feedback of the system's states, and allows for ``on-the-fly'' modification to control parameters.  The system is specifically designed such that any control systems engineer is able to customize and extend its functionality without substantial programming expertise.
+This thesis utilizes an experimental table top satellite prototype (NASA TableSat 1A) to span two main efforts.  The first is to create a physical model of a satellite for NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control systems (ADCS) techniques.  The ADCS maintains the TableSat constant 3 rpm rotation, prevents boom oscillations, and detects and corrects for unwanted nutation.  The second effort is a software system that can be used to implement theoretical and experimental models.  The system provides near ``real-time'' feedback of the system's states, and allows for ``on-the-fly'' modification to control parameters.  The system is specifically designed such that any control systems engineer is able to customize and extend its functionality without substantial programming expertise.
 
 \section{Past Work}
 \label{sec:PastWork}
 
-This work is a direct extension off of Vess' research \cite{vessthesis} and using TableSat through a Numerical Simulation Software (NSS) like Matlab Simulink or Octave and onboard flight controllers to demonstrate fundamentals of control theory.  The TableSat experimental design is modified to study the system dynamics of the instrument booms and nutation actuators in NASA's MMS mission satellites.  Previous experimental \cite{tsat1b} \cite{tsat1c} \cite{tsat2} and analytical \cite{mushawehthesis} ADCS work at University of New Hampshire's Advanced Control Lab (ACL) has been performed targeting the NASA MMS mission.  The TableSat platform or similar derivations have also been adapted in investigate other areas of research including embedded systems development \cite{tablesat_xuml} and fault tolerant control \cite{tablesat_object_bench} \cite{nanjing_university}.
+This work is a direct extension off of Vess' research \cite{vessthesis} of using TableSat through a Numerical Simulation Software (NSS like Matlab Simulink or Octave) and onboard flight controllers to demonstrate fundamentals of control theory.  The TableSat experimental design is modified to study the system dynamics of the instrument booms and nutation actuators in NASA's MMS mission satellites.  Previous experimental \cite{tsat1b} \cite{tsat1c} \cite{tsat2} and analytical \cite{mushawehthesis} ADCS work at University of New Hampshire's Advanced Control Lab (ACL) has been performed targeting the NASA MMS mission.  The TableSat platform or similar derivations have also been adapted in investigate other areas of research including embedded systems development \cite{tablesat_xuml} and fault tolerant control \cite{tablesat_object_bench} \cite{nanjing_university}.
 
 
 \section{Analytical and Experimental Test Bed}
 \label{sec:AnalyticalandExperimentalTestbed}
 
-The test bed used for analytical simulations and experimental validation consists of a base station (laptop) which handles the observer-based controller, and UNH's NASA MMS TableSat 1A which is a wireless limited 3-DOF rotation (full spin and limited nutation) test bed.  Concurrent work has been accomplished in tandem with this research to make improvements to the capabilities of the TableSat system including UNH TableSat 1C \cite{tsat1c} which improves actuator design and reduces rotational friction, and UNH TableSat 2 \cite{tsat2} which adds translation in a plane.
+The test bed used for analytical simulations and experimental validation consists of a base station (laptop) which handles the observer-based controller along with any conversions to and from TableSat sensor and fan voltages, and UNH's NASA MMS TableSat 1A which is a wireless limited 3-DOF rotation (full spin and limited nutation) test bed.  Concurrent work has been accomplished in tandem with this research to make improvements to the capabilities of the TableSat system including UNH TableSat 1C \cite{tsat1c} which improves actuator design and reduces rotational friction, and UNH TableSat 2 \cite{tsat2} which adds translation in a plane.
 
 \section{Thesis Contributions}
 \label{sec:ThesisContributions}
@@ -179,18 +182,17 @@ Since this is an active field of research, future research teams will benefit fr
 The following chapters are organized as follows:
 
 \begin{itemize}
-\item Chapter \ref{chap:SatelliteAttitudeDynamicsAndKinematics}, \nameref{chap:SatelliteAttitudeDynamicsAndKinematics}
-\item Chapter \ref{chap:UNHTableSat1A}, \nameref{chap:UNHTableSat1A}
-\item Chapter \ref{chap:TableSatAttitudeDynamicsSoftware}, \nameref{chap:TableSatAttitudeDynamicsSoftware}
-\item Chapter \ref{chap:StateError}, \nameref{chap:StateError}
-\item Chapter \ref{chap:Estimators}, \nameref{chap:Estimators}
-\item Chapter \ref{chap:Controllers}, \nameref{chap:Controllers}
-\item Chapter \ref{chap:ObserverBasedControls}, \nameref{chap:ObserverBasedControls}
-\item Chapter \ref{chap:TSatPy}, \nameref{chap:TSatPy}
-\item Chapter \ref{chap:SoftwareDevelopmentforExperimentalIntegration}, \nameref{chap:SoftwareDevelopmentforExperimentalIntegration}
-\item Chapter \ref{chap:StandardTools}, \nameref{chap:StandardTools}
-\item Chapter \ref{chap:Conclusions}, \nameref{chap:Conclusions}
-\item Chapter \ref{chap:FutureWork}, \nameref{chap:FutureWork}
-\item Chapter \ref{chap:tsatpy_samples}, \nameref{chap:tsatpy_samples}
-\item Chapter \ref{chap:tsatpy_source}, \nameref{chap:tsatpy_source}
+\item Chapter \ref{chap:SatelliteAttitudeDynamicsAndKinematics}, \nameref{chap:SatelliteAttitudeDynamicsAndKinematics} - This chapter covers the quaternions and body-fixed angular velocities (body rates) parametrization chosen for the state representation of the spin-stabilized satellite, and the dynamics and kinematics involved in modeling it's motion.
+\item Chapter \ref{chap:UNHTableSat1A}, \nameref{chap:UNHTableSat1A} - This chapter is a walk through of the components in the UNH NASA TableSat 1A including the how raw sensor voltages are transmitted to the base station for conversion by the controller into a state representation.
+\item Chapter \ref{chap:TableSatAttitudeDynamicsSoftware}, \nameref{chap:TableSatAttitudeDynamicsSoftware} - Chapters \ref{chap:SatelliteAttitudeDynamicsAndKinematics} and \ref{chap:UNHTableSat1A} establish the analytical and experimental state representations.  This chapter covers how the state representations with their associated equations of motion are implemented in this thesis' software.
+\item Chapter \ref{chap:StateError}, \nameref{chap:StateError} - This chapter details issues with current implementations of quaternion error calculations and covers the development and implementation of the ``$\theta$ Multiplier with Quaternion Vector Balancing'' method for high integrity attitude adjustments.
+\item Chapter \ref{chap:Estimators}, \nameref{chap:Estimators} - This chapter focuses on the implementation and performance comparisons of the PID and Sliding Mode Observer (SMO) estimation methods using the chosen state parameterization along with the theta multiplier error correction technique established in Chapter \ref{chap:StateError}.
+\item Chapter \ref{chap:Controllers}, \nameref{chap:Controllers} - Similar to Chapter \ref{chap:Estimators}, this chapter compares the performance of PID control and Sliding Mode Control (SMC) methods.  These also include the incorporation of the theta multiplier quaternion error correction method as well as the development and implementation of the ``Euler axis Based Moment'' calculations.
+\item Chapter \ref{chap:ObserverBasedControls}, \nameref{chap:ObserverBasedControls} - Performs a comparative analysis of various observer-based controller configurations complete from the input of sensor voltage measurements through voltage to state conversions, state estimation, state control, moment calculation, and calculated actuator voltage settings.
+\item Chapter \ref{chap:ProgressionOfControlSystemSoftware}, \nameref{chap:ProgressionOfControlSystemSoftware} - There were four major iterations prior to the final TSatPy solution.  This chapter will cover the advantages and disadvantages to each version as they build to the final solution discussed in Chapter \ref{chap:TSatPy}.
+\item Chapter \ref{chap:TSatPy}, \nameref{chap:TSatPy} - This chapter goes into greater depth on the TSatPy software system developed for this thesis including summaries of the main characteristics and modular design.
+\item Chapter \ref{chap:Conclusions}, \nameref{chap:Conclusions} - This chapter will summarize the work performed toward the goals of the thesis.
+\item Chapter \ref{chap:FutureWork}, \nameref{chap:FutureWork} - This thesis provides a foundation for a system that could be incorporated into a variety of rotational system observer based control systems.  This chapter will detail out areas that could be investigated next.
+\item Appendix \ref{chap:tsatpy_samples}, \nameref{chap:tsatpy_samples} - This appendix contains almost all the python scripts used in this thesis for reference.
+\item Appendix \ref{chap:tsatpy_source}, \nameref{chap:tsatpy_source} - This is a copy of the source code for the TSatPy software at the time of this publication.  The code will be released under an MIT license at https://github.com/MathYourLife/TSatPy.
 \end{itemize}

@@ -11,7 +11,7 @@ def TSatPyTeX():
     src_tex = os.path.join(os.path.dirname(__file__), 'sections/TSatPySource.tex')
 
     header = """
-\chapter{TSatPy Source Code}
+\chapter{TSatPy SOURCE CODE}
 \label{chap:tsatpy_source}
 
 \linespread{1}
@@ -40,7 +40,7 @@ def TSatPySamples():
     src_tex = os.path.join(os.path.dirname(__file__), 'sections/TSatPySamples.tex')
 
     header = """
-\chapter{TSatPy Sample Scripts}
+\chapter{TSatPy SAMPLE SCRIPTS}
 \label{chap:tsatpy_samples}
 
 \linespread{1}
@@ -62,8 +62,8 @@ def MatlabOOTeX():
     src_tex = os.path.join(os.path.dirname(__file__), 'sections/NSSSource.tex')
 
     header = """
-\chapter{NSS Object Oriented Source Code}
-\label{ch:NSSObjectOrientedSourceCode}
+\chapter{NSS OBJECT ORIENTED SOURCE CODE}
+\label{chap:NSSObjectOrientedSourceCode}
 
 \linespread{1}
 """
