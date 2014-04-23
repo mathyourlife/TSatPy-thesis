@@ -1,6 +1,21 @@
 \documentclass[11pt,doublespace]{unhthesis}
 
-% \includeonly{sections/TableSat1A,sections/SatelliteAttitudeModeling,sections/Controllers}
+% \includeonly{
+% sections/Introduction,
+% sections/SatelliteAttitudeModeling,
+% sections/TableSat1A,
+% sections/TableSatAttitudeDynamicsSoftware,
+% sections/StateError,
+% sections/Estimators,
+% sections/Controllers,
+% sections/ObserverBasedControls,
+% sections/SoftwareProgression,
+% sections/TSatPy,
+% sections/Conclusions,
+% sections/FutureWork,
+% }
+
+
 
 \usepackage{custom}
 \hyphenation{gno-mon-ly}
@@ -50,7 +65,7 @@
 \end{singlespace}
 
 \begin{abstractpage}
-This thesis utilizes an experimental table top satellite prototype (NASA TableSat1A) to span two main efforts.  The first is to create a physical model of a satellite for NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control systems (ADCS) techniques.  The ADCS maintains the TableSat constant 3 rpm rotation, prevents boom oscillations, and detects and corrects for unwanted nutation.  The second effort is a software system that can be used to implement theoretical and experimental models.  The system provides near ``real-time'' feedback of the system's states, and allows for ``on-the-fly'' modification to control parameters.  The system is specifically designed such that any control systems engineer is able to customize and extend its functionality without substantial programming expertise.
+This thesis utilizes an experimental table top satellite prototype (NASA TableSat 1A) to span two main efforts.  The first is to create a physical model of a satellite for NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control systems (ADCS) techniques.  The ADCS maintains the TableSat constant 3 rpm rotation, prevents boom oscillations, and detects and corrects for unwanted nutation.  The second effort is a software system that can be used to implement theoretical and experimental models.  The system provides near ``real-time'' feedback of the system's states, and allows for ``on-the-fly'' modification to control parameters.  The system is specifically designed such that any control systems engineer is able to customize and extend its functionality without substantial programming expertise.
 \end{abstractpage}
 
 
@@ -106,7 +121,6 @@ This thesis utilizes an experimental table top satellite prototype (NASA TableSa
 \include{sections/Estimators}
 \include{sections/Controllers}
 \include{sections/ObserverBasedControls}
-\include{sections/ImprovedTools}
 \include{sections/SoftwareProgression}
 \include{sections/TSatPy}
 \include{sections/Conclusions}
@@ -123,8 +137,8 @@ This thesis utilizes an experimental table top satellite prototype (NASA TableSa
 \appendix
 \pagebreak
 \begin{singlespace}
-  % \include{sections/TSatPySamples}
-  % \include{sections/TSatPySource}
+  \include{sections/TSatPySamples}
+  \include{sections/TSatPySource}
   % \include{sections/NSSSource}
 \end{singlespace}
 
