@@ -2,8 +2,6 @@
 \chapter{CONTROLLERS}
 \label{chap:Controllers}
 
-The TableSat 1A controller has performance requirements based off of NASA MMS's mission parameters.  Section \ref{sec:ComparativeAnalysysofPIDandSMOEstimators} demonstrated that multiple estimators can be run in parallel during both simulations and experimental runs.  As discussed above, this allows for a better insight into performance differences in estimation methods.  An additional benefit to running the controller through TSatPy is the ability to perform estimator scheduling.  Like gain scheduling which for an estimator or controller can modify what gains it uses depending on the current performance, estimator scheduling allows for switching between disparate estimation techniques during run-time.  For example, one estimator tuned for responding to large errors and run along side an estimator tuned for steady state performance.  The control algorithm can then receive more accurate state estimates on a wider range of environmental conditions.
-
 The control requirements for TableSat 1A can be simplified into three main goals.
 
 First is to maintain a steady spin rate of 3 rpm (0.31416 rad/sec).  Given the relative success of the body rate estimation in section \ref{chap:Estimators}, this goal should not be that difficult and likely will not need a complicated control model.
