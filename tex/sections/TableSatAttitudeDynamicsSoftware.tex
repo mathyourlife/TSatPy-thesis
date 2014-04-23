@@ -1,0 +1,278 @@
+
+\chapter{TABLESAT ATTITUDE SOFTWARE IMPLEMENTATION}
+\label{chap:TableSatAttitudeDynamicsSoftware}
+
+\section{Implementation of Attitude Modeling}
+\label{sec:ImplementationofAttitudeModeling}
+
+
+\subsection{Quaternion Notation}
+\label{subsec:Implementation-QuaternionNotation}
+Section \ref{subsubsec:QuaternionNotation}
+
+As will be described more in Chapter \ref{chap:TSatPy}, the implementation in this thesis is done in an object oriented manner so it can handle either the scalar first or scalar last format.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.State import Quaternion
+q = Quaternion(vector=[1,2,3], scalar=4)
+print(q)
+q = Quaternion(scalar=0, vector=[1,2,3])
+print(q)
+
+# Prints Out
+# <Quaternion [1 2 3], 4>
+# <Quaternion [1 2 3], 0>
+  \end{minted}
+  \nocite{minted}
+\end{singlespace}
+
+\section{Rotational Quaternion}
+\label{sec:Implementation-RotationalQuaternion}
+Section \ref{subsubsec:RotationalQuaternion}
+
+Creating a rotational quaternion from the TSatPy (Chapter \ref{chap:TSatPy}) is done with
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.State import Quaternion
+
+q = Quaternion(vector=[1,2,3], radians=4)
+e, theta = q.to_rotation()
+
+print(q)
+print("Euler axis: <%g, %g, %g>" % (e[0,0], e[1,0], e[2,0]))
+print("Rotation: %g radians" % theta)
+
+# Prints Out
+# <Quaternion [-0.24302 -0.48604 -0.72906], -0.416147>
+# Euler axis: <-0.267261, -0.534522, -0.801784>
+# Rotation: 4 radians
+  \end{minted}
+  \nocite{minted}
+\end{singlespace}
+
+\subsection{Quaternion Multiplication}
+\label{subsec:Implementation-QuaternionMultiplication}
+
+Section \ref{subsubsec:QuaternionMultiplication}
+
+The example below shows how this incremental changes holds true with the TSatPy library.
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.State import Quaternion
+
+a = Quaternion([1,2,3], radians=0.5)
+b = Quaternion([1,2,3], radians=2)
+print("a             = %s" % a)
+print("a * a * a * a = %s" % (a * a * a * a))
+print("b             = %s" % b)
+# Prints Out
+# a             = <Quaternion [-0.0661215 -0.132243 -0.198364], 0.968912>
+# a * a * a * a = <Quaternion [-0.224893 -0.449785 -0.674678], 0.540302>
+# b             = <Quaternion [-0.224893 -0.449785 -0.674678], 0.540302>
+  \end{minted}
+  \nocite{minted}
+\end{singlespace}
+
+Section \ref{subsubsec:QuaternionMultiplication} includes a small example of quaternion multiplication and the following snippet is the implementation of the quaternion multiplication which reads and is used similarly to how the quaternion algebra is written.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+class Quaternion(object):
+    def __mul__(self, q):
+        v = (self.x + np.eye(3) * self.scalar) * q.vector
+        v += self.vector * q.scalar
+        s = self.scalar * q.scalar - (self.vector.T * q.vector)[0, 0]
+        return Quaternion(v, s)
+  \end{minted}
+  \nocite{minted}
+\end{singlespace}
+
+\subsection{Rotating a Point with Quaternions}
+\label{subsec:Implementation-RotatingaPointwithQuaternions}
+
+Section \ref{subsubsec:RotatingaPointwithQuaternions}
+
+The equivalent TSatPy implementation of the point rotation equation (Equation \ref{eqn:RotationMatrix})
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.State import Quaternion
+import numpy as np
+
+A = np.mat([2, 4, -1]).T
+q = Quaternion([0,0,1], radians=np.pi/2)
+
+print(q.rmatrix * A)
+
+# Prints out
+# [[-4.]
+#  [ 2.]
+#  [-1.]]
+  \end{minted}
+  \nocite{minted}
+\end{singlespace}
+
+\subsection{Incremental Quaternion Rotations}
+\label{subsec:Implementation-IncrementalQuaternionRotations}
+Section \ref{subsubsec:IncrementalQuaternionRotations}
+
+Using the TSatPy code, equation \ref{eqn:3rpmQuaternionEquation} can be implemented as
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.State import Quaternion
+import time
+import numpy as np
+
+q_rps = Quaternion([0,0,1], radians=np.pi/10)
+print('Quaternion spin rate (rad/sec)\n %s' % q_rps)
+
+q_state = Quaternion([0,0,1], radians=np.pi/2)
+print('Initial state of TableSat\n t=0: %s' % q_state)
+
+
+print('Starting Open Loop State Tracking')
+for k in range(1,11):
+    time.sleep(1)
+    q_state *= q_rps
+    print(' t=%s: %s' % (k, q_state))
+
+# Prints Out
+# Quaternion spin rate (rad/sec)
+#  <Quaternion [-0 -0 -0.156434], 0.987688>
+# Initial state of TableSat
+#  t=0: <Quaternion [-0 -0 -0.707107], 0.707107>
+# Starting Open Loop State Tracking
+#  t=1: <Quaternion [0 0 -0.809017], 0.587785>
+#  t=2: <Quaternion [0 0 -0.891007], 0.45399>
+#  t=3: <Quaternion [0 0 -0.951057], 0.309017>
+#  t=4: <Quaternion [0 0 -0.987688], 0.156434>
+#  t=5: <Quaternion [0 0 -1], 1.11022e-16>
+#  t=6: <Quaternion [0 0 -0.987688], -0.156434>
+#  t=7: <Quaternion [0 0 -0.951057], -0.309017>
+#  t=8: <Quaternion [0 0 -0.891007], -0.45399>
+#  t=9: <Quaternion [0 0 -0.809017], -0.587785>
+#  t=10: <Quaternion [0 0 -0.707107], -0.707107>
+  \end{minted}
+  \nocite{minted}
+\end{singlespace}
+
+This implementation has both a big control theory and implementation issue.  The control theory concern is the estimate is running in an open loop without ever receiving corrections so the myriad of additional factors that affect a real system would quickly invalidate the accuracy of the estimate in this approach.  The implementation issue deals with the time step.  Even if TableSat/MMS spun perfectly at 3 rpm the state will not be updated exactly on each second.  A busy processor, numerical drift, and execution time will prevent the desired fixed step size of 1 sec.  In some of the earlier implementations of the base station controller discussed in Chapter \ref{chap:StandardTools} dropped UDP messages caused the control loop to execute on an inconsistent interval and prevent accurate state estimates.  Handling of the variability in timesteps will be covered Section \ref{sec:SatelliteDynamics}
+
+\section{System Clock}
+\label{sec:Implementation-SystemClock}
+
+Section \ref{sec:SystemClock}
+
+TSatPy implements this concept through the Metronome class.  An instance of this class serves as the reference frame for all rate calculations.  During the simulation, the clock is able to slow and quicken based on the set speed.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.Clock import Metronome
+import time
+
+c = Metronome()
+print("Start Time: system=%s, real=%s" % (c, time.time()))
+time.sleep(2)
+print("Lock step:  system=%s, real=%s" % (c, time.time()))
+c.set_speed(0.1)
+time.sleep(30)
+print("Slow-mo:    system=%s, real=%s" % (c, time.time()))
+c.set_speed(100)
+time.sleep(4)
+print("FFW:        system=%s, real=%s" % (c, time.time()))
+
+# Prints Out
+# Start Time: system=7.86781e-06s, real=1396147884.5
+# Lock step:  system=2.00162s, real=1396147886.5
+# Slow-mo:    system=5.00364s, real=1396147916.52
+# FFW:        system=405.292s, real=1396147920.52
+  \end{minted}
+  \nocite{minted}
+\end{singlespace}
+
+\subsection{Body Rate Quaternion Propagation}
+\label{subsec:Implementation-BodyRateQuaternionPropagation}
+Section \ref{subsec:BodyRateQuaternionPropagation}
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.Clock import Metronome
+from TSatPy import State
+import time
+
+clock = Metronome()
+
+M = [0, 0, 0.5]
+w = State.BodyRate([0, 0, 0])
+eme = State.EulerMomentEquations([[10, 0, 0], [0, 10, 0], [0, 0, 10]], w, clock)
+
+for k in range(5):
+    w = eme.propagate(M)
+    print(w)
+    time.sleep(1)
+
+# Prints Out
+# <BodyRate [0 0 0]>
+# <BodyRate [0 0 0.0500562]>
+# <BodyRate [0 0 0.10012]>
+# <BodyRate [0 0 0.150189]>
+# <BodyRate [0 0 0.200252]>
+  \end{minted}
+\nocite{minted}
+\end{singlespace}
+
+The quaternion propagation operates in the same way as the body rate propagation, and Equation \ref{eqn:DiscreteQuaternionPropagation} is implemented in the QuaternionDynamics class.  The sample simulation below describes a basic quaternion propagation where the TableSat/MMS model is tracking a 0.1 rad/sec rotation about the $+z$ axis.  The system clock initially tracks with the real time, so about a second of real elapsed time equates to the equivalent system time change.  After each update the angle increases by about 0.1 rad.  After a four second transient response period the system clock is sped up by a factor of five (line 19).  After that each step simulates a 0.5 rad increase from when the clock speed changed.
+
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+
+from TSatPy.Clock import Metronome
+from TSatPy import State
+import time
+
+c = Metronome()
+print("Setting spin rate of 0.1 rad/sec about +z")
+w = State.BodyRate([0, 0, 0.1])
+q_ic = State.Identity()
+
+qd = State.QuaternionDynamics(q_ic, c)
+
+for _ in range(4):
+    time.sleep(1)
+    e, theta = qd.propagate(w).to_rotation()
+    print(" Rotation Angle: %s" % theta)
+
+print("Initial transient response inspection complete.")
+print("Speed up 5x for steady state response.")
+c.set_speed(5)
+
+for _ in range(4):
+    time.sleep(1)
+    e, theta = qd.propagate(w).to_rotation()
+    print(" Rotation Angle: %s" % theta)
+
+# Prints Out
+# Setting spin rate of 0.1 rad/sec about +z
+#  Rotation Angle: 0.0
+#  Rotation Angle: 0.100147199631
+#  Rotation Angle: 0.203001904488
+#  Rotation Angle: 0.303643703461
+# Initial transient response inspection complete.
+# Speed up 5x for steady state response.
+#  Rotation Angle: 0.804805707932
+#  Rotation Angle: 1.30787069798
+#  Rotation Angle: 1.81127579212
+#  Rotation Angle: 2.3147197485
+  \end{minted}
+  \nocite{minted}
+\end{singlespace}
+
+\TODO{How do we incorporate the videos demonstrating the plant state propagation with input moments? Unforced propagation https://vimeo.com/68018120. Applied moments https://vimeo.com/42960673 }
+
+
+
+
+

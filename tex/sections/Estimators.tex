@@ -228,7 +228,7 @@ While testing the performance of the integral and derivative components showed a
 \subsection{PID Estimation with State Prediction}
 \label{subsec:PIDEstimatorwithStatePrediction}
 
-From Section \ref{sec:BodyRatePIDEstimation}, Equation \ref{eqn:PIDEstimatorUnforcedMotion} defines a method of tracking unforced spin-stabilized satellites through PID state estimation.  The biggest issue was a heavy reliance on the proportional gain to track the quaternion attitude which is sensitive to measurement noise.  Incorporating a multiplicative-correction quaternion based model of rigid body dynamics based on the equations in Chapter \ref{chap:SatelliteAttitudeModeling} can assist in predicting the $t_{k+1}$ state of the system.
+From Section \ref{sec:BodyRatePIDEstimation}, Equation \ref{eqn:PIDEstimatorUnforcedMotion} defines a method of tracking unforced spin-stabilized satellites through PID state estimation.  The biggest issue was a heavy reliance on the proportional gain to track the quaternion attitude which is sensitive to measurement noise.  Incorporating a multiplicative-correction quaternion based model of rigid body dynamics based on the equations in Chapter \ref{chap:SatelliteAttitudeDynamicsAndKinematics} can assist in predicting the $t_{k+1}$ state of the system.
 
 \begin{subequations}
   \begin{align}
