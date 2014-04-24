@@ -23,7 +23,7 @@ NASA's MMS satellites as with all real systems are rarely linear.  When modeling
   \label{eqn:EulerMoment}
 \end{subequations}
 
-Here the equations of motion are described in terms of the body's frame of reference ($x$, $y$, $z$) which does not necessarily align with the body's principal axes.  TableSat 1A's construction can be simplified to an axisymmetric design.  To adjust TableSat 1A's stability, the center screw can be raised or lowered bringing the center of mass and center of rotation closer or further apart.  As development of the observer-based controller improves the two centers can be brought closer together.  With these conditions, we can assume that the body's reference frame aligns with the body's principal axes, which simplifies Euler's equations further to.
+Here the equations of motion are described in terms of the body's frame of reference ($x$, $y$, $z$) which does not necessarily align with the body's principal axes.  NASA MMS TableSat 1A's construction can be simplified to an axisymmetric design.  To adjust TableSat's stability, the center screw can be raised or lowered bringing the center of mass and center of rotation closer or further apart.  As development of the observer-based controller improves the two centers can be brought closer together.  With these conditions, we can assume that the body's reference frame aligns with the body's principal axes, which simplifies Euler's equations further to.
 
 \begin{subequations}
   \begin{align}
@@ -34,7 +34,7 @@ Here the equations of motion are described in terms of the body's frame of refer
   \label{eqn:EulerMomentPrincipleAxes}
 \end{subequations}
 
-For implementation into the TableSat 1A's base station observer based controller, the continuous time Euler's equations \ref{eqn:EulerMomentPrincipleAxes} get converted to discrete time with a variable time step and implemented in Appendix \ref{code:TSatPy/State.py} as
+For implementation into the TableSat's base station observer based controller, the continuous time Euler's equations \ref{eqn:EulerMomentPrincipleAxes} get converted to discrete time with a variable time step and implemented in Appendix \ref{code:TSatPy/State.py} as
 
 \begin{subequations}
   \begin{align}
@@ -438,7 +438,7 @@ and through simplification becomes
   \end{bmatrix}
   \label{eqn:rot_nut_product_simplified}
 \end{equation}
-Now that we have an expanded representation of the resultant quaternion, we can use the restriction from the desired spin-stabilized state for TableSat/MMS.  The rotational quaternion is allowed to move freely about the $z$-axis but should not have any displacement about the $x$ and $y$ axes.  From Equation \ref{eqn:RotationalQuaternionDefinition}, $q_{1r} = q_{2r} = 0$.
+Now that we have an expanded representation of the resultant quaternion, we can use the restriction from the desired spin-stabilized state for TableSat.  The rotational quaternion is allowed to move freely about the $z$-axis but should not have any displacement about the $x$ and $y$ axes.  From Equation \ref{eqn:RotationalQuaternionDefinition}, $q_{1r} = q_{2r} = 0$.
 \begin{equation}
   \bs{q_{r}}
   = q_{1r} \bs{i} + q_{2r} \bs{j} + q_{3r} \bs{k} + q_{0r}
