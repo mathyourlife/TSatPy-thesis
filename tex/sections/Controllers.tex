@@ -4,31 +4,29 @@
 
 The control requirements for TableSat 1A can be simplified into three main goals.
 
-First is to maintain a steady spin rate of 3 rpm (0.31416 rad/sec).  Given the relative success of the body rate estimation in section \ref{chap:Estimators}, this goal should not be that difficult and likely will not need a complicated control model.
+First is to maintain a steady spin rate of 3 rpm ($\pi/10$ rad/sec).  Given the relative success of the body rate estimation in section \ref{chap:Estimators}, this goal should not be that difficult and likely will not need a complicated control model.
 
 Second is to correct for any nutation out of the spin plane detected by the estimator.  This can take the form of both driving body rates $\omega_y$ and $\omega_z$ to zero, and ensuring the estimated quaternion has an Euler axis is kept in parallel with the global $z$-axis.
 
 Third is to prevent oscillations in the ADP and SDP booms or attenuate any existing oscillations.  Out of the three, this performance goal has the largest set of dependencies for success.  This level of control is reliant on effective actuators along with reliable state estimates based on an accurate system model including boom dynamics.
 
+The first two goals will be addressed in this chapter as their scope is limited to controller design.  The effects of boom oscillations will be addressed in Chapter \ref{chap:ObserverBasedControls} when discussing the integration of the full observer-based controller.
+
 \section{Actuator Configuration}
 \label{sec:ActuatorConfiguration}
 
-The actuators in use on TableSat 1A consists of four single directional computer fans.  Two oriented for rate control and two for nutation corrections.  Rate control fans are mounted on opposite sides of the deck in opposing directions.  The two nutation fans are mounted at 90 degree angles and both have their thrust pointing down.  The fans are assumed to be mounted so that the rotation and nutation moments are applied about orthogonal axes, and that the thrust applied is tangential to the body's center of mass.  This initially simplifies the controller's voltage calculations for each fan which can be revisited if testing shows the effects are not negligible.
-
+The actuators in use on TableSat 1A consists of four single directional computer fans.  Two oriented for rate control and two for nutation corrections.  Rate control fans are mounted on opposite sides of the deck in opposing directions.  The two nutation fans are mounted to the deck at a 90 degree offset and have their thrust directed down.  The fans are assumed to be mounted so that the rotation and nutation moments are applied about orthogonal axes, and that the thrust applied is tangential to the body's center of mass.  This initially simplifies the controller's voltage calculations for each fan which can be revisited if testing shows the effects are not negligible.  While the two rotational fans provide full rotational control, the limited number of analog ports on the controller restricted the number of nutation control actuators to two.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/tsat_thrusters.eps,height=3in}}
   \caption{TableSat 1A thrusters}
   \label{fig:TSatThrusters}
 \end{figure}
-
-With this arrangement, actuators are identified by their center, direction of thrust related to the body reference frame, and the maximum force the actuator can produce.
-
+Since full state control is not possible, assuming that any control moment calculated by the control module in the software can be applied to the experimental setup will have detrimental results.  This makes it critical to calculate the actual applied moment and supply this value in the feedback loop to keep the plant models accurate.  For UNH NASA TableSat 1A, the actuators are identified by their center, direction of thrust related to the body reference frame, and the maximum force the actuator can produce.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/tsat_body_axes.eps,height=3in}}
   \caption{TableSat Body Axes}
   \label{fig:TableSatBodyAxes}
 \end{figure}
-
 \begin{table}[H]
   \centering
   \begin{tabular}{c|c|c|c|c}
@@ -41,17 +39,9 @@ With this arrangement, actuators are identified by their center, direction of th
   \caption{Actuator configuration}
   \label{tbl:ActuatorConfiguration}
 \end{table}
+The role of the actuator module in the software is to represent the physical limitations of the actuators by accepting a desired moment in $\Re^3$ about the body's frame of reference and return the moment capable with the limited actuator configuration and single direction fans.
 
-
-The role of the actuator module is to accept a desired moment in $\Re^3$ about the body's frame of reference and return what moment is capable with the limited actuator configuration and single direction fans.  The configuration listed in lines 4-13 represent the fan configuration displayed in Figure \ref{fig:TSatThrusters} with the addition of a hypothetical second clockwise fan to demonstrate how the request can be distributed among multiple fans if available.
-
-In the ``setup\_actuators'' function, each fan configuration is fed into the module which calculates the maximum possible moment using the fan's location, direction, and force.
-
-\begin{equation}
-  M = \frac{F \bs{n} \times \bs{f_c}}{|\bs{n}|}
-\end{equation}
-
-Lines 31-36 list the potential moments for each of the actuators loaded.  Lines 26-28 simulate a request by the controller module for a $(0.03, 0.01, 0.07)$ Nm moment.  Since the fans are mounted to create moments about one of the body reference frame axes, each component of the request is considered separately.  The $M_x = 0.03 Nm$ request can only be partially fulfilled by the Nx fan at max thrust producing a $0.02 Nm$ moment.  The $M_y = 0.01 Nm$ request is within the limits of the Ny fan but because the fan is single directional, the request can not be filled.  The $M_z = 0.07 Nm$ request can not be served by either the CCW1 or CCW2 fans alone but can be generated by both fans if they share the load.  The actuator module splits the request equally between the two CCW fans at 88\% of their max capacity.  In the end, of the initial $(0.03, 0.01, 0.07) Nm$ request is reduced to an attainable moment of $(0.02, 0, 0.07) Nm$.  At this point the information is provided to both``set\_level'' function that would relay the appropriate voltage requirements to the TableSat.  To finish up the request, the actuator module returns the attained moment which can enter a feedback to the estimator and control modules for more accurate system modeling.
+The code snippet below demonstrates this functionality as it has been implemented in the TSatPy software.  Lines 4-13 define the geometry of the actuators displayed in Figure \ref{fig:TSatThrusters} with the addition of a hypothetical fifth actuator.  Each fan is identified by its center, direction of thrust, and maximum thrust force.
 
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
@@ -80,7 +70,7 @@ def setup_actuators(configs):
 
 act = setup_actuators(configs)
 print(act)
-M = np.mat([0.03, 0.11, 0.07]).T
+M = np.mat([0.03, 0.11, 0.04]).T
 print("Request moment: %s" % (M.T))
 print("Applied moment: %s" % (act.request_moment(M).T))
 
@@ -91,14 +81,24 @@ print("Applied moment: %s" % (act.request_moment(M).T))
 #  <Fan CCW2 moment=(0, 0, 0.0279901)>
 #  <Fan NY moment=(0, -0.02, 0)>
 #  <Fan NX moment=(0.02, 0, 0)>
-# Request moment: [[ 0.03  0.11  0.07]]
+# Request moment: [[ 0.03  0.11  0.04]]
 # Setting power level=1 for: <Fan NX moment=(0.02, 0, 0)>
-# Setting power level=1 for: <Fan CCW1 moment=(0, 0, 0.0279901)>
-# Setting power level=1 for: <Fan CCW2 moment=(0, 0, 0.0279901)>
-# Applied moment: [[ 0.02        0.          0.05598023]]
+# Setting power level=0.714538 for: <Fan CCW1 moment=(0, 0, 0.0279901)>
+# Setting power level=0.714538 for: <Fan CCW2 moment=(0, 0, 0.0279901)>
+# Applied moment: [[ 0.02  0.    0.04]]
   \end{minted}
 \nocite{minted}
 \end{singlespace}
+
+When the actuator instance is created on line 24, the potential contributions for each fan is calculated with
+\begin{equation}
+  M = \frac{F \bs{n} \times \bs{f_c}}{|\bs{n}|}
+\end{equation}
+The script's output shows how a requested moment of $M_x = 0.03, M_y = 0.11, M_z = 0.04$ would be applied to the five fan configuration.  Fan ``Nx'' gets set to full power to supply part of the requested $M_x = 0.3$.  Fan ``Ny'' does not contribute since it's thrust is in opposite direction to what's needed.  Fans ``CCW1'' and ``CCW2'' can not individually supply the requested $M_z = 0.04$, but are able to collaboratively reach the requested moment by setting each to 71\% power.
+
+
+Lines 31-36 list the potential moments for each of the actuators loaded.  Lines 26-28 simulate a request by the controller module for a $(0.03, 0.01, 0.07)$ Nm moment.  Since the fans are mounted to create moments about one of the body reference frame axes, each component of the request is considered separately.  The $M_x = 0.03 Nm$ request can only be partially fulfilled by the Nx fan at max thrust producing a $0.02 Nm$ moment.  The $M_y = 0.01 Nm$ request is within the limits of the Ny fan but because the fan is single directional, the request can not be filled.  The $M_z = 0.07 Nm$ request can not be served by either the CCW1 or CCW2 fans alone but can be generated by both fans if they share the load.  The actuator module splits the request equally between the two CCW fans at 88\% of their max capacity.  In the end, of the initial $(0.03, 0.01, 0.07) Nm$ request is reduced to an attainable moment of $(0.02, 0, 0.07) Nm$.  At this point the information is provided to both``set\_level'' function that would relay the appropriate voltage requirements to the TableSat.  To finish up the request, the actuator module returns the attained moment which can enter a feedback to the estimator and control modules for more accurate system modeling.
+
 
 Prior implementations of TableSat generally stuck with a static actuator layout which requires a significant portion of time to rewrite code and/or rewire electronics to assess variations on the actuator layout.  With the use of TSatPy, most modifications to the actuators during testing can be done with just a change to the config structure that provides a much faster turn around time between tests.
 

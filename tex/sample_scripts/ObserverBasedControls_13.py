@@ -30,7 +30,7 @@ def setup_actuators(configs):
 def main():
     act = setup_actuators(configs)
     print(act)
-    M = np.mat([0.03, 0.11, 0.07]).T
+    M = np.mat([0.03, 0.11, 0.04]).T
     print("\nRequest moment: %s" % (M.T))
     print
     print("\nApplied moment: %s" % (act.request_moment(M).T))
@@ -49,10 +49,10 @@ if __name__ == '__main__':
 #  <Fan NY moment=(0, -0.02, 0)>
 #  <Fan NX moment=(0.02, 0, 0)>
 
-# Request moment: [[ 0.03  0.11  0.07]]
+# Request moment: [[ 0.03  0.11  0.04]]
 
 # Setting power level=1 for: <Fan NX moment=(0.02, 0, 0)>
-# Setting power level=1 for: <Fan CCW1 moment=(0, 0, 0.0279901)>
-# Setting power level=1 for: <Fan CCW2 moment=(0, 0, 0.0279901)>
+# Setting power level=0.714538 for: <Fan CCW1 moment=(0, 0, 0.0279901)>
+# Setting power level=0.714538 for: <Fan CCW2 moment=(0, 0, 0.0279901)>
 
-# Applied moment: [[ 0.02        0.          0.05598023]]
+# Applied moment: [[ 0.02  0.    0.04]]
