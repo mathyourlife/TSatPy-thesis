@@ -1,0 +1,146 @@
+\chapter{EQUATION SUMMARY}
+\label{chap:EquationSummary}
+
+\section{Nomenclature}
+
+\begin{nomenclature}
+\begin{tabular}{lp{0.75\linewidth}}
+  \multicolumn{2}{l}{\textbf{Clock}} \\
+  $t_k$ & The system clock's time for step $k$ of a subsystem.  Note: since update frequencies are allowed to vary between subsystems, the $k$ is limited in scope to it's subsystem.  i.e. $t_{k\_estimator} \ne t_{k\_controller}$ \\
+\end{tabular}
+
+\begin{tabular}{lp{0.75\linewidth}}
+  \multicolumn{2}{l}{\textbf{State}} \\
+  $\bs{x}$ & Measured state \\
+  $\bs{\hat{x}}$ & Estimated state \\
+  $\bs{\hat{x}}_e$ & Estimated state error (Estimated - Measured)\\
+  $\bs{\hat{x}}_d$ & Desired state \\
+  $\bs{x}_e$ & State error (Estimated - Desired) \\
+  $\bs{\hat{x}}(t_{k+1})^-$ & Predicted state prior to update \\
+  $\bs{\hat{x}}(t_k)^+$ & State estimate modified to remove rotational quaternion \\
+\end{tabular}
+
+\begin{tabular}{lp{0.75\linewidth}}
+  \multicolumn{2}{l}{\textbf{Quaternions}} \\
+  $\bs{q}$ & quaternion in the form $q_1\bs{i}+q_2\bs{j}+q_3\bs{k}+q_0$ \\
+  $\bs{v}$ & the vector portion of a quaternion equivalent to $q_1\bs{i}+q_2\bs{j}+q_3\bs{k}$ \\
+  $\bs{\hat{e}}$ & Euler's axis from $\bs{\hat{e}} = \frac{\bs{v}}{|\bs{v}|}$ \\
+  $q_0$ & the scalar portion of a quaternion \\
+  $\bs{q}_I$ & identity quaternion where $\bs{q_I} = 0\bs{i}+0\bs{j}+0\bs{k}+1$ \\
+  $\bs{q_n}$ & nutation quaternion in the form $ q_1 \bs{i} + q_2 \bs{j} + 0 \bs{k} + q_0 $ \\
+  $\bs{q_r}$ & rotational quaternion in the form $ 0 \bs{i} + 0 \bs{j} + q_3 \bs{k} + q_0 $ \\
+  $\bs{R_q}$ & 3x3 rotation matrix corresponding to quaternion $q$ \\
+\end{tabular}
+
+\begin{tabular}{lp{0.75\linewidth}}
+  \multicolumn{2}{l}{\textbf{Body-Fixed Angular Velocity (i.e. Body Rate)}} \\
+  $\bs{\omega}$ & Body Rate \\
+\end{tabular}
+
+\begin{tabular}{lp{0.75\linewidth}}
+  \multicolumn{2}{l}{\textbf{Protocols}} \\
+  UDP & User Datagram Protocol: Session-less and unverified data transfer. \\
+  TCP & Transmission Control Protocol: Session based data transfer where all transfers are confirmed on receipt. \\
+\end{tabular}
+
+\section{Equations}
+Quaternion From a Rotation
+\begin{equation} \bs{q} = \bs{v} + q_0 = \hat{\bs{e}} \sin \left( \frac{-\theta}{2} \right) + \cos \left( \frac{-\theta}{2} \right) \end{equation}
+Quaternion Rotation Matrix
+\begin{equation}
+  \bs{R_q} = (q_0^2 - \bs{v}^T \bs{v}) \bs{I} + 2 \bs{v} \bs{v}^T - 2 q_0 (\bs{v} \times)
+\end{equation}
+Quaternion Multiplication
+\begin{equation}
+  \begin{aligned}
+    \bs{a} \otimes \bs{b} &=
+    \begin{bmatrix}
+      (\bs{a}_v \times) + \bs{I} a_0 & \bs{a}_v \\
+      -\bs{a}_v^T                    & a_0 \\
+    \end{bmatrix}
+    \begin{bmatrix}
+    \bs{b}_v \\ b_0
+    \end{bmatrix} \\
+    \text{where } \bs{\Omega} \left[ \bs{a} \right] &=
+    \begin{bmatrix}
+      - [ \bs{a} \times ] & \bs{a} \\
+      - \bs{a}^T & 0
+    \end{bmatrix} \text{ and }
+    \bs{a} \times =
+    \begin{bmatrix}
+      0 & -\bs{a}_z & \bs{a}_y \\
+      \bs{a}_z & 0 & -\bs{a}_x \\
+      -\bs{a}_y & \bs{a}_x & 0 \\
+    \end{bmatrix}
+  \end{aligned}
+\end{equation}
+Quaternion Error
+\begin{equation}
+  \bs{q}_e = \bs{q}^* \otimes \bs{\hat{q}}
+\end{equation}
+
+Theta Multiplier with Quaternion Vector Balancing\\
+\begin{equation}
+  \begin{aligned}
+    \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot 2\cos^{-1} (q_0))  \end{bmatrix} \\
+    \text{where } \gamma &= \sqrt{\frac{\bs{v} \bullet \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}}
+   \end{aligned}
+\end{equation}
+Discrete Quaternion Dynamics
+\begin{equation}
+  \begin{aligned}
+    \bs{q}(t_{k+1}) &= ( \bs{A} + \bs{B} ) \bs{q}(t_{k}) \\
+    \text{where } \bs{A} &= \exp \left( \frac{\Delta t_{k+1}}{2} \bs{\Omega} \left[ \bs{\bar{\omega}}(t_{k+1}) \right] \right)\\
+    \bs{B} &= \frac{1}{48} \Delta t_{k+1}^2 \Big(
+    \bs{\Omega} \left[\bs{\omega}(t_{k+1}) \right]
+    \bs{\Omega} \left[\bs{\omega}(t_{k})   \right] -
+    \bs{\Omega} \left[\bs{\omega}(t_{k})   \right]
+    \bs{\Omega} \left[\bs{\omega}(t_{k+1}) \right]
+      \Big)
+  \end{aligned}
+\end{equation}
+Discrete quaternion integration with adaptive time steps\\
+\begin{equation} \bs{q}_{ei}(t_k) = \bs{\psi}(\bs{q}_e(t_{k}), \Delta t_{k}) \otimes \bs{q}_{ei}(t_{k-1}) \end{equation}
+Discrete quaternion derivative with adaptive time steps\\
+\begin{equation} \bs{q}_{ed}(t_k) = \bs{\psi}\left(\bs{q}_e(t_{k-1})^* \otimes \bs{q}_e(t_{k}), \frac{1}{\Delta t_{k}}\right) \end{equation}
+Quaternion Decomposition
+\begin{equation}
+  \begin{aligned}
+    \bs{q} &= \bs{q_n} \otimes \bs{q_r} \\
+    \text{where } \bs{q}_n &= \begin{bmatrix} q_{1n} = Q \cdot q_{2n} \\ q_{2n} = \sqrt{ \frac{1  - q_3^2 - q_0^2}{Q^2 + 1} } \\ 0 \\ q_{0n} = \sqrt{q_3^2 + q_0^2} \end{bmatrix} , \bs{q}_r = \begin{bmatrix} 0 \\ 0 \\ q_{3r} = \frac{q_3}{q_{0n}} \\ q_{0r} = \frac{q_0}{q_{0n}} \end{bmatrix} \\
+    Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
+  \end{aligned}
+\end{equation}
+Quaternion PID Estimation with State Prediction
+\begin{equation}
+  \bs{\hat{q}}(t_{k+1}) = \bs{\psi}\left(\bs{q}_{ed}(t_k), K_{qd}\right) \otimes \bs{\psi}\big(\bs{q}_{ei}(t_k), K_{qi}\big) \otimes \bs{\psi}(\bs{q}_e(t_{k}), K_{qp})  \otimes \bs{\hat{q}}(t_{k+1})^-
+\end{equation}
+Body Rate PID Estimation with State Prediction
+\begin{equation}
+  \bs{\hat{\omega}}(t_{k+1}) = \bs{\hat{\omega}}(t_{k+1})^- + \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k})
+\end{equation}
+Quaternion to moment conversion\\
+\begin{equation} \bs{M}_{q} = \left[-2 K_{q} \cos^{-1} (q_{0}) \right] \bs{\hat{e}} \end{equation}
+Quaternion PID Controller \\
+\begin{equation} \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[-2 K_{q} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[-2 K_{q} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed} \end{equation}
+Body Rate PID Controller with Adaptive Time Steps\\
+\begin{equation}\bs{M}_{\omega} = \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k})\end{equation}
+Quaternion Saturation
+\begin{equation} \bs{1}_s\big(\bs{q} \big) = \begin{bmatrix} \bs{v} \\ sat\left( \frac{2\cos^{-1} q_{0} }{S_{q}} \right) \end{bmatrix} \end{equation}
+Sliding Mode Observer \\
+\begin{subequations}
+  \begin{align}
+    \bs{\hat{q}}(t_{k+1}) &= \bs{\psi} (\bs{1}_s\big(\bs{q}_{e}(t_k)\big), K_q) \otimes \bs{\psi}(\bs{q}_e(t_{k}), L_{q})  \otimes \bs{\hat{q}}(t_{k+1})^- \\
+    \bs{\hat{\omega}}(t_{k+1}) &= \bs{\hat{\omega}}(t_{k+1})^- + \bs{L}_{\omega} \bs{\omega}_e(t_{k}) + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e(t_{k}) \big)
+  \end{align}
+  \label{eqn:SMOEstimatorwithPredictionUnforcedMotion}
+\end{subequations}
+Sliding Mode Control
+\begin{equation}
+  \bs{M}_{\omega}(t_{k+1}) = \bs{L}_{\omega} \bs{\omega}_e(t_{k+1}) + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e(t_{k+1}) \big)
+  \label{eqn:SMController}
+\end{equation}
+
+
+\end{nomenclature}
+

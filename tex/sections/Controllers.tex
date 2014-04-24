@@ -165,20 +165,14 @@ The response curve in Figure \ref{fig:PIDRateControl} was generated with a rando
 \label{subsec:SlidingModeController}
 
 The Sliding Mode Controller (SMC) has a similar format to the Sliding Mode Observer (SMO) in Section \ref{sec:SlidingModeObserverwithStatePrediction}.  Since the estimator contains a state prediction component, it is not required in the controller, and since the attitude is not under consideration for the rate controller, the quaternion adjustment terms are also removed.
-
-\begin{subequations}
-  \begin{align}
-    \bs{M}_{\omega}(t_{k+1}) &= \bs{L}_{\omega} \bs{\omega}_e(t_{k+1}) + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e(t_{k+1}) \big)
-  \end{align}
-  \label{eqn:SMOControllerwithPredictionUnforcedMotion}
-\end{subequations}
-
+\begin{equation}
+  \bs{M}_{\omega}(t_{k+1}) = \bs{L}_{\omega} \bs{\omega}_e(t_{k+1}) + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e(t_{k+1}) \big)
+  \label{eqn:SMController}
+\end{equation}
 where
-
 \begin{equation}
   \bs{1}_s \big(\bs{\omega}_e(t_{k+1}) \big) = sat \begin{bmatrix} \omega_{ex}(t_{k+1}) / S_{\omega} &0 &0 \\ 0 & \omega_{ey}(t_{k+1}) / S_{\omega} & 0 \\ 0 & 0 & \omega_{ez}(t_{k+1}) / S_{\omega} \end{bmatrix}
 \end{equation}
-
 Unlike the comparison of the PID estimator with the Sliding Mode Observer where they're performances were very similar, the parameter tuned SMC clearly out performs the parameter tuned PID controller for rate control with perfect estimates.  Figure \ref{fig:SMCRateControl} shows the response of the rate control SMC where the response time is approximately half the time of the PID controller, and also with consistently less overshoot.
 
 \begin{figure}[H]
@@ -227,21 +221,18 @@ To generate the moments needed to correct for the error in attitude, the P contr
 
 \begin{subequations}
   \begin{align}
-    \bs{M}_{q}(t_{k+1}) &= \left[-2 K_{qp} \cos^{-1} \big(\hat{q}_{e0}(t_{k+1}) \big) \right] \bs{\hat{e}}_e(t_{k+1}) \\
-    \text{where } \bs{\hat{e}}_e(t_{k+1}) &= \frac{\bs{\hat{v}}_e(t_{k+1})}{|\bs{\hat{v}}_e(t_{k+1})|}
+    \bs{M}_{q} &= \left[-2 K_{qp} \cos^{-1} \big(\hat{q}_{e0} \big) \right] \bs{\hat{e}}_e \\
+    \text{where } \bs{\hat{e}}_e &= \frac{\bs{\hat{v}}_e}{|\bs{\hat{v}}_e|}
   \end{align}
   \label{eqn:PAttitudeControl}
 \end{subequations}
 
 To assess the basic functionality of the proportional quaternion in Equation \ref{eqn:PAttitudeControl}, the controller was run with $K_{qp} = 0.01$ and told to return the quaternion to the standard state with the body's reference frame aligned with the global reference frame.  The TableSat was given an initial condition of
 
-\begin{subequations}
-  \begin{align}
-    \bs{\hat{v}}_e &= 0\bs{i}+0.1\bs{j}+1 \bs{k}\\
-    \theta &= 1 \text{ rad} \\
-    \bs{\omega} &= \begin{bmatrix} 0 \\ -0.01 \\ 0.2 \end{bmatrix} \text{ rad/sec}
-  \end{align}
-\end{subequations}
+\begin{equation}
+  \bs{x}_0 = \begin{bmatrix} 0 \bs{i} -0.0477 \bs{j} -0.477 \bs{k} +0.8778 \\ 0 \bs{i} -0.01 \bs{j} 0.2 \bs{k} \end{bmatrix}
+\end{equation}
+
 
 \begin{figure}[H]
   \centerline{\psfig{file=figures/p_attitude_control.eps,width=6in}}
@@ -324,13 +315,6 @@ Since the state quaternion represents a single rotation about the Euler axis and
 
 This thesis will refer to the method decomposition of a quaternion through the method in equation \ref{eqn:DecomposeQuaternion} as
 
-\begin{subequations}
-  \begin{align}
-  \bs{\chi}_r(\bs{q}) &= \bs{q}_r \\
-  \bs{\chi}_n(\bs{q}) &= \bs{q}_n \\
-  \text{where: } \bs{q} &= \bs{q}_n \otimes \bs{q}_r
-  \end{align}
-\end{subequations}
 
 Equation \ref{eqn:DecomposeQuaternion} has been built into the TSatPy library for use in the controller.  The code snippet below demonstrates the decompose method at work.  Lines 3-4 define a known rotation and nutation.  At line 8 the normal multiplication operation has been converted to a quaternion multiplication to combine quaternions into a single attitude quaternion that may be encountered in a simulation or experimental test.  Recall from Section \ref{subsec:QuaternionAttitude} that the quaternion multiplication is not commutative, so this combination represents a rotation first then a nutation.  At line 11, the single quaternion representation is asked to break itself into a rotation and nutation quaternion according as defined in Equation \ref{eqn:DecomposeQuaternion}.  The resulting decomposition can been seen in lines 16-22 to match the chosen rotation and nutation.
 
@@ -364,6 +348,15 @@ print("q_r2: %s" % q_n2)
 
 Now that there is a defined method for separating the allowed rotation from the unwanted nutations, the next section will incorporate it into a attitude controller.
 
+\subsection{Quaternion to Moment Conversion}
+
+\TODO{this}
+\begin{equation}
+  \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} (q_{0n}) \right] \bs{\hat{e}}_n
+  \label{eqn:PNutationControl}
+\end{equation}
+
+
 \subsection{P Nutation Control}
 \label{subsec:PNutationControl}
 
@@ -371,14 +364,11 @@ Since the previous section's P-controller proved very successful at attitude con
 
 In this test, a random attitude was chosen and the controller's task was to bring the satellite level regardless of the point in the rotation about the $z$-axis.  From Equation \ref{eqn:PAttitudeControl},    As with previous test runs, parameters were tuned to obtain a minimum control effort.
 
-\begin{subequations}
-  \begin{align}
-    \bs{M}_{q} &= \left[-2 K_{qp} \cos^{-1} (q_{0}) \right] \bs{\hat{e}} \\
-    \text{where: } \bs{v} + q_0 &= \bs{\chi}_n(\bs{\hat{q}}_e)\\
-    \bs{\hat{e}} &= \frac{\bs{v}}{|\bs{v}|}
-  \end{align}
+\begin{equation}
+  \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} (q_{0n}) \right] \bs{\hat{e}}_n
   \label{eqn:PNutationControl}
-\end{subequations}
+\end{equation}
+
 
 The test was initialized at rest at an orientation of a 1.26 radian rotation about $-0.25 \bs{i} -0.406\bs{j} -0.879\bs{k}$.  With a proportional gain $K_{qp} = 0.152$, the P-controller behaved as a normal by oscillating back and forth about the desired orientation.  What is notable though is that even though the system was in a state rotated away from the standard orientation, the $M_z$ term remains 0 since the controller only uses the nutation portion of the quaternion state.
 
@@ -405,23 +395,107 @@ Since the proportional attitude control converged to the desired state through t
   \label{fig:PNutationRateControl}
 \end{figure}
 
-\subsection{P Rate and Nutation Control}
-\label{subsec:PRateNutationControl}
-
-\TODO{With initial spin}
-
-\section{Comparative Analysis of PID and SMC Rate and Nutation Control}
-\label{sec:ComparativeAnalysisofPIDandSMCRateandNutationControl}
-
-\TODO{this}
-
-\subsection{PID Rate and Nutation Control}
+\subsection{PID Rate and Nutation Control Using Quaternion Decomposition}
 \label{subsec:PIDRateandNutationControl}
+In a full state control configuration the plant was initialized to a random attitude and body rate of
+\begin{equation}
+  \bs{x}_{ic} = \begin{bmatrix} -0.102 \bs{i} -0.478 \bs{j}-0.0678 \bs{k} + 0.870 \\ 0.710 \bs{i} + 0.155 \bs{j} + 0.377 \bs{k} \end{bmatrix}
+\end{equation}
+unlike with the previous simulations in this chapter this run is configured to control both the attitude and body rate.  The controller is set with the desired state of
+\begin{equation}
+  \bs{x}_d = \begin{bmatrix} 0 \bs{i} +0 \bs{j} +0 \bs{k} + 1 \\ 0 \bs{i} + 0 \bs{j} + 0.314 \bs{k} \end{bmatrix}
+\end{equation}
+The attitude quaternion and body rate desired states are at odds with each other.  The identity quaternion sets the desired attitude to be fixed with the body-fixed reference frame aligned with the global reference frame.  The desired state defined by the body rate is to maintain a constant 0.314 rad/sec rotation about the body $z$-axis, so it must both stay still and move at a constant pace.
 
-\TODO{this}
+Resolving this conflict takes advantage of the quaternion decomposition derived in Equation \ref{eqn:quaternion_decomposition_derivation} and applies it to the estimated state's quaternion.  In effect, removing any rotational information from the quaternion leaving nutation and body rate data to feed into the controller.  The initial state from the estimator is
+\begin{equation}
+  \bs{\hat{x}}(t_{k}) = \begin{bmatrix} \bs{\hat{q}}(t_{k}) \\ \bs{\hat{\omega}}(t_{k}) \end{bmatrix} = \begin{bmatrix} \bs{\hat{q}}_n(t_{k}) \otimes \bs{\hat{q}}_r(t_{k}) \\ \bs{\hat{\omega}}(t_{k}) \end{bmatrix}
+\end{equation}
+and dropping the rotational component gives the modified state estimation as
+\begin{equation}
+  \bs{\hat{x}}^+(t_{k}) = \begin{bmatrix} \bs{\hat{q}}_n(t_{k})  \\ \bs{\hat{\omega}}(t_{k}) \end{bmatrix}
+\end{equation}
+The controller's state error is then calculated as
+\begin{equation}
+  \bs{x}_e(t_{k}) = \begin{bmatrix} \bs{q}_e(t_{k}) \\ \bs{\omega}_e(t_{k}) \end{bmatrix} = \begin{bmatrix} \bs{q}_d^*(t_{k}) \otimes \bs{\hat{q}}_n(t_{k}) \\ \bs{\hat{\omega}}(t_{k}) - \bs{\omega}(t_{k}) \end{bmatrix}
+\end{equation}
+Similar to the PID estimator in Equation \ref{eqn:PIDEstimatorwithPredictionUnforcedMotion}, the moments calculated by the controller is a summation of the quaternion based correction and the body rate correction moments
+\begin{equation}
+  \bs{M} = \bs{M}_q + \bs{M}_{\omega}
+\end{equation}
+
+Taking the integral $\bs{q}_{ei}$ and derivative $\bs{q}_{ed}$ quaternions from Equations \ref{aoeu} and \ref{aoeu} and the conversion from quaternion to moments in Equation \ref{rcha}.  The quaternion portion of the moment correction is
+\begin{equation}
+  \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[-2 K_{q} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[-2 K_{q} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed}
+\end{equation}
+where $\bs{\hat{e}}_e, \bs{\hat{e}}_{ei}, \bs{\hat{e}}_{ed}$ are the Euler axes for the quaternion error, quaternion error integral, and quaternion error derivative respectively.
+
+The body rate portion of the moment correction is
+\begin{equation}
+  \bs{M}_{\omega} = \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k})
+\end{equation}
+
+
+
+with quaternion error to moment gains of
+\begin{equation}
+  K_{pq} = 0.11112, K_{iq} = 0.00925, K_{dq} = 0.23122
+\end{equation}
+and body rate error to moment gains of
+\begin{equation}
+  \begin{aligned}
+  \bs{K}_{\omega p} &= \begin{bmatrix} 0.56073&0&0 \\ 0&0.46617&0 \\ 0&0&0.62449 \end{bmatrix} \\
+  \bs{K}_{\omega i} &= \begin{bmatrix} 0.59005&0&0 \\ 0&0.46463&0 \\ 0&0&0.42009 \end{bmatrix} \\
+  \bs{K}_{\omega d} &= \begin{bmatrix} 0.34528&0&0 \\ 0&0.56419&0 \\ 0&0&0.54984 \end{bmatrix} \\
+  \end{aligned}
+\end{equation}
+
+% x_est_ic:    <Quaternion [-0.102078 -0.477679 -0.067834], 0.869943>, <BodyRate [0.70997 0.155469 0.377068]>
+% (matrix([[-0.20699052],
+%         [-0.968625  ],
+%         [-0.13755192]]), 1.031418752494432)
+
+    % kwargs = {'Kpq': 0.11111822352039165, 'Kpwy': 0.46617055725812362, 'Kiq': 0.0092460954947930132, 'Kiwy': 0.56418807555550599, 'Kpwx': 0.56072598825499542, 'Kiwx': 0.34527737331963193, 'Kpwz': 0.62449446448477242, 'Kiwz': 0.54983623166470164, 'Kdwx': 0.59004903787603236, 'Kdwy': 0.4646265536024109, 'Kdwz': 0.42009087143770402, 'Kdq': 0.23121875724788765}
+
+% # Kpq:
+% #   val: 0.111118 range: 0.02,0.22    std: 0.0340246
+% # Kpwx:
+% #   val: 0.560726 range: 0.39,0.71    std: 0.0474869
+% # Kpwy:
+% #   val: 0.466171 range: 0.17,0.65    std: 0.0840252
+% # Kpwz:
+% #   val: 0.624494 range: 0.32,0.84    std: 0.0970963
+% # Kiq:
+% #   val: 0.0092461    range: 0.003,0.039  std: 0.00281212
+% # Kiwx:
+% #   val: 0.345277 range: 0.23,0.51    std: 0.0553643
+% # Kiwy:
+% #   val: 0.564188 range: 0.28,0.88    std: 0.115591
+% # Kiwz:
+% #   val: 0.549836 range: 0.29,0.81    std: 0.0990584
+% # Kdq:
+% #   val: 0.231219 range: 0.05,0.61    std: 0.0793672
+% # Kdwx:
+% #   val: 0.590049 range: 0.32,0.8 std: 0.107061
+% # Kdwy:
+% #   val: 0.464627 range: 0.12,0.72    std: 0.0881444
+% # Kdwz:
+% #   val: 0.420091 range: 0.27,0.63    std: 0.06911
+
+
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/pid_attitude_and_rate_control.eps,width=6in}}
+  \caption{PID Rate and Nutation Control}
+  \label{fig:PNutationRateControl}
+\end{figure}
 
 \subsection{SMC Rate and Nutation Control}
 \label{subsec:SMC}
 
 \TODO{this}
 
+\section{Comparative Analysis of PID and SMC Rate and Nutation Control}
+\label{sec:ComparativeAnalysisofPIDandSMCRateandNutationControl}
+
+\TODO{this}

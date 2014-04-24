@@ -1,21 +1,20 @@
 \documentclass[11pt,doublespace]{unhthesis}
 
-% \includeonly{
-% sections/Introduction,
-% sections/SatelliteAttitudeModeling,
-% sections/TableSat1A,
-% sections/TableSatAttitudeDynamicsSoftware,
-% sections/StateError,
-% sections/Estimators,
-% sections/Controllers,
-% sections/ObserverBasedControls,
-% sections/SoftwareProgression,
-% sections/TSatPy,
-% sections/Conclusions,
-% sections/FutureWork,
-% }
-
-
+\includeonly{
+sections/Introduction,
+sections/SatelliteAttitudeModeling,
+sections/TableSat1A,
+sections/TableSatAttitudeDynamicsSoftware,
+sections/StateError,
+sections/Estimators,
+sections/Controllers,
+sections/ObserverBasedControls,
+sections/SoftwareProgression,
+sections/TSatPy,
+sections/Conclusions,
+sections/FutureWork,
+sections/EquationSummary,
+}
 
 \usepackage{custom}
 \hyphenation{gno-mon-ly}
@@ -69,50 +68,6 @@ This thesis utilizes an experimental table top satellite prototype (NASA TableSa
 \end{abstractpage}
 
 
-\begin{nomenclature}
-
-  \begin{tabular}{lp{0.75\linewidth}}
-    \multicolumn{2}{l}{\textbf{Clock}} \\
-    $t_k$ & The system clock's time for step $k$ of a subsystem.  Note: since update frequencies are allowed to vary between subsystems, the $k$ is limited in scope to it's subsystem.  i.e. $t_{k\_estimator} \ne t_{k\_controller}$ \\
-  \end{tabular}
-
-  \begin{tabular}{lp{0.75\linewidth}}
-    \multicolumn{2}{l}{\textbf{State}} \\
-    $\bs{x}$ & Measured state \\
-    $\bs{\hat{x}}$ & Estimated state \\
-    $\bs{\hat{x}}_e$ & Estimated state error (Estimated - Measured)\\
-    $\bs{\hat{x}}_d$ & Desired state \\
-    $\bs{x}_e$ & State error (Estimated - Desired) \\
-    $\bs{\hat{x}}_{t_{k+1}}^-$ & Predicted state prior to update \\
-  \end{tabular}
-
-  \begin{tabular}{lp{0.75\linewidth}}
-    \multicolumn{2}{l}{\textbf{Body-Fixed Angular Velocity (i.e. Body Rate)}} \\
-    $\bs{\omega}$ & Body Rate \\
-  \end{tabular}
-
-  \begin{tabular}{lp{0.75\linewidth}}
-    \multicolumn{2}{l}{\textbf{Operations}} \\
-    $\bs{\Omega}$ & skew symmetric matrix \\
-  \end{tabular}
-
-  \begin{tabular}{lp{0.75\linewidth}}
-    \multicolumn{2}{l}{\textbf{Quaternions}} \\
-    $\bs{q}_I$ & identity quaternion where $\bs{q_I} = 0\bs{i}+0\bs{j}+0\bs{k}+1$ \\
-    $\bs{q_n}$ & nutation quaternion \\
-    $\bs{q_r}$ & rotational quaternion \\
-    $\bs{q}$ & quaternion in the form $q_1\bs{i}+q_2\bs{j}+q_3\bs{k}+q_0$ \\
-    $\bs{v}$ & the vector portion of a quaternion equivalent to $q_1\bs{i}+q_2\bs{j}+q_3\bs{k}$ \\
-    $\bs{R_q}$ & 3x3 rotation matrix corresponding to quaternion $q$ \\
-  \end{tabular}
-
-  \begin{tabular}{lp{0.75\linewidth}}
-    \multicolumn{2}{l}{\textbf{Protocols}} \\
-    UDP & User Datagram Protocol: Session-less and unverified data transfer. \\
-    TCP & Transmission Control Protocol: Session based data transfer where all transfers are confirmed on receipt. \\
-  \end{tabular}
-\end{nomenclature}
-
 \include{sections/Introduction}
 \include{sections/SatelliteAttitudeModeling}
 \include{sections/TableSat1A}
@@ -137,6 +92,7 @@ This thesis utilizes an experimental table top satellite prototype (NASA TableSa
 \appendix
 \pagebreak
 \begin{singlespace}
+  \include{sections/EquationSummary}
   \include{sections/TSatPySamples}
   \include{sections/TSatPySource}
   % \include{sections/NSSSource}

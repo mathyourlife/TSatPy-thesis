@@ -98,13 +98,14 @@ The alternative attitude parameterization investigated was the quaternion attitu
 
 \begin{equation}
   \begin{aligned}
-    \bs{q}(t_{k+1}) = & \bigg[ \exp \left( \frac{\Delta t_{k+1}}{2} \bs{\Omega} \left[ \bs{\bar{\omega}}(t_{k+1}) \right] \right) + \\
-    & \frac{1}{48} \Delta t_{k+1}^2 \Big(
+    \bs{q}(t_{k+1}) &= ( \bs{A} + \bs{B} ) \bs{q}(t_{k}) \\
+    \text{where } \bs{A} &= \exp \left( \frac{\Delta t_{k+1}}{2} \bs{\Omega} \left[ \bs{\bar{\omega}}(t_{k+1}) \right] \right)\\
+    \bs{B} &= \frac{1}{48} \Delta t_{k+1}^2 \Big(
     \bs{\Omega} \left[\bs{\omega}(t_{k+1}) \right]
     \bs{\Omega} \left[\bs{\omega}(t_{k})   \right] -
     \bs{\Omega} \left[\bs{\omega}(t_{k})   \right]
     \bs{\Omega} \left[\bs{\omega}(t_{k+1}) \right]
-      \Big) \bigg] \bs{q}(t_{k})
+      \Big)
   \end{aligned}
   \label{eqn:DiscreteQuaternionPropagation}
 \end{equation}
@@ -289,7 +290,7 @@ To facilitate this, visualization a model of the TableSat can be rotated with a 
   \label{eqn:RotationMatrix}
 \end{equation}
 
-For a $\pi/2$ radian rotation about $\hat{e} = 0\bs{i}+0\bs{j}+1\bs{k}$, the rotational quaternion an defined in Equation \ref{eqn:RotationalQuaternionDefinition} becomes $q = 0\bs{i}+0\bs{j}-1/\sqrt{2}\bs{k}+1/\sqrt{2}$.  With Equation \ref{eqn:RotationMatrix}, the rotational matrix becomes
+For a $\pi/2$ radian rotation about $\bs{\hat{e}} = 0\bs{i}+0\bs{j}+1\bs{k}$, the rotational quaternion an defined in Equation \ref{eqn:RotationalQuaternionDefinition} becomes $q = 0\bs{i}+0\bs{j}-1/\sqrt{2}\bs{k}+1/\sqrt{2}$.  With Equation \ref{eqn:RotationMatrix}, the rotational matrix becomes
 
 \begin{equation}
   \begin{aligned}
@@ -310,7 +311,7 @@ For the visualization, a point $A (2, 4, -1)$ that in the standard orientation o
 % One of the largest challenges with running both simulations and live control models is having access to meaningful representations of how the system is performing.  NSS simulations are generally performed through either running of m-file scripts and analyzing logged data in a batch format after the run, or using a NSS to produce line plots of values tracked during the simulation run.
 
 
-Now that we have a method for calculating the new position of a point from an initial position, we can extend the process to a collection of points that create a wireframe for the TableSat model.  Once this base wireframe is defined, the estimated attitude of the system can be visualized.  The if the system's estimator determines that TableSat is at an attitude of $\bs{q} = -0.38\bs{i}-0.07\bs{j}+0.91\bs{k}+0.16$, that is equivalent to a 161 degree rotation about the axis $\bs{\hat{e}} = <0.38, 0.07, -0.92>$.  Figure \ref{fig:TSatWireframe} shows the TableSat wireframe in its default configuration with body axes align with the global reference frame.  The red dashed line shown is the axis of rotation.
+Now that we have a method for calculating the new position of a point from an initial position, we can extend the process to a collection of points that create a wireframe for the TableSat model.  Once this base wireframe is defined, the estimated attitude of the system can be visualized.  The if the system's estimator determines that TableSat is at an attitude of $\bs{q} = -0.38\bs{i}-0.07\bs{j}+0.91\bs{k}+0.16$, that is equivalent to a 161 degree rotation about the axis $\bs{\hat{e}} = 0.3844\bs{i}+0.0708\bs{j}-0.9205\bs{k}$.  Figure \ref{fig:TSatWireframe} shows the TableSat wireframe in its default configuration with body axes align with the global reference frame.  The red dashed line shown is the axis of rotation.
 
 % Ideally, generating and updating a rendered model of the system at simulation time can improve the ability to attain the desired system behavior.
 
@@ -527,11 +528,12 @@ We now have a mapping of the original state quaternion $\bs{q}$ to its decompose
   \begin{align}
     q_{1n} &= Q \cdot q_{2n} \\
     q_{2n} &= \sqrt{ \frac{1  - q_3^2 - q_0^2}{Q^2 + 1} }\\
-    q_{n0} &= \sqrt{q_3^2 + q_0^2} \\
+    q_{0n} &= \sqrt{q_3^2 + q_0^2} \\
     q_{3r} &= \frac{q_3}{q_{0n}} \\
     q_{0r} &= \frac{q_0}{q_{0n}} \\
     \text{where } Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
   \end{align}
+  \label{eqn:quaternion_decomposition_derivation}
 \end{subequations}
 
 

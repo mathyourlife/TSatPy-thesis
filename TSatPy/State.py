@@ -94,7 +94,19 @@ class Quaternion(object):
         :return: Magnitude of the quaternion
         :rtype:  float
         """
-        return np.sqrt(np.sum(self.vector.T * self.vector) + self.scalar ** 2)
+
+        # x_est_ic:    <Quaternion [-0.772448 -0.00257112 -0.603963], 0.19633>, <BodyRate [0.003 -0.001 0.004]>
+        # (matrix([[-0.78778007],
+        #         [-0.00262215],
+        #         [-0.61595104]]), 2.7463653926463545)
+
+        try:
+            mag_sq = np.sum(self.vector.T * self.vector) + self.scalar ** 2
+        except OverflowError:
+            print self
+            raise
+
+        return mag_sq
 
     def normalize(self):
         """
@@ -482,8 +494,13 @@ class QuaternionDynamics(object):
         omega1 = self._omega(-self.w.w)
         omega_bar = (omega1 + omega2) / 2
 
-        phi = expm(0.5 * omega_bar * dt) + 1 / 48 * (
-            omega2 * omega1 - omega1 * omega2) * dt ** 2
+        try:
+            phi = expm(0.5 * omega_bar * dt) + 1 / 48 * (
+                omega2 * omega1 - omega1 * omega2) * dt ** 2
+        except ValueError:
+            print self.w
+            print self.q
+            raise
         q2mat = phi * self.q.mat
         q2 = Quaternion(q2mat[0:3, 0], q2mat[3, 0])
         q2.normalize()

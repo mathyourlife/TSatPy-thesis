@@ -357,9 +357,6 @@
 
 \def\nomenclature
    {\vspace*{0.5in}
-    \thispagestyle{plain}
-    \chapter*{NOMENCLATURE}
-    \addcontentsline{toc}{section}{NOMENCLATURE}
     \@normalsize
     \parindent 0pt                      % Don't indent 'paragraphs'.
    }

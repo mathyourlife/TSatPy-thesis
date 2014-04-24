@@ -371,7 +371,7 @@ Equation \ref{eqn:ScalarMultiplierWithNormalization} has a few strengths when us
 
 The disadvantage to using this representation is that the quaternion scalar parameter is a nonlinear function of the rotation angle (Equation \ref{eqn:RotationalQuaternionDefinition}).  Applying a constant scalar multiplier to it will result in inconsistent adjustment amount depending on the position along the sinusoidal value.
 
-\subsection{$\theta$ Multiplier with Quaternion Vector Balancing}
+\subsection{Theta Multiplier with Quaternion Vector Balancing}
 \label{subsec:ThetaMultiplierWithQuaternionVectorBalancing}
 
 The section will cover the final version of the quaternion adjustment calculation that takes into consideration all the issues encountered in the above sections.  The function designated in this thesis for the scaling of a quaternion to for use with quaternion multiplicative corrections while maintaining it's connection to the physical system will be $\bs{\psi}(\bs{q}, k)$ where
@@ -379,8 +379,7 @@ The section will cover the final version of the quaternion adjustment calculatio
 \begin{equation}
   \begin{aligned}
     \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot 2\cos^{-1} (q_0))  \end{bmatrix} \\
-    \text{where } \gamma &= \sqrt{\frac{\bs{v}^T \cdot \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}} \\
-    \bs{q} &= \begin{bmatrix} \bs{v} \\ q_0  \end{bmatrix}
+    \text{where } \gamma &= \sqrt{\frac{\bs{v} \bullet \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}} \\
   \end{aligned}
   \label{eqn:PSI}
 \end{equation}
@@ -445,8 +444,7 @@ Adjustment Quaternions
   \begin{aligned}
     \bs{q}_{adj} &= \bs{\psi}(\bs{q}_e, K_{qp}) \\
     \text{where } \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot 2\cos^{-1} (q_0))  \end{bmatrix} \\
-    \gamma &= \sqrt{\frac{\bs{v}^T \cdot \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}} \\
-    \bs{q} &= \begin{bmatrix} \bs{v} \\ q_0  \end{bmatrix}
+    \gamma &= \sqrt{\frac{\bs{v} \bullet \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}}
   \end{aligned}
 \end{equation}
 
