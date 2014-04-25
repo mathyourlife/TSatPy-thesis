@@ -244,7 +244,7 @@ Section \ref{sec:RateControl} covered the design of the rate controller which ad
 
 Starting with a simplest design of the proportional attitude control, equation \ref{eqn:QuaternionToMomentConversion} can be directly applied as
 \begin{equation}
-  \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} \big(\hat{q}_{e0} \big) \right] \bs{\hat{e}}_e \\
+  \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} \big(q_{0e} \big) \right] \bs{\hat{e}}_e \\
   \label{eqn:PAttitudeControl}
 \end{equation}
 This format of the proportional controller provides a significant time savings over the common method in Equation \ref{eqn:traditional_attitude_controller} when optimizing gains since instead of 12 gain values to tune, the controller is limited to a single gain.
@@ -280,108 +280,73 @@ The results from the test are shown in Figure \ref{fig:PAttitudeControl}.  The s
 
 
 
+Prior to combining the attitude control from Section \ref{subsec:PAttitudeControl} with the body rate control from Section \ref{sec:RateControl}, the controller needs to incorporate the quaternion decomposition method in Equation \ref{eqn:quaternion_decomposition_derivation}.  The advantage to incorporating this into a controller is being able to take the quaternion portion of the state error, decompose it into its associated rotation and nutation quaternions, and replace the quaternion error with the nutation quaternion error.  This limits the attitude controller to just worry about correcting for nutation regardless of the rotational position or angular velocity.
 
-
-In order to proceed with isolating and correcting for nutation out side of the global $xy$ spin plane, a method for quantifying the nutation from the quaternion attitude is required.  From Equation \ref{eqn:RotationalQuaternionDefinition}, the definition of the rotational quaternion shows that if the system is in a non-nutated state the $q_1$ and $q_2$ components must be zero.
-
+The proportional attitude control from Equation \ref{eqn:PAttitudeControl} becomes
 \begin{equation}
-  \bs{q}_{dn} = 0 \bs{i} + 0 \bs{j} +q_3 \bs{k} + q_0
-  \label{eqn:NutationDesiredQuaternion}
+  \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} \big(q_{0en} \big) \right] \bs{\hat{e}}_{en} \\
 \end{equation}
+where $q_{0en}$ is the scalar component of the error quaternion's nutation component, and $\bs{\hat{e}}_{en}$ is the normalized Euler axis for the nutation component.
 
-Since the state quaternion represents a single rotation about the Euler axis and a rotational quaternion can be composed from multiple quaternions through a quaternion multiplication (Section \ref{subsubsec:QuaternionMultiplication}), the attitude quaternion could be created from a rotation about the $z$ axis and a nutation.  The rotation $\bs{q}_r$ and nutation $\bs{q}_n$ quaternion are defined as
-
-\begin{subequations}
-  \begin{align}
-    \bs{q}_r &= 0 \bs{i} + 0 \bs{j} + r_3 \bs{k} + r_0\\
-    \bs{q}_n &= -n_1 \bs{i} - n_2 \bs{j} + 0 \bs{k} - n_0 \\
-    \text{where: } n_1 &= Q \cdot n_2 \\
-    n_2 &= \sqrt{\frac{1 - n_0^2}{Q^2 + 1}} \\
-    Q &= \frac{q_0 q_1 - q_2 q_3}{q_0 q_2 + q_1 q_3} \\
-    r_3 &= q_3 / n_0 \\
-    r_0 &= q_0 / n_0 \\
-    n_0 &= \sqrt{q_0^2 + q_3^2}
-  \end{align}
-  \label{eqn:DecomposeQuaternion}
-\end{subequations}
-
-This thesis refers to the method decomposition of a quaternion through the method in equation \ref{eqn:DecomposeQuaternion} as
-
-
-Equation \ref{eqn:DecomposeQuaternion} has been built into the TSatPy library for use in the controller.  The code snippet below demonstrates the decompose method at work.  Lines 3-4 define a known rotation and nutation.  At line 8 the normal multiplication operation has been converted to a quaternion multiplication to combine quaternions into a single attitude quaternion that may be encountered in a simulation or experimental test.  Recall from Section \ref{subsec:QuaternionAttitude} that the quaternion multiplication is not commutative, so this combination represents a rotation first then a nutation.  At line 11, the single quaternion representation is asked to break itself into a rotation and nutation quaternion according as defined in Equation \ref{eqn:DecomposeQuaternion}.  The resulting decomposition can been seen in lines 16-22 to match the chosen rotation and nutation.
+The following code snippet shows how the incorporation of this method in the TSatPy software where the state error $x_e$ has its attitude measure adjusted to represent only the nutation error.
 
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
-from TSatPy.State import Quaternion
+from TSatPy.State import State, Quaternion, BodyRate
 
-q_r1 = Quaternion([0,0,1], radians=1.2)
-q_n1 = Quaternion([1,-1,0], radians=-0.2)
-print("q_r1: %s" % (q_r1))
-print("q_n1: %s" % (q_n1))
+print("State Error")
+x_e = State(
+    Quaternion([0,0.1,1],radians=1),
+    BodyRate([0,-0.01,0.2]))
+print("x_e: %s" % (x_e))
 
-q = q_n1 * q_r1
-print("q:    %s" % (q))
+print("Decomposed Quaternion")
+q_r, q_n = x_e.q.decompose()
+print("q_r: %s" % q_r)
+print("q_n: %s" % q_n)
 
-q_r2, q_n2 = q.decompose()
-print("q_r2: %s" % q_r2)
-print("q_r2: %s" % q_n2)
+print("Nutation Only State Error")
+x_e.q = q_n
+print("x_e: %s" % (x_e))
 
 # Prints Out
-# q_r1: <Quaternion [-0 -0 -0.564642], 0.825336>
-# q_n1: <Quaternion [0.0705929 -0.0705929 0], 0.995004>
-
-# q:    <Quaternion [0.0981226 -0.0184031 -0.561822], 0.821212>
-
-# q_r2: <Quaternion [0 0 -0.564642], 0.825336>
-# q_r2: <Quaternion [0.0705929 -0.0705929 -0], 0.995004>
+# State Error
+# x_e: <Quaternion [-0 -0.0477046 -0.477046], 0.877583>,
+#      <BodyRate [0 -0.01 0.2]>
+# Decomposed Quaternion
+# q_r: <Quaternion [0 0 -0.47759], 0.878583>
+# q_n: <Quaternion [-0.0227833 -0.0419125 -0], -0.998861>
+# Nutation Only State Error
+# x_e: <Quaternion [-0.0227833 -0.0419125 -0], -0.998861>,
+#      <BodyRate [0 -0.01 0.2]>
   \end{minted}
 \nocite{minted}
 \end{singlespace}
 
-Now that there is a defined method for separating the allowed rotation from the unwanted nutation, the next section incorporates it into a attitude controller.
+Now that there is a defined method for separating the allowed rotation from the unwanted nutation, Section \ref{subsec:PNutationControl} shows the decomposition in use with the proportional attitude controller.
 
 \subsection{P Nutation Control}
 \label{subsec:PNutationControl}
 
-Since the previous section's P-controller proved very successful at attitude control, this section attempts to loosen the restrictions on the desired attitude to allow for free rotation about the global reference frame's $z$-axis while correcting for nutation out of the spin plane making use of the quaternion decomposition in Equation \ref{eqn:DecomposeQuaternion}.
-
-In this test, a random attitude is chosen and the controller's task is to bring the satellite level regardless of the point in the rotation about the $z$-axis.  From Equation \ref{eqn:PAttitudeControl},    As with previous test runs, parameters were tuned to obtain a minimum control effort.
-
+Using the proportional control
 \begin{equation}
   \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} (q_{0n}) \right] \bs{\hat{e}}_n
   \label{eqn:PNutationControl}
 \end{equation}
-
-
-The test is initialized at rest at an orientation of a 1.26 radian rotation about $-0.25 \bs{i} -0.406\bs{j} -0.879\bs{k}$.  With a proportional gain $K_{qp} = 0.152$, the P-controller behaved as a normal by oscillating back and forth about the desired orientation.  What is notable though is that even though the system is in a state rotated away from the standard orientation, the $M_z$ term remains 0 since the controller only uses the nutation portion of the quaternion state.
-
+with the same initial state and desired quaternion as the proportional attitude controller
+\begin{equation}
+  \bs{x}_0 = \begin{bmatrix} 0 \bs{i} -0.0477 \bs{j} -0.477 \bs{k} +0.8778 \\ 0 \bs{i} -0.01 \bs{j} +0.2 \bs{k} \end{bmatrix}
+\end{equation}
+\begin{equation}
+  \bs{q}_d = 0 \bs{i} +0 \bs{j} +0 \bs{k} + 1
+\end{equation}
 \begin{figure}[H]
   \centerline{\psfig{file=figures/p_nutation_control.eps,width=6in}}
   \caption{P Nutation Control}
   \label{fig:PNutationControl}
 \end{figure}
-
-While this controller is correctly pushing the state to the spin plane there is no mechanism to damp out the oscillations.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Figure \ref{fig:PNutationControl} shows the resulting control moments, quaternion angle error, and body rates.  In the first and last graphs, the body rates and moments show the expected behavior where the corrections for initial nutation are causing fluctuations in the $\omega_x$ and $\omega_z$ body rates, but the $\omega_z$ body remains unchanged.  This means that for spin-stabilized systems like NASA's MMS mission satellite, the controller can correct for nutation errors unaffected by the constant spin rate.  The same can be seen in the first graph where moments are applied about the $x$ and $y$ axes, but no attempt is made to control for the initial spin about $z$.
+The center plot tracking quaternion angle, shows that while some of the nutation is removed the proportional nutation controller is clearly not enough to remove all nutation.
 
 
 \section{Attitude and Rate Control}

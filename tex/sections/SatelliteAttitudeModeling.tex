@@ -523,18 +523,15 @@ which can be solved for the nutation quaternion's $q_{2n}$ term
   \label{eqn:qn2_solution}
 \end{equation}
 
-We now have a mapping of the original state quaternion $\bs{q}$ to its decomposed rotation $\bs{q}_r$ and nutation $\bs{q}_n$ quaternions.  The ability to break the attitude parameters into these two quantities is particularly useful for spin-stabilized satellites as it decouples the rate and attitude controllers.  Normally the attitude controller would need to propagate the desired quaternion attitude with input from the body rates. In this approach, the controller can ignore continuously changing rotational component $\bs{q}_r$, and limit its focus on driving the nutation error $\bs{q}_n$ to zero (Figure \ref{fig:PostDecomposedQuaternion}).
-\begin{subequations}
-  \begin{align}
-    q_{1n} &= Q \cdot q_{2n} \\
-    q_{2n} &= \sqrt{ \frac{1  - q_3^2 - q_0^2}{Q^2 + 1} }\\
-    q_{0n} &= \sqrt{q_3^2 + q_0^2} \\
-    q_{3r} &= \frac{q_3}{q_{0n}} \\
-    q_{0r} &= \frac{q_0}{q_{0n}} \\
-    \text{where } Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
-  \end{align}
+We now have a mapping of the original state quaternion $\bs{q}$ to its decomposed rotation $\bs{q}_r$ and nutation $\bs{q}_n$ quaternions (Equation \ref{eqn:quaternion_decomposition_derivation}).  The ability to break the attitude parameters into these two quantities is particularly useful for spin-stabilized satellites as it decouples the rate and attitude controllers.  Normally the attitude controller would need to propagate the desired quaternion attitude with input from the body rates. In this approach, the controller can ignore continuously changing rotational component $\bs{q}_r$, and limit its focus on driving the nutation error $\bs{q}_n$ to zero (Figure \ref{fig:PostDecomposedQuaternion}).
+\begin{equation}
+  \begin{aligned}
+    \bs{q} &= \bs{q_n} \otimes \bs{q_r} \\
+    \text{where } \bs{q}_n &= \begin{bmatrix} q_{1n} = Q \cdot q_{2n} \\ q_{2n} = \sqrt{ \frac{1  - q_3^2 - q_0^2}{Q^2 + 1} } \\ 0 \\ q_{0n} = \sqrt{q_3^2 + q_0^2} \end{bmatrix} , \bs{q}_r = \begin{bmatrix} 0 \\ 0 \\ q_{3r} = \frac{q_3}{q_{0n}} \\ q_{0r} = \frac{q_0}{q_{0n}} \end{bmatrix} \\
+    Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
+  \end{aligned}
   \label{eqn:quaternion_decomposition_derivation}
-\end{subequations}
+\end{equation}
 
 
 \section{Satellite Dynamics}
