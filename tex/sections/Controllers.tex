@@ -160,39 +160,94 @@ The Sliding Mode Controller (SMC) operates similarly to a proportional controlle
   \bs{M}_{\omega} = \bs{L}_{\omega} \bs{\omega}_e + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e \big)
   \label{eqn:SMController}
 \end{equation}
-where $\bs{L}_{\omega}$ is the proportion gain and the $\bs{1}_s$ function can take a number of forms such as the signum and arctangent function.  In this thesis the smc uses the saturation function such that $\bs{1}_s$ is
+where $\bs{L}_{\omega}$ is the proportional gain and the $\bs{1}_s$ function can take a number of forms such as the signum and arctangent function.  In this thesis, the smc uses the saturation function such that $\bs{1}_s$ is
 \begin{equation}
   \bs{1}_s \big(\bs{\omega}_e \big) = sat \begin{bmatrix} \omega_{ex} / S_{\omega} &0 &0 \\ 0 & \omega_{ey} / S_{\omega} & 0 \\ 0 & 0 & \omega_{ez} / S_{\omega} \end{bmatrix}
 \end{equation}
-The response to the test configuration is very similar to that of the proportional controller as shown if Figure \ref{fig:SMCRateControl}.  Breaking the overall moment values into the separate term's contributions show in Figure \ref{fig:SMCRateControlMoments} shows the similar profile between the proportional and saturation term contributions with the exception of the peaks missing from the saturation response.  This behavior indicates a tendency for the SMC to gently pull the estimated system state toward the desired state if there is a large discrepancy, but as the two converge the strength of the corrections increases causing the two state to stick more tightly together.
+The response to the test configuration is very similar to that of the proportional controller as shown if Figure \ref{fig:SMCRateControl}.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/smc_rate_control.eps,width=6in}}
   \caption{SMC rate control}
   \label{fig:SMCRateControl}
 \end{figure}
+Breaking the overall moment values into the separate term's contributions (Figure \ref{fig:SMCRateControlMoments}) shows the similar profile between the proportional and saturation term contributions with the exception of the peaks missing from the saturation response.  This behavior indicates a tendency for the SMC to gently pull the estimated system state toward the desired state if there is a large discrepancy, but as the two converge the strength of the corrections increases causing the two states to stick tightly together.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/smc_rate_control_moments.eps,width=6in}}
   \caption{SMC rate control moments}
   \label{fig:SMCRateControlMoments}
 \end{figure}
-The SMC response in Figures \ref{fig:SMCRateControl} and \ref{fig:SMCRateControlMoments}, is generated with the following gain values tuned through a gradient descent algorithm.
+The SMC response in Figures \ref{fig:SMCRateControl} and \ref{fig:SMCRateControlMoments}, is generated with the following gain values tuned through a gradient descent search that minimizes control effort.
 \begin{equation}
     \bs{L}_{\omega} = \begin{bmatrix} 0.5264 & 0 & 0 \\ 0 & 0.3848 & 0 \\ 0 & 0 & 0.5976 \end{bmatrix},
     \bs{K}_{\omega} = \begin{bmatrix} 0.4724 & 0 & 0 \\ 0 & 0.4542 & 0 \\ 0 & 0 & 0.4049 \end{bmatrix},
     S_{\omega} = 0.0940
   \label{SMCRateControlGains}
 \end{equation}
+With the perfect measurements in this test, the saturation term does not add value over the proportional rate controller, but this test does validate the implementation of the controller which is used in the full observer-based tests in Chapter \ref{chap:ObserverBasedControls}.
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Quaternion to Moment Conversion}
+
+The remainder of this chapter focuses on the attitude control problem to correct for nutation (Section \ref{sec:NutationCorrection}) and the integration of the attitude and rate controller (Section \ref{sec:AttitudeandRateControl}).  The proper conversion from an attitude error measurement to actuator moments is critical to providing a robust control method.
+
+The attitude error measurement is calculated through the quaternion multiplicative method as is established in Section \ref{sec:HighIntegrityStateAdjustments}
+
+\begin{equation}
+  \bs{q}_e = \bs{q}_d^* \otimes \bs{\hat{q}}
+\end{equation}
+
+Unlike with the estimator where the input and output formats are both quaternions, the quaternion error in the controller $\bs{q}_e$ is composed of four parameters that need to map to three moments values.  The commonly used method for this is to fall back on matrix algebra where
+
+\begin{equation}
+  \bs{M}_q = \begin{bmatrix} 3 \times 4 \end{bmatrix} \begin{bmatrix} q_1 & q_2 & q_3 & q_0 \end{bmatrix}^T
+\end{equation}
+
+There are two main issues with this approach.  First is that the quaternion parameters are sinusoidal in nature, such that the conversion to moment values through the matrix multiplication, the magnitude of the moment do not scale linearly with the magnitude of the attitude error.
+
+The second issue is that the quaternion is comprised of a vector and scalar that provide two separate types of information about the attitude error.  Lumping the two together in a single matrix multiplication ignores the physical representation of their values.  The vector defines the Euler axis which gives the attitude error it's direction.  A vector component with $q_1 = q_3 = 0, q_2 \ne 0$ means that to move the estimated satellite attitude to the desired attitude requires a rotation about just the body-fixed $y$-axis which requires a moment couple in just $M_y$.  This can be represented simply as
+\begin{equation}
+  \bs{M}_{q} = \bs{v}_e
+\end{equation}
+This provides a basis for the direction of the moment couple, but since the rotational quaternion is fixed at a unit norm, the magnitude of the vector component will vary with the size of the error.  This is compensated for by normalizing the vector.
+\begin{equation}
+  \bs{M}_{q} = \bs{\hat{e}}_e
+  \label{eqn:quat_vector_to_moment}
+\end{equation}
+With Equation \ref{eqn:quat_vector_to_moment} establishing the direction for the actuator moments, the remaining issue is to determine how to scale the moment couples in relation to the size of the error.  The remaining $q_0$ quantity is a reasonable first choice as
+\begin{equation}
+  \bs{M}_{q} = kq_{0e} \bs{\hat{e}}_e
+\end{equation}
+$q_{0e}$, as with the vector, is a sinusoidal measure.  The underlying $\theta$ measure of the quaternion rotation however is a direct measure of the attitude error.  Extracting the $\theta$ measure from $q_{0e}$ and incorporating into the moment calculation yields
+\begin{equation}
+  \bs{M}_{q} = \left[-2 k \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e
+  \label{eqn:QuaternionToMomentConversion}
+\end{equation}
+This conversion is used throughout all attitude control calculations in the remainder of this chapter and in the observer-based controllers in Chapter \ref{chap:ObserverBasedControls}.
 
 \section{Nutation Correction}
 \label{sec:NutationCorrection}
 
-Section \ref{subsec:PIDRateControl} covered the design of the rate controller which addresses the first goal of the controller to maintain a spin rate of $\omega_z = 3$ rpm.  This section focuses on the nutation control problem that to simplicity the overall controller design is decoupled from the rate control.  The combined control effort would be
+Section \ref{sec:RateControl} covered the design of the rate controller which addresses the first controller goal to maintain a spin rate of $\omega_z = 3$ rpm.  This section focuses on the nutation control problem.  In Section , the problem is simplified to just an attitude control  which in sections that to simplicity the overall controller design is decoupled from the rate control.  The combined control effort would be
 
 \begin{equation}
     \bs{M}(t_{k+1}) = \bs{M}_{q}(t_{k+1}) + \bs{M}_{\omega}(t_{k+1})
 \end{equation}
 
 The nutation control focuses or the differences between the estimated quaternion attitude and the desired quaternion attitude.  The addition of the desired body rates of $\omega_x = \omega_y = 0$ can be added later if needed.  Since the work in Section \ref{chap:StateError} shows that working with the radian measure of the rotational quaternion had significant benefits over the traditional full state difference method, a similar approach is used for the nutation control.
+
+
+
 
 \subsection{P Attitude Control}
 \label{subsec:PAttitudeControl}
@@ -334,15 +389,6 @@ print("q_r2: %s" % q_n2)
 
 Now that there is a defined method for separating the allowed rotation from the unwanted nutation, the next section incorporates it into a attitude controller.
 
-\subsection{Quaternion to Moment Conversion}
-
-\TODO{this}
-\begin{equation}
-  \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} (q_{0n}) \right] \bs{\hat{e}}_n
-  \label{eqn:QuaternionToMomentConversion}
-\end{equation}
-
-
 \subsection{P Nutation Control}
 \label{subsec:PNutationControl}
 
@@ -365,6 +411,9 @@ The test is initialized at rest at an orientation of a 1.26 radian rotation abou
 \end{figure}
 
 While this controller is correctly pushing the state to the spin plane there is no mechanism to damp out the oscillations.
+
+\section{Attitude and Rate Control}
+\label{sec:AttitudeandRateControl}
 
 \subsection{P Rate and Nutation Control Starting at Rest}
 \label{subsec:PRateNutationControlStartingatRest}
@@ -481,7 +530,3 @@ and body rate error to moment gains of
 
 \TODO{this}
 
-\section{Comparative Analysis of PID and SMC Rate and Nutation Control}
-\label{sec:ComparativeAnalysisofPIDandSMCRateandNutationControl}
-
-\TODO{this}
