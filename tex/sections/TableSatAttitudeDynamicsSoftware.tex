@@ -10,7 +10,7 @@
 \label{subsec:Implementation-QuaternionNotation}
 Section \ref{subsubsec:QuaternionNotation}
 
-As will be described more in Chapter \ref{chap:TSatPy}, the implementation in this thesis is done in an object oriented manner so it can handle either the scalar first or scalar last format.
+As is described more in Chapter \ref{chap:TSatPy}, the implementation in this thesis is done in an object oriented manner so it can handle either the scalar first or scalar last format.
 
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
@@ -159,7 +159,7 @@ for k in range(1,11):
   \nocite{minted}
 \end{singlespace}
 
-This implementation has both a big control theory and implementation issue.  The control theory concern is the estimate is running in an open loop without ever receiving corrections so the myriad of additional factors that affect a real system would quickly invalidate the accuracy of the estimate in this approach.  The implementation issue deals with the time step.  Even if TableSat spun perfectly at 3 rpm the state will not be updated exactly on each second.  A busy processor, numerical drift, and execution time will prevent the desired fixed step size of 1 sec.  In some of the earlier implementations of the base station controller discussed in Chapter \ref{chap:ProgressionOfControlSystemSoftware} dropped UDP messages caused the control loop to execute on an inconsistent interval and prevent accurate state estimates.  Handling of the variability in timesteps will be covered Section \ref{sec:SatelliteDynamics}
+This implementation has both a big control theory and implementation issue.  The control theory concern is the estimate is running in an open loop without ever receiving corrections so the myriad of additional factors that affect a real system would quickly invalidate the accuracy of the estimate in this approach.  The implementation issue deals with the time step.  Even if TableSat spun perfectly at 3 rpm the state will not be updated exactly on each second.  A busy processor, numerical drift, and execution time will prevent the desired fixed step size of 1 sec.  In some of the earlier implementations of the base station controller discussed in Chapter \ref{chap:ProgressionOfControlSystemSoftware} dropped UDP messages caused the control loop to execute on an inconsistent interval and prevent accurate state estimates.  Handling of the variability in timesteps is covered Section \ref{sec:SatelliteDynamics}
 
 \section{System Clock}
 \label{sec:Implementation-SystemClock}

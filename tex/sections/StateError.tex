@@ -21,7 +21,7 @@ Sections \ref{sec:StateDifference} through \ref{subsec:ThetaMultiplierWithQuater
 
 This simple estimation technique has some notable deficiencies when applied to the attitude parameters of a spin-stabilized satellite.  These parameters are expected to change as the satellite rotates, but this model has no method for predicting the change in parameters so will rely solely on the state error to correct $\bs{\hat{x}(t_{k+1})}$.  After an adequate method is established for calculating the state error, later sections will address improving upon the proportional estimator.
 
-The sample error calculation in this section will be based off a last estimated state, $\bs{\hat{x}}(t_{k})$, of a $190^o$ rotation about $+z$-axis and a body rate of $\omega_z = 3$ rad/sec.  The associated the measured state, $\bs{x}(t_{k})$, is a $44^o$ rotation about the axis $0 \bs{i} + 0.1 \bs{j} + 1\bs{k}$ and a body rate of $\omega_z = 3.1$ rad/sec.
+The sample error calculation in this section are based off a last estimated state, $\bs{\hat{x}}(t_{k})$, of a $190^o$ rotation about $+z$-axis and a body rate of $\omega_z = 3$ rad/sec.  The associated the measured state, $\bs{x}(t_{k})$, is a $44^o$ rotation about the axis $0 \bs{i} + 0.1 \bs{j} + 1\bs{k}$ and a body rate of $\omega_z = 3.1$ rad/sec.
 
 
 \begin{subequations}
@@ -103,7 +103,7 @@ print("x_e:  %s" % (x_e))
 \end{singlespace}
 
 
-The body rate error calculations are well behaved and are able to be directly used with standard estimation based control techniques.  The difference in quaternion parameters however pose a number of problems even when used in a basic proportional estimator.  Using this method of error measurement will be difficult especially since after a cursory review the scalar quantity in the error quaternion that is outside the possible range for a rotational quaternion.  Section \ref{sec:QuaternionDifference} will attempt to use this state difference along with a standard proportional estimation technique.
+The body rate error calculations are well behaved and are able to be directly used with standard estimation based control techniques.  The difference in quaternion parameters however pose a number of problems even when used in a basic proportional estimator.  Using this method of error measurement is difficult especially since after a cursory review the scalar quantity in the error quaternion that is outside the possible range for a rotational quaternion.  Section \ref{sec:QuaternionDifference} will attempt to use this state difference along with a standard proportional estimation technique.
 
 \section{Quaternion Difference}
 \label{sec:QuaternionDifference}
@@ -374,7 +374,7 @@ The disadvantage to using this representation is that the quaternion scalar para
 \subsection{Theta Multiplier with Quaternion Vector Balancing}
 \label{subsec:ThetaMultiplierWithQuaternionVectorBalancing}
 
-The section will cover the final version of the quaternion adjustment calculation that takes into consideration all the issues encountered in the above sections.  The function designated in this thesis for the scaling of a quaternion to for use with quaternion multiplicative corrections while maintaining it's connection to the physical system will be $\bs{\psi}(\bs{q}, k)$ where
+The section will cover the final version of the quaternion adjustment calculation that takes into consideration all the issues encountered in the above sections.  The function designated in this thesis for the scaling of a quaternion to for use with quaternion multiplicative corrections while maintaining it's connection to the physical system is $\bs{\psi}(\bs{q}, k)$ where
 
 \begin{equation}
   \begin{aligned}
