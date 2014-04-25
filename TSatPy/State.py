@@ -106,7 +106,7 @@ class Quaternion(object):
             print self
             raise
 
-        return mag_sq
+        return np.sqrt(mag_sq)
 
     def normalize(self):
         """
@@ -374,6 +374,25 @@ class Quaternion(object):
             self.scalar)
         return msg % data
 
+    def __getitem__(self, key):
+        """
+        Allow for indexing to make accessing individual elements easier.
+
+        q[0] for the scalar
+        q[1], q[2], q[3] for the vector elements
+        """
+        if key == 0:
+            return self.scalar
+        return self.vector[key - 1, 0]
+
+    def __iter__(self):
+        """
+        Need this for scalar last notation
+        """
+        for idx in xrange(3):
+            yield self.vector[idx,0]
+        yield self.scalar
+
     def __str__(self):
         """
         :return: representation of the quaternion
@@ -622,6 +641,14 @@ class BodyRate(object):
             self.w[0, 0], self.w[1, 0], self.w[2, 0],
         )
         return msg
+
+    def __getitem__(self, key):
+        """
+        Allow for indexing to make accessing individual elements easier.
+
+        w[1] = wx, w[2] = wy, w[3] = wz
+        """
+        return self.w[key, 0]
 
     def __str__(self):
         """
@@ -980,6 +1007,14 @@ class Moment(object):
             self.M[0, 0], self.M[1, 0], self.M[2, 0],
         )
         return msg
+
+    def __getitem__(self, key):
+        """
+        Allow for indexing to make accessing individual elements easier.
+
+        M[0] = Mx, M[1] = My, M[2] = Mz
+        """
+        return self.M[key, 0]
 
     def __str__(self):
         """
