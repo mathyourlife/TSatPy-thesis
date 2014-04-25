@@ -389,19 +389,38 @@ The results from the PID Body Rate and Attitude controller are shown in Figures 
     K_{\omega d} &= \bs{I} \begin{bmatrix} 0.4096 & 0.6032 & 0.6123 \end{bmatrix}^T
   \end{aligned}
 \end{equation}
-Figure \ref{fig:PIDAttitudeAndRateControl} shows a significant improvement to the body rate response over previous body rate only tests.  All error and oscillations in the quaternion angle were also eliminated.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/pid_attitude_and_rate_control.eps,width=6in}}
   \caption{PID Attitude and Rate Control}
   \label{fig:PIDAttitudeAndRateControl}
 \end{figure}
-The graphs in \ref{fig:PIDAttitudeAndRateControlMoments} attribute the fast conversion to the desired attitude initially to the proportional and derivative components with the integral component eliminating the final steady state error.
+Figure \ref{fig:PIDAttitudeAndRateControl} shows a significant improvement to the body rate response over previous body rate only tests.  All error and oscillations in the quaternion angle were also eliminated.  The graphs in \ref{fig:PIDAttitudeAndRateControlMoments} attribute the fast conversion to the desired attitude initially to the proportional and derivative components with the integral component eliminating the final steady state error.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/pid_attitude_and_rate_control_moments.eps,width=6in}}
   \caption{PID Attitude and Rate Control Moments}
   \label{fig:PIDAttitudeAndRateControlMoments}
 \end{figure}
 
+For the Sliding Mode Controller (SMC), the parameters were tuned to
+\begin{equation}
+  \begin{aligned}
+    K_{qp} &= 0.6022,K_{qi} = 0.04656,K_{qd} = 0.8554 \\
+    K_{\omega p} &= \bs{I} \begin{bmatrix} 0.70326 & 0.7203 & 0.61757 \end{bmatrix}^T \\
+    K_{\omega i} &= \bs{I} \begin{bmatrix} 0.04207 & 0.06999 & 0.018591 \end{bmatrix}^T \\
+    K_{\omega d} &= \bs{I} \begin{bmatrix} 0.4096 & 0.6032 & 0.6123 \end{bmatrix}^T
+  \end{aligned}
+\end{equation}
+and resulted in the associated response profiles of
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/smc_attitude_and_rate_control.eps,width=6in}}
+  \caption{SMC Attitude and Rate Control}
+  \label{fig:SMCAttitudeAndRateControl}
+\end{figure}
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/smc_attitude_and_rate_control_moments.eps,width=6in}}
+  \caption{SMC Attitude and Rate Control Moments}
+  \label{fig:SMCAttitudeAndRateControlMoments}
+\end{figure}
 
 \subsection{Spin-Stabilized Control}
 \label{subsec:SpinStabilizedControl}
