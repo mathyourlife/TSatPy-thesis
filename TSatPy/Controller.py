@@ -74,6 +74,9 @@ class PID(ControllerBase):
         ControllerBase.__init__(self, clock)
 
         self.M = State.Moment()
+        self.M_p = State.Moment()
+        self.M_i = State.Moment()
+        self.M_d = State.Moment()
         # Zero out state integrator term
         self.x_i = State.State()
         self.x_e = State.State()
@@ -128,12 +131,11 @@ class PID(ControllerBase):
             dt = 0
 
         # Calculate the state error and starting the empty moment
-        x_err = State.StateError(self.x_d, x_hat)
-        m_adj = State.Moment()
+        x_err = State.StateError(x_hat, self.x_d)
 
         # Add the proportional adjustment
         if self.K['p'] is not None:
-            m_adj += self.K['p'] * x_err
+            self.M_p = -self.K['p'] * x_err
 
         # Add the integral adjustment
         if dt and self.K['i'] is not None:
@@ -142,7 +144,7 @@ class PID(ControllerBase):
                 SO.BodyRateGain(np.eye(3) * dt))
             self.x_i += Kt * x_err
 
-            m_adj += self.K['i'] * self.x_i
+            self.M_i = -self.K['i'] * self.x_i
 
         # Add the derivative adjustment
         if dt and self.K['d'] is not None:
@@ -153,14 +155,14 @@ class PID(ControllerBase):
             x_diff = x_err - self.last_err
             x_d_err = Kt * x_diff
 
-            m_adj += self.K['d'] * x_d_err
+            self.M_d = -self.K['d'] * x_d_err
 
         # Ending the update, set the changes and return the
         # moments for supply to the actuators
         self.x_e = x_err
         self.last_update = t
         self.last_err = x_err
-        self.M = m_adj
+        self.M = self.M_p + self.M_i + self.M_d
         return self.M
 
     def __str__(self):
@@ -192,6 +194,10 @@ class SMC(ControllerBase):
 
     def __init__(self, clock):
         ControllerBase.__init__(self, clock)
+
+        self.M = State.Moment()
+        self.M_l = State.Moment()
+        self.M_s = State.Moment()
 
         # Zero out state integrator
         self.last_err = None
@@ -246,22 +252,21 @@ class SMC(ControllerBase):
 
         # Calculate the state error and starting the empty moment
         x_err = State.StateError(self.x_d, x_hat)
-        m_adj = State.Moment()
 
         # Include the proportional Luenberger/Proportional gain
         if self.L is not None:
-            m_adj += self.L * x_err
+            self.M_l = self.L * x_err
 
         # Include the scaled saturation moment
         x_s = self.S * x_err
-        m_adj += self.K * x_s
+        self.M_s = self.K * x_s
 
         # Ending the update, set the changes and return the
         # moments for supply to the actuators
         self.x_e = x_err
         self.last_update = t
         self.last_err = x_err
-        self.M = m_adj
+        self.M = self.M_l + self.M_s
         return self.M
 
     def __str__(self):
