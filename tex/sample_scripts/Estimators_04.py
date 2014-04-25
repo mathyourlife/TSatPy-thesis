@@ -6,7 +6,7 @@ import time
 import random
 
 
-print('Integrated State Error')
+print('Derivative State Error')
 
 
 c = Metronome()
