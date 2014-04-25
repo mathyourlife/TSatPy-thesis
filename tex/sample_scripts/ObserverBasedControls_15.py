@@ -21,15 +21,15 @@ x_d = State.State(
 
 
 def run_test(Kpx, Kpy, Kpz, Kix, Kiy, Kiz, Kdx, Kdy, Kdz, plot=False):
-    ts, Ms, ws = test(Kpx, Kpy, Kpz, Kix, Kiy, Kiz, Kdx, Kdy, Kdz)
+    ts, Ms, Mps, Mis, Mds, ws = test(Kpx, Kpy, Kpz, Kix, Kiy, Kiz, Kdx, Kdy, Kdz)
 
     if plot:
-        graph_it(ts, Ms, ws)
+        graph_it(ts, Ms, Mps, Mis, Mds, ws)
 
 
 def test(Kpx, Kpy, Kpz, Kix, Kiy, Kiz, Kdx, Kdy, Kdz):
     x_est = State.State(
-        State.Quaternion([0,0.1,1],radians=1),
+        State.Quaternion(np.random.rand(3,1),radians=np.random.rand()),
         State.BodyRate(np.random.rand(3,1)))
 
     I = [[4, 0, 0], [0, 4, 0], [0, 0, 2]]
@@ -54,6 +54,9 @@ def test(Kpx, Kpy, Kpz, Kix, Kiy, Kiz, Kdx, Kdy, Kdz):
     M = State.Moment()
     ts = []
     Ms = []
+    Mps = []
+    Mis = []
+    Mds = []
     ws = []
     start_time = c.tick()
     end_time = c.tick() + run_time
@@ -65,15 +68,18 @@ def test(Kpx, Kpy, Kpz, Kix, Kiy, Kiz, Kdx, Kdy, Kdz):
         M = pid.update(x_plant)
 
         ts.append(c.tick() - start_time)
-        Ms.append((M.M[0,0],M.M[1,0],M.M[2,0]))
-        ws.append((x_plant.w.w[0,0],x_plant.w.w[1,0],x_plant.w.w[2,0]))
+        Ms.append((M[0],M[1],M[2]))
+        Mps.append((pid.M_p[0],pid.M_p[1],pid.M_p[2]))
+        Mis.append((pid.M_i[0],pid.M_i[1],pid.M_i[2]))
+        Mds.append((pid.M_d[0],pid.M_d[1],pid.M_d[2]))
+        ws.append((x_plant.w[0],x_plant.w[1],x_plant.w[2]))
 
-    return ts, Ms, ws
+    return ts, Ms, Mps, Mis, Mds, ws
 
 def grid_me(ax):
     ax.grid(color='0.75', linestyle='--', linewidth=1)
 
-def graph_it(ts, Ms, ws):
+def graph_it(ts, Ms, Mps, Mis, Mds, ws):
     fig = plt.figure(dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(2,1,1)
     ax.plot(ts, [M[0] for M in Ms], c='b', label=r'$M_x$', lw=2)
@@ -94,13 +100,41 @@ def graph_it(ts, Ms, ws):
     ax.set_xlabel('$t(k)$ seconds')
 
     plt.tight_layout()
+    plt.draw()
+
+    fig = plt.figure(dpi=80, facecolor='w', edgecolor='k')
+    ax = fig.add_subplot(3,1,1)
+    ax.plot(ts, [M[0] for M in Mps], c='b', label=r'$M_x$', lw=2)
+    ax.plot(ts, [M[1] for M in Mps], c='r', label=r'$M_y$', lw=2)
+    ax.plot(ts, [M[2] for M in Mps], c='g', label=r'$M_z$', lw=2)
+    ax.set_ylabel(r'P-Moment (Nm)')
+    grid_me(ax)
+    plt.legend(prop={'size':10})
+
+    ax = fig.add_subplot(3,1,2)
+    ax.plot(ts, [M[0] for M in Mis], c='b', label=r'$M_x$', lw=2)
+    ax.plot(ts, [M[1] for M in Mis], c='r', label=r'$M_y$', lw=2)
+    ax.plot(ts, [M[2] for M in Mis], c='g', label=r'$M_z$', lw=2)
+    ax.set_ylabel(r'I-Moment (Nm)')
+    grid_me(ax)
+    plt.legend(prop={'size':10})
+
+    ax = fig.add_subplot(3,1,3)
+    ax.plot(ts, [M[0] for M in Mds], c='b', label=r'$M_x$', lw=2)
+    ax.plot(ts, [M[1] for M in Mds], c='r', label=r'$M_y$', lw=2)
+    ax.plot(ts, [M[2] for M in Mds], c='g', label=r'$M_z$', lw=2)
+    ax.set_ylabel(r'D-Moment (Nm)')
+    grid_me(ax)
+    plt.legend(prop={'size':10})
+
+    ax.set_xlabel('$t(k)$ seconds')
+
+    plt.tight_layout()
     plt.show()
 
 
-def calc_err(ts, Ms, ws):
+def calc_err(ts, Ms, Mps, Mis, Mds, ws):
     M = np.array(Ms)
-    w = np.array(ws)
-
     cost = np.abs(M).mean(axis=0).sum()
     return cost
 
@@ -110,17 +144,17 @@ def main():
         ['Kpx', 0.001,  0.9],
         ['Kpy', 0.001,  0.9],
         ['Kpz', 0.001,  0.9],
-        ['Kix', 0.001,  0.9],
-        ['Kiy', 0.001,  0.9],
-        ['Kiz', 0.001,  0.9],
-        ['Kdx', 0.001,  0.9],
-        ['Kdy', 0.001,  0.9],
-        ['Kdz', 0.001,  0.9],
+        ['Kix', 0,  0.01],
+        ['Kiy', 0,  0.01],
+        ['Kiz', 0,  0.01],
+        ['Kdx', 0,  0.1],
+        ['Kdy', 0,  0.1],
+        ['Kdz', 0,  0.1],
     ]
 
     kwargs = {
         # Number of iterations to run
-        'N': 200,
+        'N': 50,
 
         # Definition of parameter search domain
         'domains': domains,
@@ -138,10 +172,12 @@ def main():
 
 if __name__ == '__main__':
 
-    kwargs =   {'Kiz': 0.328, 'Kiy': 0.372, 'Kix': 0.364, 'Kpx': 0.597,
-        'Kpy': 0.643, 'Kpz': 0.450, 'Kdx': 0.435, 'Kdy': 0.357, 'Kdz': 0.392}
-
-    # kwargs = None
+    kwargs = None
+    kwargs = {
+        'Kpx': 0.4239, 'Kpy': 0.4164, 'Kpz': 0.3460,
+        'Kix': 0.005723, 'Kiy': 0.003002, 'Kiz': 0.005465,
+        'Kdx': 0.04437, 'Kdy': 0.07173, 'Kdz': 0.04188
+    }
 
     if kwargs is not None:
         kwargs['plot'] = True
@@ -149,5 +185,23 @@ if __name__ == '__main__':
     else:
         exit(main())
 
-    # ts, Ms, ws = test(0.1, 0.1, 0.1)
-    # graph_it(ts, Ms, ws)
+# Best performance at
+# Kpx:
+#   val: 0.423915 range: 0.001,0.9    std: 0.0528036
+# Kpy:
+#   val: 0.416379 range: 0.001,0.9    std: 0.0508544
+# Kpz:
+#   val: 0.346048 range: 0.001,0.9    std: 0.0263608
+# Kix:
+#   val: 0.00572302   range: 0,0.01   std: 0.000574547
+# Kiy:
+#   val: 0.00300189   range: 0,0.01   std: 0.00112776
+# Kiz:
+#   val: 0.00546487   range: 0,0.01   std: 0.000738131
+# Kdx:
+#   val: 0.0443719    range: 0,0.1    std: 0.00127098
+# Kdy:
+#   val: 0.0717262    range: 0,0.1    std: 0.0113157
+# Kdz:
+#   val: 0.0418845    range: 0,0.1    std: 0.00599079
+
