@@ -321,10 +321,13 @@ class BodyRateToMoment(object):
     :type  K: numpy.matrix
     """
     def __init__(self, K):
-        self.K = K
+        self.K = np.mat(K, dtype=np.float)
 
     def __mul__(self, w):
         return State.Moment(self.K * w.w)
+
+    def __neg__(self):
+        return BodyRateToMoment(-self.K)
 
     def __str__(self):
         """
@@ -355,7 +358,7 @@ class QuaternionToMoment(object):
         :param K: scalar quantity for scaling the moment required
         :type  K: list
         """
-        self.K = K
+        self.K = np.mat(K, dtype=np.float)
 
     def __mul__(self, q):
         """
@@ -367,6 +370,9 @@ class QuaternionToMoment(object):
         """
         e, r = q.to_rotation()
         return State.Moment(-e * r * self.K)
+
+    def __neg__(self):
+        return QuaternionToMoment(-self.K)
 
     def __str__(self):
         """
@@ -392,6 +398,17 @@ class StateToMoment(object):
         if self.Kw is not None:
             M += self.Kw * x.w
         return M
+
+    def __neg__(self):
+        if self.Kq:
+            Kq = -self.Kq
+        else:
+            Kq = None
+        if self.Kw:
+            Kw = -self.Kw
+        else:
+            Kw = None
+        return StateToMoment(Kq, Kw)
 
     def __str__(self):
         return '<%s <Kq %s>, <Kw = %s>>' % (
