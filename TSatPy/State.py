@@ -94,7 +94,19 @@ class Quaternion(object):
         :return: Magnitude of the quaternion
         :rtype:  float
         """
-        return np.sqrt(np.sum(self.vector.T * self.vector) + self.scalar ** 2)
+
+        # x_est_ic:    <Quaternion [-0.772448 -0.00257112 -0.603963], 0.19633>, <BodyRate [0.003 -0.001 0.004]>
+        # (matrix([[-0.78778007],
+        #         [-0.00262215],
+        #         [-0.61595104]]), 2.7463653926463545)
+
+        try:
+            mag_sq = np.sum(self.vector.T * self.vector) + self.scalar ** 2
+        except OverflowError:
+            print self
+            raise
+
+        return np.sqrt(mag_sq)
 
     def normalize(self):
         """
@@ -362,6 +374,25 @@ class Quaternion(object):
             self.scalar)
         return msg % data
 
+    def __getitem__(self, key):
+        """
+        Allow for indexing to make accessing individual elements easier.
+
+        q[0] for the scalar
+        q[1], q[2], q[3] for the vector elements
+        """
+        if key == 0:
+            return self.scalar
+        return self.vector[key - 1, 0]
+
+    def __iter__(self):
+        """
+        Need this for scalar last notation
+        """
+        for idx in xrange(3):
+            yield self.vector[idx,0]
+        yield self.scalar
+
     def __str__(self):
         """
         :return: representation of the quaternion
@@ -482,8 +513,13 @@ class QuaternionDynamics(object):
         omega1 = self._omega(-self.w.w)
         omega_bar = (omega1 + omega2) / 2
 
-        phi = expm(0.5 * omega_bar * dt) + 1 / 48 * (
-            omega2 * omega1 - omega1 * omega2) * dt ** 2
+        try:
+            phi = expm(0.5 * omega_bar * dt) + 1 / 48 * (
+                omega2 * omega1 - omega1 * omega2) * dt ** 2
+        except ValueError:
+            print self.w
+            print self.q
+            raise
         q2mat = phi * self.q.mat
         q2 = Quaternion(q2mat[0:3, 0], q2mat[3, 0])
         q2.normalize()
@@ -605,6 +641,14 @@ class BodyRate(object):
             self.w[0, 0], self.w[1, 0], self.w[2, 0],
         )
         return msg
+
+    def __getitem__(self, key):
+        """
+        Allow for indexing to make accessing individual elements easier.
+
+        w[1] = wx, w[2] = wy, w[3] = wz
+        """
+        return self.w[key, 0]
 
     def __str__(self):
         """
@@ -963,6 +1007,14 @@ class Moment(object):
             self.M[0, 0], self.M[1, 0], self.M[2, 0],
         )
         return msg
+
+    def __getitem__(self, key):
+        """
+        Allow for indexing to make accessing individual elements easier.
+
+        M[0] = Mx, M[1] = My, M[2] = Mz
+        """
+        return self.M[key, 0]
 
     def __str__(self):
         """

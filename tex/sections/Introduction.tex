@@ -28,7 +28,7 @@ Despite the widely experienced effects of reconnection events, very little about
 
 MMS's four satellites are equipped with instrumentation mounted at the end of six boom extending out from the spacecraft's body along each major axis.  Four Spin Plane Double Probes (SDP) booms and two Axial Double Probes (ADP) booms.  This configuration along with high resolution electron and ion spectrometers gives the constellation a new insight into the internal structure of the diffusion region.
 
-Placing the instrumentation at the ends of the booms is an advantage to the science portion of the mission but creates a unique challenge for the Attitude Determination and Control Systems (ADCS).  The satellites are spin-stabilized at a rate of 3 rpm, and disturbances to the rotation could translate into undesirable boom dynamics and body nutations.
+Placing the instrumentation at the ends of the booms is an advantage to the science portion of the mission but creates a unique challenge for the Attitude Determination and Control Systems (ADCS).  The satellites are spin-stabilized at a rate of 3 rpm, and disturbances to the rotation could translate into undesirable boom dynamics and body nutation.
 
 \begin{figure}[H]
   \centerline{\psfig{file=figures/booms.eps,height=2in}}
@@ -130,7 +130,7 @@ Figure \ref{fig:booms}, created by Neil Mushaweh \cite{mushawehthesis}, shows a 
 \section{Research Objective}
 \label{sec:ResearchObjective}
 
-This thesis utilizes an experimental table top satellite prototype (NASA TableSat 1A) to span two main efforts.  The first is to create a physical model of a satellite for NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control systems (ADCS) techniques.  The ADCS maintains the TableSat constant 3 rpm rotation, prevents boom oscillations, and detects and corrects for unwanted nutation.  The second effort is a software system that can be used to implement theoretical and experimental models.  The system provides near ``real-time'' feedback of the system's states, and allows for ``on-the-fly'' modification to control parameters.  The system is specifically designed such that any control systems engineer is able to customize and extend its functionality without substantial programming expertise.
+This thesis utilizes an experimental table top satellite prototype (NASA MMS TableSat 1A) to span two main efforts.  The first is to create a physical model of a satellite for NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control systems (ADCS) techniques.  The ADCS maintains the TableSat constant 3 rpm rotation, prevents boom oscillations, and detects and corrects for unwanted nutation.  The second effort is a software system that can be used to implement theoretical and experimental models.  The system provides near ``real-time'' feedback of the system's states, and allows for ``on-the-fly'' modification to control parameters.  The system is specifically designed such that any control systems engineer is able to customize and extend its functionality without substantial programming expertise.
 
 \section{Past Work}
 \label{sec:PastWork}
@@ -141,7 +141,7 @@ This work is a direct extension off of Vess' research \cite{vessthesis} of using
 \section{Analytical and Experimental Test Bed}
 \label{sec:AnalyticalandExperimentalTestbed}
 
-The test bed used for analytical simulations and experimental validation consists of a base station (laptop) which handles the observer-based controller along with any conversions to and from TableSat sensor and fan voltages, and UNH's NASA MMS TableSat 1A which is a wireless limited 3-DOF rotation (full spin and limited nutation) test bed.  Concurrent work has been accomplished in tandem with this research to make improvements to the capabilities of the TableSat system including UNH TableSat 1C \cite{tsat1c} which improves actuator design and reduces rotational friction, and UNH TableSat 2 \cite{tsat2} which adds translation in a plane.
+The test bed used for analytical simulations and experimental validation consists of a base station (laptop) which handles the observer-based controller along with any conversions to and from TableSat sensor and fan voltages, and NASA MMS TableSat 1A which is a wireless limited 3-DOF rotation (full spin and limited nutation) test bed.  Concurrent work has been accomplished in tandem with this research to make improvements to the capabilities of the TableSat system including UNH TableSat 1C \cite{tsat1c} which improves actuator design and reduces rotational friction, and UNH TableSat 2 \cite{tsat2} which adds translation in a plane.
 
 \section{Thesis Contributions}
 \label{sec:ThesisContributions}
@@ -157,7 +157,7 @@ Mushaweh's research using MSC Marc Mentat 2005 r3 and MATLAB / \textit{Simulink}
   \item \textbf{Quaternion Multiplicative Corrections}: Ensures numerical stability in rotating systems
   \item \textbf{Adaptive Step Algorithms}: Corrects for inconsistent step sizes in simulations or experiments
   \item \textbf{Quaternion Decomposition}: Decouples rotation and nutation control
-  \item \textbf{$\theta$ Multiplier with Quaternion Vector Balancing}: Linearly scales quaternion attitude measures used in state corrections without breaking the unit quaternion restriction
+  \item \textbf{Theta Multiplier with Quaternion Vector Balancing}: Linearly scales quaternion attitude measures used in state corrections without breaking the unit quaternion restriction
   \item \textbf{Euler Axis Based Moments}: Utilizes the quaternion's Euler axis and angular displacement to calculate linearly scaled control moments
 \end{itemize}
 
@@ -183,9 +183,9 @@ The following chapters are organized as follows:
 
 \begin{itemize}
 \item Chapter \ref{chap:SatelliteAttitudeDynamicsAndKinematics}, \nameref{chap:SatelliteAttitudeDynamicsAndKinematics} - This chapter covers the quaternions and body-fixed angular velocities (body rates) parametrization chosen for the state representation of the spin-stabilized satellite, and the dynamics and kinematics involved in modeling it's motion.
-\item Chapter \ref{chap:UNHTableSat1A}, \nameref{chap:UNHTableSat1A} - This chapter is a walk through of the components in the UNH NASA TableSat 1A including the how raw sensor voltages are transmitted to the base station for conversion by the controller into a state representation.
+\item Chapter \ref{chap:UNHTableSat1A}, \nameref{chap:UNHTableSat1A} - This chapter is a walk through of the components in the NASA MMS TableSat 1A including the how raw sensor voltages are transmitted to the base station for conversion by the controller into a state representation.
 \item Chapter \ref{chap:TableSatAttitudeDynamicsSoftware}, \nameref{chap:TableSatAttitudeDynamicsSoftware} - Chapters \ref{chap:SatelliteAttitudeDynamicsAndKinematics} and \ref{chap:UNHTableSat1A} establish the analytical and experimental state representations.  This chapter covers how the state representations with their associated equations of motion are implemented in this thesis' software.
-\item Chapter \ref{chap:StateError}, \nameref{chap:StateError} - This chapter details issues with current implementations of quaternion error calculations and covers the development and implementation of the ``$\theta$ Multiplier with Quaternion Vector Balancing'' method for high integrity attitude adjustments.
+\item Chapter \ref{chap:StateError}, \nameref{chap:StateError} - This chapter details issues with current implementations of quaternion error calculations and covers the development and implementation of the ``Theta Multiplier with Quaternion Vector Balancing'' method for high integrity attitude adjustments.
 \item Chapter \ref{chap:Estimators}, \nameref{chap:Estimators} - This chapter focuses on the implementation and performance comparisons of the PID and Sliding Mode Observer (SMO) estimation methods using the chosen state parameterization along with the theta multiplier error correction technique established in Chapter \ref{chap:StateError}.
 \item Chapter \ref{chap:Controllers}, \nameref{chap:Controllers} - Similar to Chapter \ref{chap:Estimators}, this chapter compares the performance of PID control and Sliding Mode Control (SMC) methods.  These also include the incorporation of the theta multiplier quaternion error correction method as well as the development and implementation of the ``Euler axis Based Moment'' calculations.
 \item Chapter \ref{chap:ObserverBasedControls}, \nameref{chap:ObserverBasedControls} - Performs a comparative analysis of various observer-based controller configurations complete from the input of sensor voltage measurements through voltage to state conversions, state estimation, state control, moment calculation, and calculated actuator voltage settings.

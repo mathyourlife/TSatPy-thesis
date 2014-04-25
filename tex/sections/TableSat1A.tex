@@ -1,8 +1,8 @@
 
-\chapter{UNH TABLESAT 1A}
+\chapter{NASA MMS TABLESAT 1A}
 \label{chap:UNHTableSat1A}
 
-The UNH TableSat 1A is a limited 3-DOF experimental test bed analog for the NASA MMS satellite (Figure \ref{fig:TSatFullView}).  All electronics, booms, and actuators are attached to a circular PVC deck.  The aluminum hub at its center has a hollow center which allow it to rest on a center post giving the deck full rotation about its z-axis and limited rotations about its x and y-axes.  Five out of the six booms present on the MMS spacecraft are represented on TableSat 1A.  The four SDP booms extend radially from the deck at 90 degree intervals.  One of the MMS's ADP booms is modeled with a boom attached to the center post of the TableSat.
+The NASA MMS TableSat 1A is a limited 3-DOF experimental test bed analog for the NASA MMS satellite (Figure \ref{fig:TSatFullView}).  All electronics, booms, and actuators are attached to a circular PVC deck.  The aluminum hub at its center has a hollow center which allow it to rest on a center post giving the deck full rotation about its z-axis and limited rotations about its x and y-axes.  Five out of the six booms present on the MMS spacecraft are represented on TableSat 1A.  The four SDP booms extend radially from the deck at 90 degree intervals.  One of the MMS's ADP booms is modeled with a boom attached to the center post of the TableSat.
 
 \begin{figure}[H]
 \centerline{\psfig{file=figures/tsat_full_view.eps,height=3in}}
@@ -44,7 +44,7 @@ Section \ref{subsec:MessageDefinitions} defines message number 18 as the method 
 \section{Sensors}
 \label{sec:Sensors}
 
-Four classes of analog sensors were implemented in TableSat 1A's design. Gyroscope (Section \ref{subsec:Gyroscope}) and accelerometer (Section \ref{subsec:Accelerometer}) for velocity measurements.  Course sun sensor (Section \ref{subsec:CourseSunSensor}), and magnetometer (Section \ref{subsec:TripleAxisMagnetometer}) for position measurements.  These sensors and the four actuators filled all available analog ports on the onboard Athena flight computer.  As is described below, the gyroscopes and accelerometers were not used for the observer-based controllers in this thesis leaving just positional measurements from the course sun sensors and triple axis magnetometer.
+Four classes of analog sensors were implemented in NASA MMS TableSat 1A's design. Gyroscope (Section \ref{subsec:Gyroscope}) and accelerometer (Section \ref{subsec:Accelerometer}) for velocity measurements.  Course sun sensor (Section \ref{subsec:CourseSunSensor}), and magnetometer (Section \ref{subsec:TripleAxisMagnetometer}) for position measurements.  These sensors and the four actuators filled all available analog ports on the onboard Athena flight computer.  As is described below, the gyroscopes and accelerometers were not used for the observer-based controllers in this thesis leaving just positional measurements from the course sun sensors and triple axis magnetometer.
 
 \begin{figure}[H]
 \centerline{\psfig{file=figures/sensor_voltage_charts.eps,height=4in}}
@@ -60,7 +60,7 @@ Gyroscopes remain one of the most accurate sensors for detecting changes to a st
 \subsection{Accelerometer}
 \label{subsec:Accelerometer}
 
-Two 2-axis accelerometers are mounted at the circumference or TableSat's deck.  The accelerometers are oriented such that one signal detects vertical acceleration with a 2g resolution and the other a radial signal with a 0.5g resolution.  The rotational accelerometers ended up picking up a small signal which is either due to oscillations in angular velocity or a nutation subjecting the radial accelerometer to gravitational effects.  The vertical components of the accelerometers had such low signal to noise ratios that heavy filtering would be required to even attempt to detect the out of plane rotations.  Any significant nutations allowed by the limited 3-DOF design would damp out quickly enough to be eliminated before the filtering could identify the signal.  Given these severe limitations in the sensor's measurements, for the purpose of this thesis the accelerometer measurements are ignored.
+Two 2-axis accelerometers are mounted at the circumference or TableSat's deck.  The accelerometers are oriented such that one signal detects vertical acceleration with a 2g resolution and the other a radial signal with a 0.5g resolution.  The rotational accelerometers ended up picking up a small signal which is either due to oscillations in angular velocity or a nutation subjecting the radial accelerometer to gravitational effects.  The vertical components of the accelerometers had such low signal to noise ratios that heavy filtering would be required to even attempt to detect the out of plane rotations.  Any significant nutation allowed by the limited 3-DOF design would damp out quickly enough to be eliminated before the filtering could identify the signal.  Given these severe limitations in the sensor's measurements, for the purpose of this thesis the accelerometer measurements are ignored.
 
 \subsection{Course Sun Sensor}
 \label{subsec:CourseSunSensor}
@@ -151,7 +151,7 @@ The baseline path established for TableSat in the absence of nutation (Figure \r
 
 As covered in the sections above, the only sensors available for state measurement of TableSat 1A for the observer based controller were the course sun sensor and the triple axis magnetometer.  Both of which individually measure a portion of the system's attitude and leave the system's body rate unmeasured.
 
-Combining the measurements of the course sun sensor and triple axis magnetometer provided high confidence in the yaw measurement and rough estimates about the roll and pitch nutations.  An algorithm was developed that started with the course sun sensor and through equation \ref{eqn:CSSResultantForce} produced a measurement of yaw.  The TAM calibration data was synthesized to create a reference table of TAM readings at each of the five paths (steady, and the four nutations shown in Figure \ref{fig:TAMNutationVoltages}).  This reference table along with the equation to determine yaw from the course sun sensor are comined through a method descibed in \ref{subsec:SampleAttitudeCalculation} to approximate the TableSat's attitude.
+Combining the measurements of the course sun sensor and triple axis magnetometer provided high confidence in the yaw measurement and rough estimates about the roll and pitch nutation.  An algorithm was developed that started with the course sun sensor and through equation \ref{eqn:CSSResultantForce} produced a measurement of yaw.  The TAM calibration data was synthesized to create a reference table of TAM readings at each of the five paths (steady, and the four nutation shown in Figure \ref{fig:TAMNutationVoltages}).  This reference table along with the equation to determine yaw from the course sun sensor are combined through a method described in \ref{subsec:SampleAttitudeCalculation} to approximate the TableSat's attitude.
 
 \begin{table}[H]
   \centering
@@ -217,7 +217,7 @@ print "A %g radian (%d degree) rotation about <%g, %g, %g>" % (
 
 \subsubsection{Calculate TAM Nutation Reference Data}
 
-Figure \ref{fig:TAMNutationVoltages} shows that while the TAM readings vary enough to be noticeable for large nutations the signal contain a fair quantity of noise.  In order to use the triple-axis magnetometer to quantify nutation for the observer based controller, the data in Table \ref{tbl:TAMCalibration} needs to be summarized to five data points for a yaw angle of 191 degrees.  When running the estimator, TAM sensor values can be compared to the five reference nutation points of flat, +x down, +y down, -x down, and -y down.
+Figure \ref{fig:TAMNutationVoltages} shows that while the TAM readings vary enough to be noticeable for large nutation the signal contain a fair quantity of noise.  In order to use the triple-axis magnetometer to quantify nutation for the observer based controller, the data in Table \ref{tbl:TAMCalibration} needs to be summarized to five data points for a yaw angle of 191 degrees.  When running the estimator, TAM sensor values can be compared to the five reference nutation points of flat, +x down, +y down, -x down, and -y down.
 
 The method chosen for creating the five reference points starts with collecting about 2400 data points with corresponding TAM and course sun sensor voltages.  The voltages for each nutation setting were grouped into 1 degree increments.  Multiple rotations created some overlap in each degree measurements.  The final reference value for each degree was calculated through a weighted average of a specified smoothing window.
 
@@ -285,9 +285,9 @@ Taking one of the points from yneg calibration data to complete the example, Tab
   \label{fig:TAMPoint191}
 \end{figure}
 
-In order to determine the best approximation for the measured nutations a number of combinations of approaches were attempted including using the proportion between two estimates, normalizing the reference vectors, projecting the point to the plane consisting of the two nearest vectors, and creating a conversion of the x and y vectors to an orthogonal space.  Some cases provided slightly lower classification error rates when run against the original calibration test set, but any improvements were not significant.  For simplicity and speed, the measurement estimate for nutation was reduced to a nearest neighbor classification \cite{nearestneighbor} where the closest reference point won out.
+In order to determine the best approximation for the measured nutation a number of combinations of approaches were attempted including using the proportion between two estimates, normalizing the reference vectors, projecting the point to the plane consisting of the two nearest vectors, and creating a conversion of the x and y vectors to an orthogonal space.  Some cases provided slightly lower classification error rates when run against the original calibration test set, but any improvements were not significant.  For simplicity and speed, the measurement estimate for nutation was reduced to a nearest neighbor classification \cite{nearestneighbor} where the closest reference point won out.
 
-Despite the improved speed and simplicity, this classification method has some large faults.  The biggest of which is the jitter that will be fed into the estimator since with no continuum of values, the nutation state will jump between the five calibration states of flat, and $14^o$ nutations.  Further work should be focused on refining this technique.
+Despite the improved speed and simplicity, this classification method has some large faults.  The biggest of which is the jitter that will be fed into the estimator since with no continuum of values, the nutation state will jump between the five calibration states of flat, and $14^o$ nutation.  Further work should be focused on refining this technique.
 
 \section{Messages Between TableSat and the Base Station}
 
@@ -329,7 +329,7 @@ The packet structure used for this project is the same as used by Melissa Vess \
 
 The first octet (h1) contains the message number that matches to a predefined list of messages known by both the sender and recipient.  This is used to specify how the data in the payload is to be used.
 
-The second octet (h2) is reserved for flags.  For some messages, flags can be set for additional data.  These are not used in the final implementation of UNH TableSat 1A.
+The second octet (h2) is reserved for flags.  For some messages, flags can be set for additional data.  These are not used in the final implementation of NASA MMS TableSat 1A.
 
 The third (h3) and fourth (h4) header octets define the size of the data's payload, so when reading data in from a buffer, the header can inform the recipient how many bytes need to get read in from the buffer in order to get to the end of the packet.  For payloads less than 256 bytes only the fourth header byte is needed.  For payloads larger than 255 bytes the following formula is used to specify the message size headers.
 
