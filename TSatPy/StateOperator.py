@@ -382,7 +382,7 @@ class QuaternionToMoment(object):
         :rtype: str
         """
         return '<%s <K %s>>' % (
-            self.__class__.__name__, str(self.K))
+            self.__class__.__name__, str(self.K[0,0]))
 
 
 class StateToMoment(object):

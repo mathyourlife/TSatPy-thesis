@@ -251,15 +251,15 @@ class SMC(ControllerBase):
             dt = 0
 
         # Calculate the state error and starting the empty moment
-        x_err = State.StateError(self.x_d, x_hat)
+        x_err = State.StateError(x_hat, self.x_d)
 
         # Include the proportional Luenberger/Proportional gain
         if self.L is not None:
-            self.M_l = self.L * x_err
+            self.M_l = -self.L * x_err
 
         # Include the scaled saturation moment
         x_s = self.S * x_err
-        self.M_s = self.K * x_s
+        self.M_s = -self.K * x_s
 
         # Ending the update, set the changes and return the
         # moments for supply to the actuators
