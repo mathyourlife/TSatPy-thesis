@@ -388,16 +388,17 @@ class QuaternionToMoment(object):
 class StateToMoment(object):
 
     def __init__(self, Kq=None, Kw=None):
+        self.M_q = State.Moment()
+        self.M_w = State.Moment()
         self.Kq = Kq
         self.Kw = Kw
 
     def __mul__(self, x):
-        M = State.Moment()
         if self.Kq is not None:
-            M += self.Kq * x.q
+            self.M_q = self.Kq * x.q
         if self.Kw is not None:
-            M += self.Kw * x.w
-        return M
+            self.M_w = self.Kw * x.w
+        return self.M_q + self.M_w
 
     def __neg__(self):
         if self.Kq:
