@@ -1,22 +1,26 @@
-from TSatPy.State import Quaternion
+from TSatPy.State import State, Quaternion, BodyRate
 
-print("Quaternion Decomposition")
+print("State Error")
+x_e = State(
+    Quaternion([0,0.1,1],radians=1),
+    BodyRate([0,-0.01,0.2]))
+print("x_e: %s" % (x_e))
 
-q_r1 = Quaternion([0,0,1], radians=1.2)
-q_n1 = Quaternion([1,-1,0], radians=-0.2)
-print("q_r1: %s" % (q_r1))
-print("q_n1: %s" % (q_n1))
+print("Decomposed Quaternion")
+q_r, q_n = x_e.q.decompose()
+print("q_r: %s" % q_r)
+print("q_n: %s" % q_n)
 
-q = q_n1 * q_r1
-print("q:    %s" % (q))
-
-q_r2, q_n2 = q.decompose()
-print("q_r2: %s" % q_r2)
-print("q_r2: %s" % q_n2)
+print("Nutation Only State Error")
+x_e.q = q_n
+print("x_e: %s" % (x_e))
 
 # Prints Out
-# q_r1: <Quaternion [-0 -0 -0.564642], 0.825336>
-# q_n1: <Quaternion [0.0705929 -0.0705929 0], 0.995004>
-# q:    <Quaternion [0.0981226 -0.0184031 -0.561822], 0.821212>
-# q_r2: <Quaternion [0 0 -0.564642], 0.825336>
-# q_r2: <Quaternion [0.0705929 -0.0705929 -0], 0.995004>
+# State Error
+# x_e: <Quaternion [-0 -0.0477046 -0.477046], 0.877583>, <BodyRate [0 -0.01 0.2]>
+# Decomposed Quaternion
+# q_r: <Quaternion [0 0 -0.47759], 0.878583>
+# q_n: <Quaternion [-0.0227833 -0.0419125 -0], -0.998861>
+# Nutation Only State Error
+# x_e: <Quaternion [-0.0227833 -0.0419125 -0], -0.998861>, <BodyRate [0 -0.01 0.2]>
+
