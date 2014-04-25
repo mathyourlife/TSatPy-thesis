@@ -6,7 +6,7 @@
 \begin{nomenclature}
 \begin{tabular}{lp{0.75\linewidth}}
   \multicolumn{2}{l}{\textbf{Clock}} \\
-  $t_k$ & The system clock's time for step $k$ of a subsystem.  Note: since update frequencies are allowed to vary between subsystems, the $k$ is limited in scope to it's subsystem.  i.e. $t_{k\_estimator} \ne t_{k\_controller}$ \\
+  $t_k$ & The system clock's time for step $k$ of a subsystem.  Note: since update frequencies are allowed to vary between subsystems, the $k$ is limited in scope to it's subsystem.  i.e. $t_{k\_estimator} \ne t_{k\_controller}$.  In order to increase the legibility, the time step notations may be omitted from some equations if all parameters are from the same time step. \\
 \end{tabular}
 
 \begin{tabular}{lp{0.75\linewidth}}
@@ -35,6 +35,7 @@
 \begin{tabular}{lp{0.75\linewidth}}
   \multicolumn{2}{l}{\textbf{Body-Fixed Angular Velocity (i.e. Body Rate)}} \\
   $\bs{\omega}$ & Body Rate \\
+  $\bs{\omega}_d - \bs{\hat{\omega}}(t_{k+1})$ & Controller Body Rate error \\
 \end{tabular}
 
 \begin{tabular}{lp{0.75\linewidth}}
@@ -133,12 +134,10 @@ Sliding Mode Observer \\
     \bs{\hat{q}}(t_{k+1}) &= \bs{\psi} (\bs{1}_s\big(\bs{q}_{e}(t_k)\big), K_q) \otimes \bs{\psi}(\bs{q}_e(t_{k}), L_{q})  \otimes \bs{\hat{q}}(t_{k+1})^- \\
     \bs{\hat{\omega}}(t_{k+1}) &= \bs{\hat{\omega}}(t_{k+1})^- + \bs{L}_{\omega} \bs{\omega}_e(t_{k}) + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e(t_{k}) \big)
   \end{align}
-  \label{eqn:SMOEstimatorwithPredictionUnforcedMotion}
 \end{subequations}
 Sliding Mode Control
 \begin{equation}
   \bs{M}_{\omega}(t_{k+1}) = \bs{L}_{\omega} \bs{\omega}_e(t_{k+1}) + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e(t_{k+1}) \big)
-  \label{eqn:SMController}
 \end{equation}
 
 
