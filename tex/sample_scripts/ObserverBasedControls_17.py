@@ -20,8 +20,8 @@ x_d = State.State()
 
 def test():
     x_est = State.State(
-        State.Quaternion([0,0,1],radians=1),
-        State.BodyRate([0,-0.00,0.2]))
+        State.Quaternion([0,0.1,1],radians=1),
+        State.BodyRate([0,-0.01,0.2]))
 
     I = [[4, 0, 0], [0, 4, 0], [0, 0, 2]]
     plant_est = State.Plant(I, x_est, c)

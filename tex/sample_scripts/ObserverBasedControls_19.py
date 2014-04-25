@@ -9,7 +9,7 @@ from GradientDescent import GradientDescent
 
 print("Test P - Nutation Control")
 
-run_time = 100
+run_time = 120
 speed = 20
 c = Metronome()
 c.set_speed(speed)
@@ -27,15 +27,12 @@ def run_test(Kq, plot=False):
 
 def test(Kq):
 
-    # Randomize the initial condition of the plant
-    x_est_ic = State.State(
-        State.Quaternion(np.random.rand(3,1),radians=np.random.rand()*3),
-        State.BodyRate([0,0,0]))
-    print("x_est_ic:    %s" % (x_est_ic))
-    print x_est_ic.q.to_rotation()
+    x_est = State.State(
+        State.Quaternion([0,0.1,1],radians=1),
+        State.BodyRate([0,-0.01,0.2]))
 
     I = [[4, 0, 0], [0, 4, 0], [0, 0, 2]]
-    plant_est = State.Plant(I, x_est_ic, c)
+    plant_est = State.Plant(I, x_est, c)
 
     Kp = SO.StateToMoment(
         SO.QuaternionToMoment(Kq),
@@ -64,10 +61,10 @@ def test(Kq):
         M = pid.update(x_plant)
 
         ts.append(c.tick() - start_time)
-        Ms.append((M.M[0,0],M.M[1,0],M.M[2,0]))
-        e, r = x_plant.q.to_rotation()
+        Ms.append((M[0],M[1],M[2]))
+        e, r = q_n.to_rotation()
         theta.append(r)
-        ws.append((x_plant.w.w[0,0],x_plant.w.w[1,0],x_plant.w.w[2,0]))
+        ws.append((x_plant.w[0],x_plant.w[1],x_plant.w[2]))
 
     return ts, Ms, ws, theta
 
@@ -138,7 +135,7 @@ def main():
 
 if __name__ == '__main__':
 
-    kwargs = {'Kq': 0.152}
+    kwargs = {'Kq': 0.14869025098803129}
 
     # kwargs = None
 
