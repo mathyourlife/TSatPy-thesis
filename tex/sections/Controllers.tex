@@ -164,13 +164,13 @@ where $\bs{L}_{\omega}$ is the proportional gain and the $\bs{1}_s$ function can
 \begin{equation}
   \bs{1}_s \big(\bs{\omega}_e \big) = sat \begin{bmatrix} \omega_{ex} / S_{\omega} &0 &0 \\ 0 & \omega_{ey} / S_{\omega} & 0 \\ 0 & 0 & \omega_{ez} / S_{\omega} \end{bmatrix}
 \end{equation}
-The response to the test configuration is very similar to that of the proportional controller as shown if Figure \ref{fig:SMCRateControl}.
+The response to the test configuration shows significant improvements in performance over the P and PID rate controller as shown if Figure \ref{fig:SMCRateControl}.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/smc_rate_control.eps,width=6in}}
   \caption{SMC rate control}
   \label{fig:SMCRateControl}
 \end{figure}
-Breaking the overall moment values into the separate term's contributions (Figure \ref{fig:SMCRateControlMoments}) shows the similar profile between the proportional and saturation term contributions with the exception of the peaks missing from the saturation response.  This behavior indicates a tendency for the SMC to gently pull the estimated system state toward the desired state if there is a large discrepancy, but as the two converge the strength of the corrections increases causing the two states to stick tightly together.
+Breaking the overall moment values into the separate term's contributions (Figure \ref{fig:SMCRateControlMoments}) shows the similar profile between the proportional and saturation term contributions with the exception of the peaks missing from the saturation response.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/smc_rate_control_moments.eps,width=6in}}
   \caption{SMC rate control moments}
@@ -178,17 +178,17 @@ Breaking the overall moment values into the separate term's contributions (Figur
 \end{figure}
 The SMC response in Figures \ref{fig:SMCRateControl} and \ref{fig:SMCRateControlMoments}, is generated with the following gain values tuned through a gradient descent search that minimizes control effort.
 \begin{equation}
-    \bs{L}_{\omega} = \begin{bmatrix} 0.5264 & 0 & 0 \\ 0 & 0.3848 & 0 \\ 0 & 0 & 0.5976 \end{bmatrix},
-    \bs{K}_{\omega} = \begin{bmatrix} 0.4724 & 0 & 0 \\ 0 & 0.4542 & 0 \\ 0 & 0 & 0.4049 \end{bmatrix},
-    S_{\omega} = 0.0940
+    \bs{L}_{\omega} = \begin{bmatrix} 0.3983 & 0 & 0 \\ 0 & 0.3828 & 0 \\ 0 & 0 & 0.4160 \end{bmatrix},
+    \bs{K}_{\omega} = \begin{bmatrix} 0.4399 & 0 & 0 \\ 0 & 0.5097 & 0 \\ 0 & 0 & 0.3162 \end{bmatrix},
+    S_{\omega} = 0.1404
   \label{SMCRateControlGains}
 \end{equation}
-With the perfect measurements in this test, the saturation term does not add value over the proportional rate controller, but this test does validate the implementation of the controller which is used in the full observer-based tests in Chapter \ref{chap:ObserverBasedControls}.
+With the perfect measurements in this test, the saturation term adds a significant performance improvement over the P and PID implementations.  Additionally, with two fewer gain values tuning the SMC is slightly less involved than the PID body rate controller.
 
 \section{Quaternion to Moment Conversion}
 \label{sec:QuaternionToMomentConversion}
 
-The remainder of this chapter focuses on the attitude control problem to correct for nutation (Section \ref{sec:AttitudeAndNutationControl}) and the integration of the attitude and rate controller (Section \ref{sec:AttitudeandRateControl}).  The proper conversion from an attitude error measurement to actuator moments is critical to providing a robust control method.
+The remainder of this chapter focuses on the attitude control problem to correct for nutation (Section \ref{sec:AttitudeAndNutationControl}) and the integration of the attitude and rate controller (Section \ref{sec:AttitudeandBodyRateControl}).  The proper conversion from an attitude error measurement to actuator moments is critical to providing a robust control method.
 
 The attitude error measurement is calculated through the quaternion multiplicative method as is established in Section \ref{sec:HighIntegrityStateAdjustments}
 
@@ -209,7 +209,7 @@ The second issue is that the quaternion is comprised of a vector and scalar that
 \begin{equation}
   \bs{M}_{q} = \bs{v}_e
 \end{equation}
-This provides a basis for the direction of the moment couple, but since the rotational quaternion is fixed at a unit norm, the magnitude of the vector component will vary with the size of the error.  This is compensated for by normalizing the vector.
+This provides a basis for the direction of the moment couple, but since the rotational quaternion is fixed at a unit norm, the magnitude of the vector component varies with the size of the error.  This is compensated for by normalizing the vector.
 \begin{equation}
   \bs{M}_{q} = \bs{\hat{e}}_e
   \label{eqn:quat_vector_to_moment}
@@ -237,7 +237,7 @@ This conversion is used throughout all attitude control calculations in the rema
 \section{Attitude and Nutation Control}
 \label{sec:AttitudeAndNutationControl}
 
-Section \ref{sec:RateControl} covered the design of the rate controller which addresses the first controller goal to maintain a spin rate of $\omega_z = 3$ rpm.  This section ignores the rate control requirement and focuses strictly on the attitude control problem by incorporating the quaternion to moment conversion in Equation \ref{eqn:QuaternionToMomentConversion} into a PID and SMC attitude controller.   Later, section \ref{sec:AttitudeandRateControl} combines the attitude and body rate controls into a single controller.
+Section \ref{sec:RateControl} covered the design of the rate controller which addresses the first controller goal to maintain a spin rate of $\omega_z = 3$ rpm.  This section ignores the rate control requirement and focuses strictly on the attitude control problem by incorporating the quaternion to moment conversion in Equation \ref{eqn:QuaternionToMomentConversion} into a PID and SMC attitude controller.   Later, section \ref{sec:AttitudeandBodyRateControl} combines the attitude and body rate controls into a single controller.
 
 \subsection{P Attitude Control}
 \label{subsec:PAttitudeControl}
@@ -349,180 +349,91 @@ Figure \ref{fig:PNutationControl} shows the resulting control moments, quaternio
 The center plot tracking quaternion angle, shows that while some of the nutation is removed the proportional nutation controller is clearly not enough to remove all nutation.
 
 
-\section{Attitude and Rate Control}
-\label{sec:AttitudeandRateControl}
+\section{Attitude and Body Rate Control}
+\label{sec:AttitudeandBodyRateControl}
 
-
+Sections \ref{sec:RateControl} and \ref{sec:AttitudeAndNutationControl} have established methods to address the spin rate and nutation control goals.  In this section the two are used together.  In Section \ref{subsec:FixedAttitudeControl}, the attitude and body rate controllers are combined to take a satellite from an initialized uncontrolled spin and bring it to the standard orientation with fixed-body axes aligned with the global axes.  Section \ref{subsec:SpinStabilizedControl} follows up by releasing the restriction on motion about the $z$ axis and takes the satellite's initial uncontrolled spin to a nutation-free rotation about the $z$-axis.
 \begin{equation}
-    \bs{M}(t_{k+1}) = \bs{M}_{q}(t_{k+1}) + \bs{M}_{\omega}(t_{k+1})
+    \bs{M} = \bs{M}_{q} + \bs{M}_{\omega}
+\end{equation}
+For consistency, all tests in this section are initialized with the following state
+\begin{equation}
+  \bs{x}_0 = \begin{bmatrix} -0.532 \bs{i} -0.417 \bs{j} -0.275 \bs{k} +0.684 \\ 0.315 \bs{i} +0.207 \bs{j} +0.113 \bs{k} \end{bmatrix}
+  \label{eqn:attitude_and_body_rate_control_ic}
 \end{equation}
 
-
-
-
-\subsection{P Attitude and Body Rate Control}
-\label{subsec:PAttitudeandBodyRateControl}
-
-The results shown in \ref{fig:PAttitudeControl} are very promising.  The full three degree of freedom (DOF) object with an initial out of plane offset and initial body rates is able to oscillate about the desired set point with the use of a single gain being combined with the components of the current step's quaternion attitude.
-
-Combining the proportional attitude control in Equation \ref{eqn:PAttitudeControl} with the proportional body rate control in Equation \ref{eqn:PRateControl} gives
-
-\begin{subequations}
-  \begin{align}
-    \bs{M}(t_{k+1}) &= \left[-2 K_{qp} \cos^{-1} \big(\hat{q}_{e0}(t_{k+1}) \big) \right] \bs{\hat{e}}_e(t_{k+1}) + \bs{K}_{\omega p} \bs{\omega}_e(t_{k+1})\\
-    \text{where } \bs{\hat{e}}_e(t_{k+1}) &= \frac{\bs{\hat{v}}_e(t_{k+1})}{|\bs{\hat{v}}_e(t_{k+1})|} \\
-    \bs{\omega}_e(t_{k+1}) &= \bs{\omega}_d - \bs{\hat{\omega}}(t_{k+1})
-  \end{align}
-  \label{eqn:PAttitudeAndRateControl}
-\end{subequations}
-
-After an iterative gradient descent to minimize the control effort, the following gains provided the best performance against a variety of initial conditions.
-
-\begin{equation}
-  K_{qp} = 0.0912, \bs{K}_{\omega p} = \begin{bmatrix} 0.494 & 0 & 0 \\ 0 & 0.583 & 0 \\ 0 & 0 & 0.624 \end{bmatrix}
-\end{equation}
-
-Figure \ref{fig:PAttitudeRateControl} shows the system's response when bringing a system into the standard orientation from an initial condition of
-
-\begin{equation}
-  \bs{x}_0 = \begin{bmatrix} -0.202 \bs{i} -0.0581 \bs{j} -0.222 \bs{k} +0.952 \\ 0.585 \bs{i} +0.0919 \bs{j} +0.999 \bs{k} \end{bmatrix}
-\end{equation}
-
-\begin{figure}[H]
-  \centerline{\psfig{file=figures/p_attitude_and_rate_control.eps,width=6in}}
-  \caption{P Attitude and Rate Control}
-  \label{fig:PAttitudeRateControl}
-\end{figure}
-
-Another random initial condition test run under the same parameters, provides additional support for the choice of the multiplicative quaternion corrections and error quaternions.  With the system initialed to the state
-
-\begin{equation}
-  \bs{x}_0 = \begin{bmatrix} -0.0134 \bs{i} -0.0611 \bs{j} -0.0347 \bs{k} +0.997 \\ 0.259 \bs{i} +0.899 \bs{j} +0.402 \bs{k} \end{bmatrix}
-\end{equation}
-
-The response in Figure \ref{fig:PAttitudeRateControlWithAntipodalRollOver} shows that at about five seconds into the control run, the control effort moments jump.  This can happen when the system passes close to a point antipodal from the desired orientation.  The proportional rate controller is slowing down the initial body rates while the quaternion proportional controller is attempting to unwind the angle to bring the system back to the desired orientation.  At about five seconds into the test run, the rate controller has reduced much of the initial spin rate.  At that same time the attitude quaternion angle shows it is passing a point that requires a 3.14 radian turn to bring it back to the desired orientation.  At this point it is more efficient to allow the rotation around the rest of the rotation and ease it into the desired state rather that bringing the system to a halt and unwinding the whole way.  This behavior in advantageous, but the additional benefit of using the quaternion multiplicative correction is that it is built into the rotational quaternion that 0 and $2\pi$ are the same orientation.  So even though the desired orientation is a zero degree angle as is performed in Figure \ref{fig:PAttitudeRateControl}, this test converges the system to the more efficient $2\pi$ orientation as shown in the center graph in Figure \ref{fig:PAttitudeRateControlWithAntipodalRollOver}.
-
-\begin{figure}[H]
-  \centerline{\psfig{file=figures/p_attitude_and_rate_control_with_180_roll_over.eps,width=6in}}
-  \caption{P Attitude and Rate Control with Antipodal Roll Over}
-  \label{fig:PAttitudeRateControlWithAntipodalRollOver}
-\end{figure}
-
-This proportional attitude controller has shown to work extremely well at correcting for a variety of conditions, but unlike the needs of the NASA MMS mission, it's target attitude is the standard orientation of body rates aligned with the global reference frame and with no body rates.  The following sections attempt to isolate and correct for a nutation outside of the spin plane independent of the rotation about the $z$-axis.
-
-
-\subsection{P Rate and Nutation Control Starting at Rest}
-\label{subsec:PRateNutationControlStartingatRest}
-
-Since the proportional attitude control converged to the desired state through the addition of a proportional body rate controller, this section adds a body rate controller to the P-Nutation controller from the previous section.  Figure \ref{fig:PNutationRateControl} shows the result of a test with an initial conditions of $\bs{q}_0 = -0.289\bs{i} -0.0130 \bs{j} -0.154 \bs{k} + 0.945$ and body rates $\omega_x = \omega_f = \omega_z = 0$.  The proportional nutation and body rate controllers are run with the parameters
-
-\begin{equation}
-  K_{qp} = 0.268, \bs{K}_{\omega p} = \begin{bmatrix} 0.414 & 0 & 0 \\ 0 & 0.559 & 0 \\ 0 & 0 & 0.418 \end{bmatrix}
-\end{equation}
-
-\begin{figure}[H]
-  \centerline{\psfig{file=figures/p_nutation_and_rate_control.eps,width=6in}}
-  \caption{P Nutation and Rate Control}
-  \label{fig:PNutationRateControl}
-\end{figure}
-
-\subsection{PID Rate and Nutation Control Using Quaternion Decomposition}
-\label{subsec:PIDRateandNutationControl}
-In a full state control configuration the plant is initialized to a random attitude and body rate of
-\begin{equation}
-  \bs{x}_{ic} = \begin{bmatrix} -0.102 \bs{i} -0.478 \bs{j}-0.0678 \bs{k} + 0.870 \\ 0.710 \bs{i} + 0.155 \bs{j} + 0.377 \bs{k} \end{bmatrix}
-\end{equation}
-unlike with the previous simulations in this chapter this run is configured to control both the attitude and body rate.  The controller is set with the desired state of
-\begin{equation}
-  \bs{x}_d = \begin{bmatrix} 0 \bs{i} +0 \bs{j} +0 \bs{k} + 1 \\ 0 \bs{i} + 0 \bs{j} + 0.314 \bs{k} \end{bmatrix}
-\end{equation}
-The attitude quaternion and body rate desired states are at odds with each other.  The identity quaternion sets the desired attitude to be fixed with the body-fixed reference frame aligned with the global reference frame.  The desired state defined by the body rate is to maintain a constant 0.314 rad/sec rotation about the body $z$-axis, so it must both stay still and move at a constant pace.
-
-Resolving this conflict takes advantage of the quaternion decomposition derived in Equation \ref{eqn:quaternion_decomposition_derivation} and applies it to the estimated state's quaternion.  In effect, removing any rotational information from the quaternion leaving nutation and body rate data to feed into the controller.  The initial state from the estimator is
-\begin{equation}
-  \bs{\hat{x}}(t_{k}) = \begin{bmatrix} \bs{\hat{q}}(t_{k}) \\ \bs{\hat{\omega}}(t_{k}) \end{bmatrix} = \begin{bmatrix} \bs{\hat{q}}_n(t_{k}) \otimes \bs{\hat{q}}_r(t_{k}) \\ \bs{\hat{\omega}}(t_{k}) \end{bmatrix}
-\end{equation}
-and dropping the rotational component gives the modified state estimation as
-\begin{equation}
-  \bs{\hat{x}}^+(t_{k}) = \begin{bmatrix} \bs{\hat{q}}_n(t_{k})  \\ \bs{\hat{\omega}}(t_{k}) \end{bmatrix}
-\end{equation}
-The controller's state error is then calculated as
-\begin{equation}
-  \bs{x}_e(t_{k}) = \begin{bmatrix} \bs{q}_e(t_{k}) \\ \bs{\omega}_e(t_{k}) \end{bmatrix} = \begin{bmatrix} \bs{q}_d^*(t_{k}) \otimes \bs{\hat{q}}_n(t_{k}) \\ \bs{\hat{\omega}}(t_{k}) - \bs{\omega}(t_{k}) \end{bmatrix}
-\end{equation}
-Similar to the PID estimator in Equation \ref{eqn:PIDEstimatorwithPredictionUnforcedMotion}, the moments calculated by the controller is a summation of the quaternion based correction and the body rate correction moments
-\begin{equation}
-  \bs{M} = \bs{M}_q + \bs{M}_{\omega}
-\end{equation}
-
-Taking the integral $\bs{q}_{ei}$ and derivative $\bs{q}_{ed}$ quaternions from Equations \ref{eqn:IEstimator} and \ref{eqn:DEstimator} and the conversion from quaternion to moments in Equation \ref{eqn:QuaternionToMomentConversion}.  The quaternion portion of the moment correction is
-\begin{equation}
-  \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[-2 K_{q} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[-2 K_{q} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed}
-\end{equation}
-where $\bs{\hat{e}}_e, \bs{\hat{e}}_{ei}, \bs{\hat{e}}_{ed}$ are the Euler axes for the quaternion error, quaternion error integral, and quaternion error derivative respectively.
-
-The body rate portion of the moment correction is
-\begin{equation}
-  \bs{M}_{\omega} = \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k})
-\end{equation}
-
-
-
-with quaternion error to moment gains of
-\begin{equation}
-  K_{pq} = 0.11112, K_{iq} = 0.00925, K_{dq} = 0.23122
-\end{equation}
-and body rate error to moment gains of
+\subsection{Fixed Attitude Control}
+\label{subsec:FixedAttitudeControl}
+The PID controllers are defined as
 \begin{equation}
   \begin{aligned}
-  \bs{K}_{\omega p} &= \begin{bmatrix} 0.56073&0&0 \\ 0&0.46617&0 \\ 0&0&0.62449 \end{bmatrix} \\
-  \bs{K}_{\omega i} &= \begin{bmatrix} 0.59005&0&0 \\ 0&0.46463&0 \\ 0&0&0.42009 \end{bmatrix} \\
-  \bs{K}_{\omega d} &= \begin{bmatrix} 0.34528&0&0 \\ 0&0.56419&0 \\ 0&0&0.54984 \end{bmatrix} \\
+    \bs{M} &= \bs{M}_{q} + \bs{M}_{\omega} \\
+    \bs{M}_{q} &= \left[-2 K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[-2 K_{qi} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[-2 K_{qd} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed} \\
+    \bs{M}_{\omega} &= \bs{K}_{\omega p} \bs{\omega}_e + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e
   \end{aligned}
 \end{equation}
+where $\bs{\hat{e}}_e, \bs{\hat{e}}_{ei}, \bs{\hat{e}}_{ed}$ are the Euler axes for the quaternion error, quaternion error integral, and quaternion error derivative respectively with the integral $\bs{q}_{ei}$ and derivative $\bs{q}_{ed}$ quaternions from Equations \ref{eqn:IEstimator} and \ref{eqn:DEstimator}.
 
-% x_est_ic:    <Quaternion [-0.102078 -0.477679 -0.067834], 0.869943>, <BodyRate [0.70997 0.155469 0.377068]>
-% (matrix([[-0.20699052],
-%         [-0.968625  ],
-%         [-0.13755192]]), 1.031418752494432)
-
-    % kwargs = {'Kpq': 0.11111822352039165, 'Kpwy': 0.46617055725812362, 'Kiq': 0.0092460954947930132, 'Kiwy': 0.56418807555550599, 'Kpwx': 0.56072598825499542, 'Kiwx': 0.34527737331963193, 'Kpwz': 0.62449446448477242, 'Kiwz': 0.54983623166470164, 'Kdwx': 0.59004903787603236, 'Kdwy': 0.4646265536024109, 'Kdwz': 0.42009087143770402, 'Kdq': 0.23121875724788765}
-
-% # Kpq:
-% #   val: 0.111118 range: 0.02,0.22    std: 0.0340246
-% # Kpwx:
-% #   val: 0.560726 range: 0.39,0.71    std: 0.0474869
-% # Kpwy:
-% #   val: 0.466171 range: 0.17,0.65    std: 0.0840252
-% # Kpwz:
-% #   val: 0.624494 range: 0.32,0.84    std: 0.0970963
-% # Kiq:
-% #   val: 0.0092461    range: 0.003,0.039  std: 0.00281212
-% # Kiwx:
-% #   val: 0.345277 range: 0.23,0.51    std: 0.0553643
-% # Kiwy:
-% #   val: 0.564188 range: 0.28,0.88    std: 0.115591
-% # Kiwz:
-% #   val: 0.549836 range: 0.29,0.81    std: 0.0990584
-% # Kdq:
-% #   val: 0.231219 range: 0.05,0.61    std: 0.0793672
-% # Kdwx:
-% #   val: 0.590049 range: 0.32,0.8 std: 0.107061
-% # Kdwy:
-% #   val: 0.464627 range: 0.12,0.72    std: 0.0881444
-% # Kdwz:
-% #   val: 0.420091 range: 0.27,0.63    std: 0.06911
-
-
-
+The results from the PID body rate and attitude controller are shown in Figures \ref{fig:PIDAttitudeAndRateControl} and \ref{fig:PIDAttitudeAndRateControlMoments} when tested with the following parameters
+\begin{equation}
+  \begin{aligned}
+    K_{qp} &= 0.6022,K_{qi} = 0.04656,K_{qd} = 0.8554 \\
+    K_{\omega p} &= \bs{I} \begin{bmatrix} 0.70326 & 0.7203 & 0.61757 \end{bmatrix}^T \\
+    K_{\omega i} &= \bs{I} \begin{bmatrix} 0.04207 & 0.06999 & 0.018591 \end{bmatrix}^T \\
+    K_{\omega d} &= \bs{I} \begin{bmatrix} 0.4096 & 0.6032 & 0.6123 \end{bmatrix}^T
+  \end{aligned}
+\end{equation}
 \begin{figure}[H]
   \centerline{\psfig{file=figures/pid_attitude_and_rate_control.eps,width=6in}}
-  \caption{PID Rate and Nutation Control}
-  \label{fig:PIDNutationRateControl}
+  \caption{PID Attitude and Rate Control}
+  \label{fig:PIDAttitudeAndRateControl}
+\end{figure}
+Figure \ref{fig:PIDAttitudeAndRateControl} shows a significant improvement to the body rate response over previous body rate only tests.  All error and oscillations in the quaternion angle were also eliminated.  The graphs in \ref{fig:PIDAttitudeAndRateControlMoments} attribute the fast conversion to the desired attitude initially to the proportional and derivative components with the integral component eliminating the final steady state error.
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/pid_attitude_and_rate_control_moments.eps,width=6in}}
+  \caption{PID Attitude and Rate Control Moments}
+  \label{fig:PIDAttitudeAndRateControlMoments}
 \end{figure}
 
-\subsection{SMC Rate and Nutation Control}
-\label{subsec:SMC}
+The Sliding Mode Controllers are defined as
+\begin{equation}
+  \begin{aligned}
+    \bs{M} &= \bs{M}_{q} + \bs{M}_{\omega} \\
+    \bs{M}_{q} &= \left[-2 L_{q} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[ K_{q} sat \left( \frac{-2\cos^{-1} (q_{0e})}{S_q} \right) \right] \bs{\hat{e}}_e \\
+    \bs{M}_{\omega} &= \bs{L}_{\omega} \bs{\omega}_e + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e / S_{\omega} \big) \\
+    \bs{1}_s \big(\bs{\omega}_e / S_{\omega} \big) &= \begin{bmatrix} sat (\omega_{ex} / S_{\omega}) &0 &0 \\ 0 & sat (\omega_{ey} / S_{\omega}) & 0 \\ 0 & 0 & sat (\omega_{ez} / S_{\omega}) \end{bmatrix}
+  \end{aligned}
+\end{equation}
+Figures \ref{fig:SMCAttitudeAndRateControl} and \ref{fig:SMCAttitudeAndRateControlMoments} show the response for the SMC to the attitude and body rate control test run.  Through a gradient descent search, the SMC parameters are tuned to
+\begin{equation}
+  \begin{aligned}
+    L_q &= 0.408, \bs{L}_{\omega} = \bs{I} \begin{bmatrix} 0.708 & 0.678 & 0.525 \end{bmatrix}^T \\
+    K_q &= 0.500, \bs{K}_{\omega} = \bs{I} \begin{bmatrix} 0.745 & 0.816 & 0.666 \end{bmatrix}^T \\
+    S_q &= 0.607, S_{\omega} = 0.315
+  \end{aligned}
+\end{equation}
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/smc_attitude_and_rate_control.eps,width=6in}}
+  \caption{SMC Attitude and Rate Control}
+  \label{fig:SMCAttitudeAndRateControl}
+\end{figure}
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/smc_attitude_and_rate_control_moments.eps,width=6in}}
+  \caption{SMC Attitude and Rate Control Moments}
+  \label{fig:SMCAttitudeAndRateControlMoments}
+\end{figure}
+As with the body rate comparative tests, the sliding mode controller shows a significant improvement in performance compared to the PID controller for the fixed attitude and body rate tests.  Section \ref{subsec:SpinStabilizedControl} follows up on these results by freeing up the motion about the $z$-axis for a spin-stabilized and nutation rejection test.
 
-\TODO{this}
+\subsection{Spin-Stabilized Control}
+\label{subsec:SpinStabilizedControl}
+
+This section assesses the PID and SMC controller's capability to take a satellite from an initialized state defined in Equation \ref{eqn:attitude_and_body_rate_control_ic} to the spin-stabilized state of $\omega_z = 0.314$ rad/sec without nutation.
+
+\TODO{Get good gains for SMC}
+
+
+
+
+
+
 
