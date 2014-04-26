@@ -139,39 +139,39 @@ class TestQuaternionSaturation(unittest.TestCase):
         # Positive quaternion angle below the threshold
         q = State.Quaternion([0,0,1], radians=0.7)
         q_sat = s * q
-        self.assertEquals(State.Quaternion([0,0,1], radians=0.7), q_sat)
+        self.assertEquals(State.Quaternion([0,0,1], radians=0.7/1.1), q_sat)
 
         # Positive quaternion angle above the threshold
         q = State.Quaternion([0,0,1], radians=1.7)
         q_sat = s * q
-        self.assertEquals(State.Quaternion([0,0,1], radians=1.1), q_sat)
+        self.assertEquals(State.Quaternion([0,0,1], radians=1), q_sat)
 
         # Negative quaternion angle below the threshold
         q = State.Quaternion([0,0,1], radians=-0.7)
         q_sat = s * q
-        self.assertEquals(State.Quaternion([0,0,1], radians=-0.7), q_sat)
+        self.assertEquals(State.Quaternion([0,0,1], radians=-0.7/1.1), q_sat)
 
         # Negative quaternion angle above the threshold
         q = State.Quaternion([0,0,1], radians=-1.7)
         q_sat = s * q
-        self.assertEquals(State.Quaternion([0,0,1], radians=-1.1), q_sat)
+        self.assertEquals(State.Quaternion([0,0,1], radians=-1), q_sat)
 
         # Positive quaternion angle greater than 180
         q = State.Quaternion([0,0,1], radians=4)
         q_sat = s * q
-        self.assertEquals(State.Quaternion([0,0,1], radians=-1.1), q_sat)
+        self.assertEquals(State.Quaternion([0,0,1], radians=-1), q_sat)
 
         # Negative quaternion angle less than -180
         q = State.Quaternion([0,0,1], radians=-4)
         q_sat = s * q
-        self.assertEquals(State.Quaternion([0,0,1], radians=1.1), q_sat)
+        self.assertEquals(State.Quaternion([0,0,1], radians=1), q_sat)
 
 
 class TestBodyRateSaturation(unittest.TestCase):
 
     def test_init(self):
         s = StateOperator.BodyRateSaturation(0.3)
-        self.assertTrue(np.all(s.rho == np.mat([0.3,0.3,0.3]).T))
+        self.assertEquals(s.rho, 0.3)
 
     def test_str(self):
         s = StateOperator.BodyRateSaturation(2)
@@ -182,7 +182,7 @@ class TestBodyRateSaturation(unittest.TestCase):
 
         w = State.BodyRate([-1,-2,3])
         w_sat = s * w
-        self.assertEquals(State.BodyRate([-1,-1.3,1.3]), w_sat)
+        self.assertEquals(State.BodyRate([-1/1.3,-1,1]), w_sat)
 
 
 
@@ -214,8 +214,8 @@ class TestStateSaturation(unittest.TestCase):
             State.BodyRate([-1,-2,3]))
         x_sat = Sx * x
         x_expected = State.State(
-            State.Quaternion([0,0,1], radians=1.1),
-            State.BodyRate([-1,-1.3,1.3]))
+            State.Quaternion([0,0,1], radians=1),
+            State.BodyRate([-1/1.3,-1,1]))
 
         self.assertEquals(x_expected, x_sat)
 
@@ -229,7 +229,7 @@ class TestStateSaturation(unittest.TestCase):
         x_sat = Sx * x
         x_expected = State.State(
             State.Quaternion([0,0,1], radians=1.7),
-            State.BodyRate([-1,-1.3,1.3]))
+            State.BodyRate([-1/1.3,-1,1]))
 
         self.assertEquals(x_expected, x_sat)
 
@@ -242,7 +242,7 @@ class TestStateSaturation(unittest.TestCase):
             State.BodyRate([-1,-2,3]))
         x_sat = Sx * x
         x_expected = State.State(
-            State.Quaternion([0,0,1], radians=1.1),
+            State.Quaternion([0,0,1], radians=1),
             State.BodyRate([-1,-2,3]))
 
         self.assertEquals(x_expected, x_sat)
