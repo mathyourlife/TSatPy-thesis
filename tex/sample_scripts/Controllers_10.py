@@ -141,21 +141,21 @@ def calc_err(ts, Ms, Mls, Mss, ws, theta):
 
 def main():
     domains = [
-        ['Lq', 0,  0.9],
-        ['Lx', 0,  0.9],
-        ['Ly', 0,  0.9],
-        ['Lz', 0,  0.9],
-        ['Kq', 0,  0.9],
-        ['Kx', 0,  0.9],
-        ['Ky', 0,  0.9],
-        ['Kz', 0,  0.9],
-        ['Sq', 0,  0.1],
-        ['Sw', 0,  0.08],
+        ['Lq', 0, 1],
+        ['Lx', 0, 1],
+        ['Ly', 0, 1],
+        ['Lz', 0, 1],
+        ['Kq', 0, 1],
+        ['Kx', 0, 1],
+        ['Ky', 0, 1],
+        ['Kz', 0, 1],
+        ['Sq', 0, 1],
+        ['Sw', 0, 1],
     ]
 
     kwargs = {
         # Number of iterations to run
-        'N': 100,
+        'N': 200,
 
         # Definition of parameter search domain
         'domains': domains,
@@ -176,9 +176,9 @@ if __name__ == '__main__':
 
     kwargs = None
     kwargs = {
-        'Kq': 0.5941, 'Kx': 0.5893, 'Ky': 0.7085, 'Kz': 0.5641,
-        'Lq': 0.2205, 'Lx': 0.8003, 'Ly': 0.7435, 'Lz': 0.4857,
-        'Sq': 0.1133, 'Sw': 0.1170,
+        'Kq': 0.500, 'Kx': 0.745, 'Ky': 0.816, 'Kz': 0.666,
+        'Lq': 0.408, 'Lx': 0.708, 'Ly': 0.678, 'Lz': 0.525,
+        'Sq': 0.607, 'Sw': 0.315,
     }
 
     if kwargs is not None:

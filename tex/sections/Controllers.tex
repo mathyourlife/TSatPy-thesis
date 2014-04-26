@@ -359,6 +359,7 @@ Sections \ref{sec:RateControl} and \ref{sec:AttitudeAndNutationControl} have est
 For consistency, all tests in this section are initialized with the following state
 \begin{equation}
   \bs{x}_0 = \begin{bmatrix} -0.532 \bs{i} -0.417 \bs{j} -0.275 \bs{k} +0.684 \\ 0.315 \bs{i} +0.207 \bs{j} +0.113 \bs{k} \end{bmatrix}
+  \label{eqn:attitude_and_body_rate_control_ic}
 \end{equation}
 
 \subsection{Fixed Attitude Control}
@@ -398,19 +399,19 @@ The Sliding Mode Controllers are defined as
 \begin{equation}
   \begin{aligned}
     \bs{M} &= \bs{M}_{q} + \bs{M}_{\omega} \\
-    \bs{M}_{q} &= \left[-2 L_{q} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[-2 K_{q} sat (\cos^{-1} (q_{0e})) \right] \bs{\hat{e}}_e \\
-    \bs{M}_{\omega} &= \bs{L}_{\omega} \bs{\omega}_e + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e \big) \\
-    \bs{1}_s \big(\bs{\omega}_e \big) &= sat \begin{bmatrix} \omega_{ex} / S_{\omega} &0 &0 \\ 0 & \omega_{ey} / S_{\omega} & 0 \\ 0 & 0 & \omega_{ez} / S_{\omega} \end{bmatrix}
+    \bs{M}_{q} &= \left[-2 L_{q} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[ K_{q} sat \left( \frac{-2\cos^{-1} (q_{0e})}{S_q} \right) \right] \bs{\hat{e}}_e \\
+    \bs{M}_{\omega} &= \bs{L}_{\omega} \bs{\omega}_e + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e / S_{\omega} \big) \\
+    \bs{1}_s \big(\bs{\omega}_e / S_{\omega} \big) &= \begin{bmatrix} sat (\omega_{ex} / S_{\omega}) &0 &0 \\ 0 & sat (\omega_{ey} / S_{\omega}) & 0 \\ 0 & 0 & sat (\omega_{ez} / S_{\omega}) \end{bmatrix}
   \end{aligned}
 \end{equation}
-
-For the Sliding Mode Controller (SMC), the parameters were tuned to
-
-        % 'Kq': 0.5941, 'Kx': 0.5893, 'Ky': 0.7085, 'Kz': 0.5641,
-        % 'Lq': 0.2205, 'Lx': 0.8003, 'Ly': 0.7435, 'Lz': 0.4857,
-        % 'Sq': 0.1133, 'Sw': 0.1170,
-
-and resulted in the associated response profiles of
+Figures \ref{fig:SMCAttitudeAndRateControl} and \ref{fig:SMCAttitudeAndRateControlMoments} show the response for the SMC to the attitude and body rate control test run.  Through a gradient descent search, the SMC parameters are tuned to
+\begin{equation}
+  \begin{aligned}
+    L_q &= 0.408, \bs{L}_{\omega} = \bs{I} \begin{bmatrix} 0.708 & 0.678 & 0.525 \end{bmatrix}^T \\
+    K_q &= 0.500, \bs{K}_{\omega} = \bs{I} \begin{bmatrix} 0.745 & 0.816 & 0.666 \end{bmatrix}^T \\
+    S_q &= 0.607, S_{\omega} = 0.315
+  \end{aligned}
+\end{equation}
 \begin{figure}[H]
   \centerline{\psfig{file=figures/smc_attitude_and_rate_control.eps,width=6in}}
   \caption{SMC Attitude and Rate Control}
@@ -421,15 +422,12 @@ and resulted in the associated response profiles of
   \caption{SMC Attitude and Rate Control Moments}
   \label{fig:SMCAttitudeAndRateControlMoments}
 \end{figure}
+As with the body rate comparative tests, the sliding mode controller shows a significant improvement in performance compared to the PID controller for the fixed attitude and body rate tests.  Section \ref{subsec:SpinStabilizedControl} follows up on these results by freeing up the motion about the $z$-axis for a spin-stabilized and nutation rejection test.
 
 \subsection{Spin-Stabilized Control}
 \label{subsec:SpinStabilizedControl}
 
-
-
-
-
-
+This section assesses the PID and SMC controller's capability to take a satellite from an initialized state defined in Equation \ref{eqn:attitude_and_body_rate_control_ic} to the spin-stabilized state of $\omega_z = 0.314$ rad/sec without nutation.
 
 
 
