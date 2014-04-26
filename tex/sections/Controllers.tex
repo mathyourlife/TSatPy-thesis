@@ -164,13 +164,13 @@ where $\bs{L}_{\omega}$ is the proportional gain and the $\bs{1}_s$ function can
 \begin{equation}
   \bs{1}_s \big(\bs{\omega}_e \big) = sat \begin{bmatrix} \omega_{ex} / S_{\omega} &0 &0 \\ 0 & \omega_{ey} / S_{\omega} & 0 \\ 0 & 0 & \omega_{ez} / S_{\omega} \end{bmatrix}
 \end{equation}
-The response to the test configuration is very similar to that of the proportional controller as shown if Figure \ref{fig:SMCRateControl}.
+The response to the test configuration shows significant improvements in performance over the P and PID rate controller as shown if Figure \ref{fig:SMCRateControl}.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/smc_rate_control.eps,width=6in}}
   \caption{SMC rate control}
   \label{fig:SMCRateControl}
 \end{figure}
-Breaking the overall moment values into the separate term's contributions (Figure \ref{fig:SMCRateControlMoments}) shows the similar profile between the proportional and saturation term contributions with the exception of the peaks missing from the saturation response.  This behavior indicates a tendency for the SMC to gently pull the estimated system state toward the desired state if there is a large discrepancy, but as the two converge the strength of the corrections increases causing the two states to stick tightly together.
+Breaking the overall moment values into the separate term's contributions (Figure \ref{fig:SMCRateControlMoments}) shows the similar profile between the proportional and saturation term contributions with the exception of the peaks missing from the saturation response.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/smc_rate_control_moments.eps,width=6in}}
   \caption{SMC rate control moments}
@@ -178,12 +178,12 @@ Breaking the overall moment values into the separate term's contributions (Figur
 \end{figure}
 The SMC response in Figures \ref{fig:SMCRateControl} and \ref{fig:SMCRateControlMoments}, is generated with the following gain values tuned through a gradient descent search that minimizes control effort.
 \begin{equation}
-    \bs{L}_{\omega} = \begin{bmatrix} 0.5264 & 0 & 0 \\ 0 & 0.3848 & 0 \\ 0 & 0 & 0.5976 \end{bmatrix},
-    \bs{K}_{\omega} = \begin{bmatrix} 0.4724 & 0 & 0 \\ 0 & 0.4542 & 0 \\ 0 & 0 & 0.4049 \end{bmatrix},
-    S_{\omega} = 0.0940
+    \bs{L}_{\omega} = \begin{bmatrix} 0.3983 & 0 & 0 \\ 0 & 0.3828 & 0 \\ 0 & 0 & 0.4160 \end{bmatrix},
+    \bs{K}_{\omega} = \begin{bmatrix} 0.4399 & 0 & 0 \\ 0 & 0.5097 & 0 \\ 0 & 0 & 0.3162 \end{bmatrix},
+    S_{\omega} = 0.1404
   \label{SMCRateControlGains}
 \end{equation}
-With the perfect measurements in this test, the saturation term does not add value over the proportional rate controller, but this test does validate the implementation of the controller which is used in the full observer-based tests in Chapter \ref{chap:ObserverBasedControls}.
+With the perfect measurements in this test, the saturation term adds a significant performance improvement over the P and PID implementations.  Additionally, with two fewer gain values tuning the SMC is slightly less involved than the PID body rate controller.
 
 \section{Quaternion to Moment Conversion}
 \label{sec:QuaternionToMomentConversion}
@@ -353,16 +353,16 @@ The center plot tracking quaternion angle, shows that while some of the nutation
 \label{sec:AttitudeandBodyRateControl}
 
 Sections \ref{sec:RateControl} and \ref{sec:AttitudeAndNutationControl} have established methods to address the spin rate and nutation control goals.  In this section the two are used together.  In Section \ref{subsec:FixedAttitudeControl}, the attitude and body rate controllers are combined to take a satellite from an initialized uncontrolled spin and bring it to the standard orientation with fixed-body axes aligned with the global axes.  Section \ref{subsec:SpinStabilizedControl} follows up by releasing the restriction on motion about the $z$ axis and takes the satellite's initial uncontrolled spin to a nutation-free rotation about the $z$-axis.
-
 \begin{equation}
     \bs{M} = \bs{M}_{q} + \bs{M}_{\omega}
 \end{equation}
-
 For consistency, all tests in this section are initialized with the following state
 \begin{equation}
   \bs{x}_0 = \begin{bmatrix} -0.532 \bs{i} -0.417 \bs{j} -0.275 \bs{k} +0.684 \\ 0.315 \bs{i} +0.207 \bs{j} +0.113 \bs{k} \end{bmatrix}
 \end{equation}
 
+\subsection{Fixed Attitude Control}
+\label{subsec:FixedAttitudeControl}
 The PID controllers are defined as
 \begin{equation}
   \begin{aligned}
@@ -373,14 +373,7 @@ The PID controllers are defined as
 \end{equation}
 where $\bs{\hat{e}}_e, \bs{\hat{e}}_{ei}, \bs{\hat{e}}_{ed}$ are the Euler axes for the quaternion error, quaternion error integral, and quaternion error derivative respectively with the integral $\bs{q}_{ei}$ and derivative $\bs{q}_{ed}$ quaternions from Equations \ref{eqn:IEstimator} and \ref{eqn:DEstimator}.
 
-The Sliding Mode Controllers are defined as
-
-
-
-\subsection{Fixed Attitude Control}
-\label{subsec:FixedAttitudeControl}
-
-The results from the PID Body Rate and Attitude controller are shown in Figures \ref{fig:PIDAttitudeAndRateControl} and \ref{fig:PIDAttitudeAndRateControlMoments}.  The parameters used for this test were
+The results from the PID body rate and attitude controller are shown in Figures \ref{fig:PIDAttitudeAndRateControl} and \ref{fig:PIDAttitudeAndRateControlMoments} when tested with the following parameters
 \begin{equation}
   \begin{aligned}
     K_{qp} &= 0.6022,K_{qi} = 0.04656,K_{qd} = 0.8554 \\
@@ -401,15 +394,22 @@ Figure \ref{fig:PIDAttitudeAndRateControl} shows a significant improvement to th
   \label{fig:PIDAttitudeAndRateControlMoments}
 \end{figure}
 
-For the Sliding Mode Controller (SMC), the parameters were tuned to
+The Sliding Mode Controllers are defined as
 \begin{equation}
   \begin{aligned}
-    K_{qp} &= 0.6022,K_{qi} = 0.04656,K_{qd} = 0.8554 \\
-    K_{\omega p} &= \bs{I} \begin{bmatrix} 0.70326 & 0.7203 & 0.61757 \end{bmatrix}^T \\
-    K_{\omega i} &= \bs{I} \begin{bmatrix} 0.04207 & 0.06999 & 0.018591 \end{bmatrix}^T \\
-    K_{\omega d} &= \bs{I} \begin{bmatrix} 0.4096 & 0.6032 & 0.6123 \end{bmatrix}^T
+    \bs{M} &= \bs{M}_{q} + \bs{M}_{\omega} \\
+    \bs{M}_{q} &= \left[-2 L_{q} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[-2 K_{q} sat (\cos^{-1} (q_{0e})) \right] \bs{\hat{e}}_e \\
+    \bs{M}_{\omega} &= \bs{L}_{\omega} \bs{\omega}_e + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e \big) \\
+    \bs{1}_s \big(\bs{\omega}_e \big) &= sat \begin{bmatrix} \omega_{ex} / S_{\omega} &0 &0 \\ 0 & \omega_{ey} / S_{\omega} & 0 \\ 0 & 0 & \omega_{ez} / S_{\omega} \end{bmatrix}
   \end{aligned}
 \end{equation}
+
+For the Sliding Mode Controller (SMC), the parameters were tuned to
+
+        % 'Kq': 0.5941, 'Kx': 0.5893, 'Ky': 0.7085, 'Kz': 0.5641,
+        % 'Lq': 0.2205, 'Lx': 0.8003, 'Ly': 0.7435, 'Lz': 0.4857,
+        % 'Sq': 0.1133, 'Sw': 0.1170,
+
 and resulted in the associated response profiles of
 \begin{figure}[H]
   \centerline{\psfig{file=figures/smc_attitude_and_rate_control.eps,width=6in}}
