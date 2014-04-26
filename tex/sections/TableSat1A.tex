@@ -1,23 +1,19 @@
 
-\chapter{NASA MMS TABLESAT 1A}
+\chapter{UNH NASA MMS TABLESAT 1A EXPERIMENTAL PLATFORM}
 \label{chap:UNHTableSat1A}
 
-The NASA MMS TableSat 1A is a limited 3-DOF experimental test bed analog for the NASA MMS satellite (Figure \ref{fig:TSatFullView}).  All electronics, booms, and actuators are attached to a circular PVC deck.  The aluminum hub at its center has a hollow center which allow it to rest on a center post giving the deck full rotation about its z-axis and limited rotations about its x and y-axes.  Five out of the six booms present on the MMS spacecraft are represented on TableSat 1A.  The four SDP booms extend radially from the deck at 90 degree intervals.  One of the MMS's ADP booms is modeled with a boom attached to the center post of the TableSat.
+The NASA MMS TableSat 1A is a limited 3-DOF experimental test platform for the NASA MMS satellite (Figure \ref{fig:TSatFullView}).  The experimental platform is designed and constructed with the aid of other UNH Advanced Control Lab researchers to mimic the actual MMS spacecraft.  All electronics, booms, and actuators are attached to a circular PVC bus.  The aluminum hub at its center has a hollow center which allow it to rest on a center post giving the main platform full rotation about its z-axis and limited rotation about its x and y-axes.  Five out of the six booms present on the MMS spacecraft are represented on TableSat 1A.  The four Spin-plane Double Probe (SDP) booms extend radially from the bus at 90 degree intervals.  One of the MMS's Axial Double Probe (ADP) booms is modeled with a boom attached to the center post of the TableSat.
 
-\begin{figure}[H]
-\centerline{\psfig{file=figures/tsat_full_view.eps,height=3in}}
-\caption{TableSat 1A Full View}
-\label{fig:TSatFullView}
+\begin{figure}[h]
+  \centerline{\psfig{file=figures/tsat_full_view.eps,height=4in}}
+  \caption{TableSat 1A Full View}
+  \label{fig:TSatFullView}
 \end{figure}
 
 \section{Booms}
 \label{sec:Booms}
 
-The ADP booms were modeled with a selection of flexible antenna.  Attaching weights to the tip and varying the stiffness of the selected antenna allowed for some tuning to the fundamental frequency of the booms.  Since the SDP booms extend perpendicularly to gravity, two choices were made for their modeling.  For free motion, the cylindrical antenna for the ADP boom were also used for the SDP booms.  The disadvantage to these booms especially when adding weights to reduce their natural frequency was that they would droop under the gravitational pull.  An alternative to the cylindrical antenna for the SPD booms were thin and flat strips of metal.  Attaching them to the TableSat's deck such that they were standing on edge removed the gravitational drooping since the booms, but still allowed for the boom to bend back and forth in the spin plane.  This also restricted the boom's freedom of movement, so a combination of results would be needed to get a better idea of how the MMS booms would react in orbit.
-
-\TODO{cite work on boom dynamics}
-% Generating an accurate model for the NASA MMS flexible body dynamics have proven difficult \cite{mushaweh} although characteristics of the boom dynamics and specifically how they influence attitude determination and control is a key factor in developing an effective Attitude Determination and Control (ADC) system.  For the purpose of this research, the system will be assumed to follow rigid body dynamics and variations in system characteristics and behavior off the predicted state propagation will be attributed to either normal noise and distrubances as well as from the additional dynamics of the system booms.  Since it's expected that the natural frequency and dynamics of the boom will be significantly different from the noise and disturbance characteristics,
-
+The ADP booms are modeled with a selection of flexible antenna.  The physical model provides a basis for understanding the boom dynamics under rotation where the analytical tool in previous research \cite{mushaweh} were unable to.  Attaching weights to the tip and varying the stiffness of the selected antenna allows for some tuning to their fundamental frequency.  Since the SDP booms extend perpendicularly to gravity, two choices are made for their modeling.  For free motion, the cylindrical antenna for the ADP boom are also used for the SDP booms.  The disadvantage to these booms especially when adding weights to reduce their natural frequency is that they droop under the pull of gravity.  An alternative to the cylindrical antenna for the SPD booms is thin and flat strips of metal.  Attaching them to the TableSat's bus such that they are standing on edge removes the gravitational drooping, but still allows for the boom to bend back and forth in the spin plane.  This also restricts the boom's freedom of movement, so a combination of results is be needed to predict the MMS boom's behavior while in orbit.
 
 \begin{figure}[H]
 \centerline{\psfig{file=figures/tsat_components.eps,height=4in}}
@@ -28,23 +24,23 @@ The ADP booms were modeled with a selection of flexible antenna.  Attaching weig
 \section{Flight Controller}
 \label{sec:FlightController}
 
-The onboard flight controller was an Athena PC from Diamond Systems powered by a Jupiter power supply and lithium-ion rechargeable battery.  The Athena processor and Jupiter power supply were mounted in a rapid prototyping housing with open sides for ventilation.  A custom printed circuit board designed by Jeff Kite \TODO{need footnote reference here?} was mounted on top of the rapid prototyping housing.  User Datagram Protocol (UDP) communication (Section \ref{subsec:MessageDefinitions}) to the base station is transmitted through a wireless access point.
+The onboard flight controller is an Athena PC from Diamond Systems powered by a Jupiter power supply and lithium-ion rechargeable battery.  The Athena processor and Jupiter power supply are mounted in a rapid prototyping housing with open sides for ventilation.  A custom printed circuit board designed by members of the UNH TableSat 1A team is mounted on top of the rapid prototyping housing.  User Datagram Protocol (UDP) based communication (Section \ref{subsec:MessageDefinitions}) to the base station is transmitted through a wireless access point.
 
-\TODO{forgot cs student's name} created a C program based off of Vess' ``open-loop'' flight controller \cite{vessthesis} .  This program is responsible for listening to a UDP socket on the TableSat and performing a limited set of actions based on the message packets received from the base station.  The most common messages triggered actions like altering the voltages applied to the actuators, and scanning the sensor ports and sending the voltages back to the base station through UDP.
+The UNH TableSat 1A team also created a C program based off of Vess' ``open-loop'' flight controller \cite{vessthesis} .  This program is responsible for listening on a UDP socket on the TableSat and performing a limited set of actions based on the message packets it receives from the base station.  The most common messages triggered are actions such as altering the voltage commands to the actuators, scanning the sensor ports, and sending back the voltage measurements to the base station through UDP.
 
 \section{Actuators}
 \label{sec:Actuators}
 
-In addition to the booms extending from the TableSat's deck, four single direction analog input computer fans were mounted to provide a source of thrust (Figure \ref{fig:TSatComponents}).  Two fans were mounted standing upright to provide radial torque.  One pointing clockwise and the other counter clockwise had their centers level with the pivot point inside the central hub and provided control of the rotation rate.  Two other fans were mounted facing down to provide limited opportunities for nutation control.
+In addition to the booms extending from the TableSat's bus, four single direction analog input computer fans are mounted to provide a source of thrust (Figure \ref{fig:TSatComponents}).  Two fans are mounted standing upright to provide radial torque and provide control to the rotation rate.  One pointing clockwise and the other counter clockwise have their centers level with the pivot point inside the central hub.  Two other fans are mounted facing down to provide limited opportunities for nutation control.  At a minimum, four single directional fans are needed to provide full state control for both positive and negative moments about the $x$ and $y$ axes.  The fans on TableSat 1A provide limited thrust compared to the mass of the TableSat and friction in the mount point.  Through testing, the fans are found to provide insufficient thrust to differentiate between naturally damped out nutation from controlled nutation.
 
-Section \ref{subsec:MessageDefinitions} defines message number 18 as the method for communicating with the TableSat to specify the voltage to apply to each of the individual fans.  Voltages are set through an analog port and are allowed to vary between \TODO{find limits}.  Voltages below \TODO{Lower limit} either are not high enough to overcome the static friction, or risk damaging the fan by rotating far below the normal speed.
+Individual fans are actuated via specific voltage commands.  Voltages are set through an analog port and are allowed to vary between \TODO{find limits}.  Voltages below \TODO{Lower limit} either are not high enough to overcome static friction or risk damaging the fan by rotating far below the normal speed.
 
 \TODO{CO2 thrusters}
 
 \section{Sensors}
 \label{sec:Sensors}
 
-Four classes of analog sensors were implemented in NASA MMS TableSat 1A's design. Gyroscope (Section \ref{subsec:Gyroscope}) and accelerometer (Section \ref{subsec:Accelerometer}) for velocity measurements.  Course sun sensor (Section \ref{subsec:CourseSunSensor}), and magnetometer (Section \ref{subsec:TripleAxisMagnetometer}) for position measurements.  These sensors and the four actuators filled all available analog ports on the onboard Athena flight computer.  As is described below, the gyroscopes and accelerometers were not used for the observer-based controllers in this thesis leaving just positional measurements from the course sun sensors and triple axis magnetometer.
+Four classes of analog sensors are implemented in NASA MMS TableSat 1A's design. Gyroscope (Section \ref{subsec:Gyroscope}) and accelerometer (Section \ref{subsec:Accelerometer}) for velocity measurements.  Coarse sun sensor (Section \ref{subsec:CoarseSunSensor}), and magnetometer (Section \ref{subsec:TripleAxisMagnetometer}) for position measurements.  These sensors and the four actuators filled all available analog ports on the onboard Athena flight computer.  As is described below, the gyroscopes and accelerometers are not used for the observer-based controllers in this thesis leaving just positional measurements from the coarse sun sensors and triple axis magnetometer.
 
 \begin{figure}[H]
 \centerline{\psfig{file=figures/sensor_voltage_charts.eps,height=4in}}
@@ -60,17 +56,17 @@ Gyroscopes remain one of the most accurate sensors for detecting changes to a st
 \subsection{Accelerometer}
 \label{subsec:Accelerometer}
 
-Two 2-axis accelerometers are mounted at the circumference or TableSat's deck.  The accelerometers are oriented such that one signal detects vertical acceleration with a 2g resolution and the other a radial signal with a 0.5g resolution.  The rotational accelerometers ended up picking up a small signal which is either due to oscillations in angular velocity or a nutation subjecting the radial accelerometer to gravitational effects.  The vertical components of the accelerometers had such low signal to noise ratios that heavy filtering would be required to even attempt to detect the out of plane rotations.  Any significant nutation allowed by the limited 3-DOF design would damp out quickly enough to be eliminated before the filtering could identify the signal.  Given these severe limitations in the sensor's measurements, for the purpose of this thesis the accelerometer measurements are ignored.
+Two 2-axis accelerometers are mounted at the circumference or TableSat's bus.  The accelerometers are oriented such that one signal detects vertical acceleration with a 2g resolution and the other a radial signal with a 0.5g resolution.  The rotational accelerometers ended up picking up a small signal which is either due to oscillations in angular velocity or a nutation subjecting the radial accelerometer to gravitational effects.  The vertical components of the accelerometers had such low signal to noise ratios that heavy filtering would be required to even attempt to detect the out of plane rotations.  Any significant nutation allowed by the limited 3-DOF design would damp out quickly enough to be eliminated before the filtering could identify the signal.  Given these severe limitations in the sensor's measurements, for the purpose of this thesis the accelerometer measurements are ignored.
 
-\subsection{Course Sun Sensor}
-\label{subsec:CourseSunSensor}
+\subsection{Coarse Sun Sensor}
+\label{subsec:CoarseSunSensor}
 
-The course sun sensor (CSS) for UNH TableSat 1A was constructed from a hexagonal piece of PVC pipe with a photodiode mounted in each face (Figure \ref{fig:CSS}).  Photodiodes are light detectors that convert captured light to electricity.  Given the inability to use the gyroscope and the accelerometer's high level of noise, the course sun sensor proved to be the most reliable sensor, but was limited to measuring a single value from the state matrix corresponding to rotations about the z-axis.  Each photo diode detected light level in its field of view and would generate a voltage generally proportional to that value.  The photodiodes are mounted above the center hub and faced out around the spin plane.  By placing a single light source in a dark room, the course sun sensor's voltages could be used to calculate the angular displacement about the body's z-axis.
+The coarse sun sensor (CSS) for UNH TableSat 1A was constructed from a hexagonal piece of PVC pipe with a photodiode mounted in each face (Figure \ref{fig:CSS}).  Photodiodes are light detectors that convert captured light to electricity.  Given the inability to use the gyroscope and the accelerometer's high level of noise, the coarse sun sensor proved to be the most reliable sensor, but was limited to measuring a single value from the state matrix corresponding to rotations about the z-axis.  Each photo diode detected light level in its field of view and would generate a voltage generally proportional to that value.  The photodiodes are mounted above the center hub and faced out around the spin plane.  By placing a single light source in a dark room, the coarse sun sensor's voltages could be used to calculate the angular displacement about the body's z-axis.
 
 
 \begin{figure}[H]
 \centerline{\psfig{file=figures/css.eps,height=2in}}
-\caption{Course Sun Sensor Configuration}
+\caption{Coarse Sun Sensor Configuration}
 \label{fig:CSS}
 \end{figure}
 
@@ -95,7 +91,7 @@ Calculating the angular displacement about the body's z-axis is done using a met
 \subsection{Triple Axis Magnetometer}
 \label{subsec:TripleAxisMagnetometer}
 
-Along with the course sun sensor, the triple-axis magnetometer (TAM) is used to measure position.  The primary advantage to the TAM over the course sun sensor it that it measures the full position state rather than just position about the z-axis.  As seen in Figure \ref{fig:SensorVoltageReadings}, three voltages are reported to designate the TableSat's attitude.  Each voltage corresponds to the strength of the magnetic field in each orthogonal direction.  To determine a method of converting raw TAM voltages to a TableSat, the clockwise actuator was set to provide a constant thrust.  With the fraction of the pivot point, the system slowly stabilized to a relatively constant spin rate.  Once stabilized, TAM voltage readings were recorded at a rate of 50 Hz and written to a log.  The mean values were subtracted from each of the three axes and plotted (Figure \ref{fig:TAMRaw}).
+Along with the coarse sun sensor, the triple-axis magnetometer (TAM) is used to measure position.  The primary advantage to the TAM over the coarse sun sensor it that it measures the full position state rather than just position about the z-axis.  As seen in Figure \ref{fig:SensorVoltageReadings}, three voltages are reported to designate the TableSat's attitude.  Each voltage corresponds to the strength of the magnetic field in each orthogonal direction.  To determine a method of converting raw TAM voltages to a TableSat, the clockwise actuator was set to provide a constant thrust.  With the fraction of the pivot point, the system slowly stabilized to a relatively constant spin rate.  Once stabilized, TAM voltage readings are recorded at a rate of 50 Hz and written to a log.  The mean values are subtracted from each of the three axes and plotted (Figure \ref{fig:TAMRaw}).
 
 \begin{figure}[H]
 \centerline{\psfig{file=figures/tam_raw.eps,height=4in}}
@@ -126,7 +122,7 @@ Besides the slightly less dense center, the raw TAM measurements amount to a blo
   \label{fig:TAMSignal}
 \end{figure}
 
-Figure \ref{fig:TAMFittedPlane} shows the result of fitting a plane to the moving average smoothed TAM voltages.  The error in the fit between the smoothed TAM data points and the planar fit were too large to have much confidence in using this measure for nutation detection.
+Figure \ref{fig:TAMFittedPlane} shows the result of fitting a plane to the moving average smoothed TAM voltages.  The error in the fit between the smoothed TAM data points and the planar fit are too large to have much confidence in using this measure for nutation detection.
 
 Following this analysis, the magnetic field surrounding the experimental setup was tested.  Moving a compass through the test space showed large swings in magnetic field lines despite the setup being placed on a wooden table in the middle of the lab.  Subsequent sweeps of the lab located a space with a relatively uniform magnetic field.  A uniform thrust was applied to the clockwise actuator and voltages logged as before.  Performing the moving average smoothing provided verification of the expected behavior of the magnetometer (Fig \ref{fig:TAMUniformField})
 
@@ -136,9 +132,9 @@ Following this analysis, the magnetic field surrounding the experimental setup w
   \label{fig:TAMUniformField}
 \end{figure}
 
-Since the gyroscope and accelerometers were determined to be useless for the observer based controller, and the course sun sensors only able to detect motion about the z-axis, the triple-axis magnetometer remained the only sensor onboard that had the capability of detecting the nutation required for the MMS controller.
+Since the gyroscope and accelerometers are determined to be useless for the observer based controller, and the coarse sun sensors only able to detect motion about the z-axis, the triple-axis magnetometer remained the only sensor onboard that had the capability of detecting the nutation required for the MMS controller.
 
-The baseline path established for TableSat in the absence of nutation (Figure \ref{fig:TAMUniformField}) should be able to be compared to readings during a live run of the system and any offsets used to quantify nutation.  The same process of rotating the TableSat under a constant thrust was repeated four more times.  Each time a 200g brass weight was placed on the TableSat's deck at each principle axis $+x, +y, -x, -y$ causing the TableSat to pivot about 14 degrees out of the spin plane which was about the extent its range for nutation.  The TAM voltages for each run are grouped by color and shown in Figure \ref{fig:TAMNutationVoltages}.  Although the paths intersect and measurements are not 1:1 to the TableSat's orientation, there is at least a separation in paths.  Further study found that while the TAM voltages are duplicated between nutation paths, points that occupy the same space in the TAM measurement have different yaw measurements as measured by the course sun sensor.
+The baseline path established for TableSat in the absence of nutation (Figure \ref{fig:TAMUniformField}) should be able to be compared to readings during a live run of the system and any offsets used to quantify nutation.  The same process of rotating the TableSat under a constant thrust was repeated four more times.  Each time a 200g brass weight was placed on the TableSat's bus at each principle axis $+x, +y, -x, -y$ causing the TableSat to pivot about 14 degrees out of the spin plane which was about the extent its range for nutation.  The TAM voltages for each run are grouped by color and shown in Figure \ref{fig:TAMNutationVoltages}.  Although the paths intersect and measurements are not 1:1 to the TableSat's orientation, there is at least a separation in paths.  Further study found that while the TAM voltages are duplicated between nutation paths, points that occupy the same space in the TAM measurement have different yaw measurements as measured by the coarse sun sensor.
 
 \begin{figure}[H]
   \centerline{\psfig{file=figures/tam_distinct_tilts_with_good_field.eps,height=4in}}
@@ -149,9 +145,9 @@ The baseline path established for TableSat in the absence of nutation (Figure \r
 \section{TableSat State Measurement}
 \label{subsec:StateMeasurement}
 
-As covered in the sections above, the only sensors available for state measurement of TableSat 1A for the observer based controller were the course sun sensor and the triple axis magnetometer.  Both of which individually measure a portion of the system's attitude and leave the system's body rate unmeasured.
+As covered in the sections above, the only sensors available for state measurement of TableSat 1A for the observer based controller are the coarse sun sensor and the triple axis magnetometer.  Both of which individually measure a portion of the system's attitude and leave the system's body rate unmeasured.
 
-Combining the measurements of the course sun sensor and triple axis magnetometer provided high confidence in the yaw measurement and rough estimates about the roll and pitch nutation.  An algorithm was developed that started with the course sun sensor and through equation \ref{eqn:CSSResultantForce} produced a measurement of yaw.  The TAM calibration data was synthesized to create a reference table of TAM readings at each of the five paths (steady, and the four nutation shown in Figure \ref{fig:TAMNutationVoltages}).  This reference table along with the equation to determine yaw from the course sun sensor are combined through a method described in \ref{subsec:SampleAttitudeCalculation} to approximate the TableSat's attitude.
+Combining the measurements of the coarse sun sensor and triple axis magnetometer provided high confidence in the yaw measurement and rough estimates about the roll and pitch nutation.  An algorithm was developed that started with the coarse sun sensor and through equation \ref{eqn:CSSResultantForce} produced a measurement of yaw.  The TAM calibration data was synthesized to create a reference table of TAM readings at each of the five paths (steady, and the four nutation shown in Figure \ref{fig:TAMNutationVoltages}).  This reference table along with the equation to determine yaw from the coarse sun sensor are combined through a method described in \ref{subsec:SampleAttitudeCalculation} to approximate the TableSat's attitude.
 
 \begin{table}[H]
   \centering
@@ -180,13 +176,13 @@ Combining the measurements of the course sun sensor and triple axis magnetometer
 \subsection{Sample Attitude Calculation}
 \label{subsec:SampleAttitudeCalculation}
 
-This example will go through a sample calculation of the nutation based on a single set of course sun sensor and triple axis magnetometer voltage measurements.
+This example will go through a sample calculation of the nutation based on a single set of coarse sun sensor and triple axis magnetometer voltage measurements.
 
 \subsubsection{Scan Sensor Voltages}
 
 The base station submits message id 20 to TableSat which responds with a message 63 with a payload containing 15 floats (timestamp, 6 photodiodes, 4 accelerometrs, gyroscope, and 3 triple-axis magnetometer).
 
-\subsubsection{Calculate Yaw From Course Sun Sensor}
+\subsubsection{Calculate Yaw From Coarse Sun Sensor}
 
 Using sample CSS voltages from the photodiodes of 0.37247, 0.30899, 1.18370, 2.40020, 1.80500, and 0.44052.  The TSatPy python package whose development is detailed in Chapter \ref{chap:TSatPy} uses equation \ref{eqn:CSSResultantForce} to convert the sensor voltages into a meaningful state.
 
@@ -219,7 +215,7 @@ print "A %g radian (%d degree) rotation about <%g, %g, %g>" % (
 
 Figure \ref{fig:TAMNutationVoltages} shows that while the TAM readings vary enough to be noticeable for large nutation the signal contain a fair quantity of noise.  In order to use the triple-axis magnetometer to quantify nutation for the observer based controller, the data in Table \ref{tbl:TAMCalibration} needs to be summarized to five data points for a yaw angle of 191 degrees.  When running the estimator, TAM sensor values can be compared to the five reference nutation points of flat, +x down, +y down, -x down, and -y down.
 
-The method chosen for creating the five reference points starts with collecting about 2400 data points with corresponding TAM and course sun sensor voltages.  The voltages for each nutation setting were grouped into 1 degree increments.  Multiple rotations created some overlap in each degree measurements.  The final reference value for each degree was calculated through a weighted average of a specified smoothing window.
+The method chosen for creating the five reference points starts with collecting about 2400 data points with corresponding TAM and coarse sun sensor voltages.  The voltages for each nutation setting were grouped into 1 degree increments.  Multiple rotations created some overlap in each degree measurements.  The final reference value for each degree was calculated through a weighted average of a specified smoothing window.
 
 Figure \ref{fig:TAMNutationReference} shows the result of the nutation reference values for 5, 15 and 25 degree smoothing windows.  At $\pm 15$ degrees, an adequate level of noise was filtered out without causing over smoothing.  At this level, each of the 191 degree reference values would be a weighted average of about 200 of the original calibration points.
 
@@ -287,7 +283,7 @@ Taking one of the points from yneg calibration data to complete the example, Tab
 
 In order to determine the best approximation for the measured nutation a number of combinations of approaches were attempted including using the proportion between two estimates, normalizing the reference vectors, projecting the point to the plane consisting of the two nearest vectors, and creating a conversion of the x and y vectors to an orthogonal space.  Some cases provided slightly lower classification error rates when run against the original calibration test set, but any improvements were not significant.  For simplicity and speed, the measurement estimate for nutation was reduced to a nearest neighbor classification \cite{nearestneighbor} where the closest reference point won out.
 
-Despite the improved speed and simplicity, this classification method has some large faults.  The biggest of which is the jitter that will be fed into the estimator since with no continuum of values, the nutation state will jump between the five calibration states of flat, and $14^o$ nutation.  Further work should be focused on refining this technique.
+Despite the improved speed and simplicity, this classification method has some large faults.  The biggest of which is the jitter that is fed into the estimator since with no continuum of values, the nutation state will jump between the five calibration states of flat, and $14^o$ nutation.  Further work should be focused on refining this technique.
 
 \section{Messages Between TableSat and the Base Station}
 

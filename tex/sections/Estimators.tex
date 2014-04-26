@@ -7,7 +7,7 @@ Section \ref{chap:StateError} explained the rationale for the state representati
 \section{State Prediction}
 \label{sec:StatePrediction}
 
-Section \ref{sec:BodyRatePIDEstimation} shows that to keep accurate tracking of a spin-stabilized satellite like TableSat or MMS, the system's dynamic equations are required to couple the body rate and quaternion values.  This is especially important for the NASA MMS TableSat 1A implementation since only the magnetometer and course sun sensors provide feedback about the system's state, and they only have a partial measurement of the attitude quaternion and no direct measurement of the body rates.
+Section \ref{sec:BodyRatePIDEstimation} shows that to keep accurate tracking of a spin-stabilized satellite like TableSat or MMS, the system's dynamic equations are required to couple the body rate and quaternion values.  This is especially important for the NASA MMS TableSat 1A implementation since only the magnetometer and coarse sun sensors provide feedback about the system's state, and they only have a partial measurement of the attitude quaternion and no direct measurement of the body rates.
 
 The approach taken in the TSatPy code to create state predictions off previous state estimates is to start with a discretized Euler's Moment Equations \ref{eqn:DiscreteEulerMomentEquations} to predict $\bs{\dot{\omega}}(t_{k+1})$.  The the current estimated body rate is adjusted based on the variable time step size.
 
@@ -20,7 +20,7 @@ The newly estimated body rates $\bs{\omega}(t_{k+1})$ are supplied to the discre
 \section{PID State Estimation}
 \label{sec:BodyRatePIDEstimation}
 
-This section will cover the use of PID adjustments to track state estimation.  Section \ref{chap:StateError} covered how states and especially the quaternion portion can be scaled.  The same method can be applied to the proportional part of the PID estimator.
+This section covers the use of PID adjustments to track state estimation.  Section \ref{chap:StateError} covered how states and especially the quaternion portion can be scaled.  The same method can be applied to the proportional part of the PID estimator.
 
 \subsection{Proportional State Estimation}
 \label{subsec:ProportionalEstimator}
@@ -93,7 +93,7 @@ This demonstrates that a proportional estimator initialized to a state of a $190
   \label{fig:PEstimatorwithstatictarget}
 \end{figure}
 
-The work covered so far in this chapter has all dealt with the a system in a static state.  In Figure \ref{fig:PEstimatorwithstatictarget}, a P-Estimator converges it's estimated state (blue) to the static measured state (red).  While the estimated state converges to the measured state after about 40 iterations, this type of conversion would be effective only for non-rotating systems.  The non-zero $\omega_z$ means that the quaternion attitude representation will be in constant motion.
+The work covered so far in this chapter has all dealt with the a system in a static state.  In Figure \ref{fig:PEstimatorwithstatictarget}, a P-Estimator converges it's estimated state (blue) to the static measured state (red).  While the estimated state converges to the measured state after about 40 iterations, this type of conversion would be effective only for non-rotating systems.  The non-zero $\omega_z$ means that the quaternion attitude representation is in constant motion.
 
 The $3.1$ rad/sec rotation about $0\bs{i} + 0.1\bs{j} + 1\bs{k}$ condition from the previous p-estimator is then allowed to propagate the quaternion state through 10 second of rotation with state estimate updates every 0.1 sec.  The resulting measured state (red) and estimated state (blue) is shown in Figure \ref{fig:PEstimatorwithrotatingtarget}.  The body rates track identically to those in Figure \ref{fig:PEstimatorwithstatictarget} where $t(k) = 2$ corresponds to $k = 20$.  Due to the proportional only compensation and no predictive methods, the initial transient behavior is followed by a behavior similar to a steady state error.
 
@@ -103,7 +103,7 @@ The $3.1$ rad/sec rotation about $0\bs{i} + 0.1\bs{j} + 1\bs{k}$ condition from 
   \label{fig:PEstimatorwithrotatingtarget}
 \end{figure}
 
-Increasing the frequency of updates to the p-estimator can decrease the error between the measured and estimated states, but there will always be an error similar to a steady state error in the quaternion representation.  For better results the estimator needs to take into consideration changes in the state through the PID's integration and derivative terms.
+Increasing the frequency of updates to the p-estimator can decrease the error between the measured and estimated states, but there is always be an error similar to a steady state error in the quaternion representation.  For better results the estimator needs to take into consideration changes in the state through the PID's integration and derivative terms.
 
 \subsection{Integral State Estimation}
 \label{subsec:IntegralEstimator}
