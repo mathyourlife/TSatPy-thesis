@@ -7,15 +7,17 @@ from TSatPy import StateOperator as SO
 from TSatPy.Clock import Metronome
 from GradientDescent import GradientDescent
 
-print("SMC - Fixed attitude control")
+print("SMC - Spin-stabilized control with nutation rejection")
 
-run_time = 60
-speed = 30
+run_time = 200
+speed = 20
 c = Metronome()
 c.set_speed(speed)
 dt = 0.25
 
-x_d = State.State()
+x_d = State.State(
+    State.Identity(),
+    State.BodyRate([0,0,0.314]))
 
 x_ic = State.State(
     State.Quaternion([-0.531597, -0.417257, -0.274828], 0.683937),
@@ -63,6 +65,10 @@ def test(Lq, Lx, Ly, Lz, Kq, Kx, Ky, Kz, Sq, Sw):
         plant_est.propagate(M)
 
         x_plant = plant_est.x
+        # Replace the plant's quaternion with just the nutation component
+        q_r, q_n = x_plant.q.decompose()
+        x_plant.q = q_n
+
         M = smc.update(x_plant)
 
         ts.append(c.tick() - start_time)
@@ -141,21 +147,21 @@ def calc_err(ts, Ms, Mls, Mss, ws, theta):
 
 def main():
     domains = [
-        ['Lq', 0, 1],
-        ['Lx', 0, 1],
-        ['Ly', 0, 1],
-        ['Lz', 0, 1],
-        ['Kq', 0, 1],
-        ['Kx', 0, 1],
-        ['Ky', 0, 1],
-        ['Kz', 0, 1],
-        ['Sq', 0, 1],
-        ['Sw', 0, 1],
+        ['Lq', 0, 0.8],
+        ['Lx', 0, 0.8],
+        ['Ly', 0, 0.8],
+        ['Lz', 0, 0.8],
+        ['Kq', 0, 0.00001],
+        ['Kx', 0, 0.00001],
+        ['Ky', 0, 0.00001],
+        ['Kz', 0, 0.00001],
+        ['Sq', 0, 0.00001],
+        ['Sw', 0, 0.00001],
     ]
 
     kwargs = {
         # Number of iterations to run
-        'N': 200,
+        'N': 50,
 
         # Definition of parameter search domain
         'domains': domains,
@@ -174,12 +180,17 @@ def main():
 
 if __name__ == '__main__':
 
-    kwargs = None
     kwargs = {
-       'Kq': 0.500, 'Kx': 0.745, 'Ky': 0.816, 'Kz': 0.666,
-        'Lq': 0.408, 'Lx': 0.708, 'Ly': 0.678, 'Lz': 0.525,
-        'Sq': 0.607, 'Sw': 0.315,
+        'Lq': 0.01, 'Lx': 0.398, 'Ly': 0.383, 'Lz': 0.416,
+        'Kq': 0.01, 'Kx': 0.440, 'Ky': 0.510, 'Kz': 0.316,
+        'Sq': 0.01, 'Sw': 0.140,
     }
+    kwargs = {'Sq': 0.062663872574474727, 'Sw': 0.3329618123659126, 'Kq': 0.072216474905679728, 'Lq': 0.087998748777940214, 'Kz': 0.33319954123327683, 'Ky': 0.28674045970892637, 'Kx': 0.36872390079128597, 'Lz': 0.32698330272848397, 'Lx': 0.34695363650490668, 'Ly': 0.34132425160986929}
+    kwargs = {'Sq': 0.027148050432234495, 'Sw': 0.13336984489717346, 'Kq': 0.021998524898371081, 'Lq': 0.025949569053072753, 'Kz': 0.38288986450255147, 'Ky': 0.38541056156243608, 'Kx': 0.41703185588006242, 'Lz': 0.3361865680671049, 'Lx': 0.3483079580278492, 'Ly': 0.33748434993203241}
+    kwargs = {'Sq': 0.018020305743649066, 'Sw': 0.17880655413259694, 'Kq': 0.044634548311351829, 'Lq': 0.042125695797577502, 'Kz': 0.39902739662878534, 'Ky': 0.40015188100200871, 'Kx': 0.34356772502518118, 'Lz': 0.35649924354251206, 'Lx': 0.34041887463581805, 'Ly': 0.34753752428861473}
+    kwargs = {'Sq': 0.04909989044977249, 'Sw': 0.3147549859665264, 'Kq': 0.077017868746220575, 'Lq': 0.07982860235511112, 'Kz': 0.3978584885214646, 'Ky': 0.27575565137778069, 'Kx': 0.42652211463627182, 'Lz': 0.34370131156238154, 'Lx': 0.34902635227802264, 'Ly': 0.31670548786536457}
+    kwargs = None
+
 
     if kwargs is not None:
         kwargs['plot'] = True
