@@ -7,42 +7,42 @@ from TSatPy import StateOperator as SO
 from TSatPy.Clock import Metronome
 from GradientDescent import GradientDescent
 
-print("Test SMC Controller - Rate Control")
+print("SMC - Spin-stabilized control with nutation rejection")
 
-run_time = 60
+run_time = 200
 speed = 20
 c = Metronome()
 c.set_speed(speed)
-dt = 0.5
+dt = 0.25
 
 x_d = State.State(
     State.Identity(),
     State.BodyRate([0,0,0.314]))
 
+x_ic = State.State(
+    State.Quaternion([-0.531597, -0.417257, -0.274828], 0.683937),
+    State.BodyRate([0.315424, 0.207168, 0.113405]))
 
-def run_test(Lx, Ly, Lz, Kx, Ky, Kz, Sw, plot=False):
-    ts, Ms, Mls, Mss, ws = test(Lx, Ly, Lz, Kx, Ky, Kz, Sw)
+def run_test(Lq, Lx, Ly, Lz, Kq, Kx, Ky, Kz, Sq, Sw, plot=False):
+    ts, Ms, Mls, Mss, ws, theta = test(Lq, Lx, Ly, Lz, Kq, Kx, Ky, Kz, Sq, Sw)
 
     if plot:
-        graph_it(ts, Ms, Mls, Mss, ws)
+        graph_it(ts, Ms, Mls, Mss, ws, theta)
 
 
-def test(Lx, Ly, Lz, Kx, Ky, Kz, Sw):
-    x_est = State.State(
-        State.Quaternion(np.random.rand(3,1),radians=np.random.rand()),
-        State.BodyRate(np.random.rand(3,1)))
+def test(Lq, Lx, Ly, Lz, Kq, Kx, Ky, Kz, Sq, Sw):
 
     I = [[4, 0, 0], [0, 4, 0], [0, 0, 2]]
-    plant_est = State.Plant(I, x_est, c)
+    plant_est = State.Plant(I, x_ic, c)
 
     L = SO.StateToMoment(
-        None,
+        SO.QuaternionToMoment(Lq),
         SO.BodyRateToMoment([[Lx,0,0],[0,Ly,0],[0,0,Lz]]))
     K = SO.StateToMoment(
-        None,
+        SO.QuaternionToMoment(Kq),
         SO.BodyRateToMoment([[Kx,0,0],[0,Ky,0],[0,0,Kz]]))
     S = SO.StateSaturation(
-        None,
+        SO.QuaternionSaturation(Sq),
         SO.BodyRateSaturation(Sw))
 
     smc = Controller.SMC(c)
@@ -57,6 +57,7 @@ def test(Lx, Ly, Lz, Kx, Ky, Kz, Sw):
     Mls = []
     Mss = []
     ws = []
+    theta = []
     start_time = c.tick()
     end_time = c.tick() + run_time
     while c.tick() < end_time:
@@ -64,22 +65,28 @@ def test(Lx, Ly, Lz, Kx, Ky, Kz, Sw):
         plant_est.propagate(M)
 
         x_plant = plant_est.x
+        # Replace the plant's quaternion with just the nutation component
+        q_r, q_n = x_plant.q.decompose()
+        x_plant.q = q_n
+
         M = smc.update(x_plant)
 
         ts.append(c.tick() - start_time)
         Ms.append((M[0],M[1],M[2]))
         Mls.append((smc.M_l[0],smc.M_l[1],smc.M_l[2]))
         Mss.append((smc.M_s[0],smc.M_s[1],smc.M_s[2]))
+        e, r = x_plant.q.to_rotation()
+        theta.append(r)
         ws.append((x_plant.w[0],x_plant.w[1],x_plant.w[2]))
 
-    return ts, Ms, Mls, Mss, ws
+    return ts, Ms, Mls, Mss, ws, theta
 
 def grid_me(ax):
     ax.grid(color='0.75', linestyle='--', linewidth=1)
 
-def graph_it(ts, Ms, Mls, Mss, ws):
+def graph_it(ts, Ms, Mls, Mss, ws, theta):
     fig = plt.figure(dpi=80, facecolor='w', edgecolor='k')
-    ax = fig.add_subplot(2,1,1)
+    ax = fig.add_subplot(3,1,1)
     ax.plot(ts, [M[0] for M in Ms], c='b', label=r'$M_x$', lw=2)
     ax.plot(ts, [M[1] for M in Ms], c='r', label=r'$M_y$', lw=2)
     ax.plot(ts, [M[2] for M in Ms], c='g', label=r'$M_z$', lw=2)
@@ -87,7 +94,13 @@ def graph_it(ts, Ms, Mls, Mss, ws):
     grid_me(ax)
     plt.legend(prop={'size':10})
 
-    ax = fig.add_subplot(2,1,2)
+    ax = fig.add_subplot(3,1,2)
+    ax.plot(ts, theta, c='b', label=r'$\theta$', lw=2)
+    ax.set_ylabel(r'Quaternion Angle (rad)')
+    grid_me(ax)
+    plt.legend(prop={'size':10})
+
+    ax = fig.add_subplot(3,1,3)
     ax.plot(ts, [w[0] for w in ws], c='b', label=r'$\omega_x$', lw=2)
     ax.plot(ts, [w[1] for w in ws], c='r', label=r'$\omega_y$', lw=2)
     ax.plot(ts, [w[2] for w in ws], c='g', label=r'$\omega_z$', lw=2)
@@ -123,28 +136,32 @@ def graph_it(ts, Ms, Mls, Mss, ws):
     plt.show()
 
 
-def calc_err(ts, Ms, Mls, Mss, ws):
+def calc_err(ts, Ms, Mls, Mss, ws, theta):
     M = np.array(Ms)
-    w = np.array(ws)
+    theta = np.array(theta)
 
-    cost = np.abs(M).mean(axis=0).sum()
-    return cost
+    moment_cost = np.abs(M).mean(axis=0).sum()
+    theta_cost = np.abs(theta).mean(axis=0).sum()
+    return moment_cost + theta_cost
 
 
 def main():
     domains = [
-        ['Lx', 0,  0.9],
-        ['Ly', 0,  0.9],
-        ['Lz', 0,  0.9],
-        ['Kx', 0,  0.9],
-        ['Ky', 0,  0.9],
-        ['Kz', 0,  0.9],
-        ['Sw', 0,  0.2],
+        ['Lq', 0, 0.8],
+        ['Lx', 0, 0.8],
+        ['Ly', 0, 0.8],
+        ['Lz', 0, 0.8],
+        ['Kq', 0, 0.00001],
+        ['Kx', 0, 0.00001],
+        ['Ky', 0, 0.00001],
+        ['Kz', 0, 0.00001],
+        ['Sq', 0, 0.00001],
+        ['Sw', 0, 0.00001],
     ]
 
     kwargs = {
         # Number of iterations to run
-        'N': 100,
+        'N': 50,
 
         # Definition of parameter search domain
         'domains': domains,
@@ -160,14 +177,19 @@ def main():
     return 0
 
 
+
 if __name__ == '__main__':
 
-    kwargs = None
     kwargs = {
-        'Lx': 0.3983, 'Ly': 0.3828, 'Lz': 0.4160,
-        'Kx': 0.4399, 'Kz': 0.5097, 'Ky': 0.3162,
-        'Sw': 0.1404,
+        'Lq': 0.01, 'Lx': 0.398, 'Ly': 0.383, 'Lz': 0.416,
+        'Kq': 0.01, 'Kx': 0.440, 'Ky': 0.510, 'Kz': 0.316,
+        'Sq': 0.01, 'Sw': 0.140,
     }
+    kwargs = {'Sq': 0.062663872574474727, 'Sw': 0.3329618123659126, 'Kq': 0.072216474905679728, 'Lq': 0.087998748777940214, 'Kz': 0.33319954123327683, 'Ky': 0.28674045970892637, 'Kx': 0.36872390079128597, 'Lz': 0.32698330272848397, 'Lx': 0.34695363650490668, 'Ly': 0.34132425160986929}
+    kwargs = {'Sq': 0.027148050432234495, 'Sw': 0.13336984489717346, 'Kq': 0.021998524898371081, 'Lq': 0.025949569053072753, 'Kz': 0.38288986450255147, 'Ky': 0.38541056156243608, 'Kx': 0.41703185588006242, 'Lz': 0.3361865680671049, 'Lx': 0.3483079580278492, 'Ly': 0.33748434993203241}
+    kwargs = {'Sq': 0.018020305743649066, 'Sw': 0.17880655413259694, 'Kq': 0.044634548311351829, 'Lq': 0.042125695797577502, 'Kz': 0.39902739662878534, 'Ky': 0.40015188100200871, 'Kx': 0.34356772502518118, 'Lz': 0.35649924354251206, 'Lx': 0.34041887463581805, 'Ly': 0.34753752428861473}
+    kwargs = {'Sq': 0.04909989044977249, 'Sw': 0.3147549859665264, 'Kq': 0.077017868746220575, 'Lq': 0.07982860235511112, 'Kz': 0.3978584885214646, 'Ky': 0.27575565137778069, 'Kx': 0.42652211463627182, 'Lz': 0.34370131156238154, 'Lx': 0.34902635227802264, 'Ly': 0.31670548786536457}
+    kwargs = None
 
 
     if kwargs is not None:
@@ -175,20 +197,3 @@ if __name__ == '__main__':
         run_test(**kwargs)
     else:
         exit(main())
-
-
-# Lx:
-#   val: 0.47476  range: 0,0.9    std: 0.210038
-# Ly:
-#   val: 0.416598 range: 0,0.9    std: 0.196389
-# Lz:
-#   val: 0.474746 range: 0,0.9    std: 0.23053
-# Kx:
-#   val: 0.440692 range: 0,0.9    std: 0.222047
-# Ky:
-#   val: 0.395224 range: 0,0.9    std: 0.159278
-# Kz:
-#   val: 0.367202 range: 0,0.9    std: 0.106721
-# Sw:
-#   val: 0.0510164    range: 0,0.1    std: 0.0283298
-# {'Sw': 0.051016418708496498, 'Kz': 0.36720158466774794, 'Ky': 0.3952241489310177, 'Kx': 0.4406917587867023, 'Lz': 0.47474643665632293, 'Lx': 0.47475998370042327, 'Ly': 0.41659760436845467}

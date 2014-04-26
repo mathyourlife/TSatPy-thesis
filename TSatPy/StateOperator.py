@@ -246,13 +246,12 @@ class QuaternionSaturation(object):
         # compensate for r > 180
         if r > np.pi:
             r = r - 2 * np.pi
-            e = -e
 
-        # to saturate?
-        if np.abs(r) > self.rho:
-            return State.Quaternion(e, radians=-self.rho)
-        # or not
-        return q
+        limit = np.abs(r) / self.rho
+        if limit >= 1:
+            return State.Quaternion(e, radians=-np.sign(r))
+
+        return State.Quaternion(e, radians=-np.sign(r)*limit)
 
     def __str__(self):
         return '<%s <rho %s>>' % (self.__class__.__name__, str(self.rho))
@@ -270,7 +269,7 @@ class BodyRateSaturation(object):
         :param rho: threshold for saturation function
         :type  rho: numeric
         """
-        self.rho = np.ones((3, 1)) * float(rho)
+        self.rho = float(rho)
 
     def __mul__(self, w):
         """
@@ -280,12 +279,13 @@ class BodyRateSaturation(object):
         :param w: body rate to be saturated
         :type  w: BodyRate
         """
-        w_sat = np.multiply(np.minimum.reduce([np.abs(w.w), self.rho]),
-            np.sign(w.w))
+        sats = w.w / self.rho
+        w_sat = np.multiply(np.minimum.reduce([np.abs(sats),
+            np.ones((3,1))]), np.sign(sats))
         return State.BodyRate(w_sat)
 
     def __str__(self):
-        return '<%s <rho %s>>' % (self.__class__.__name__, str(self.rho[0, 0]))
+        return '<%s <rho %s>>' % (self.__class__.__name__, str(self.rho))
 
 
 class StateSaturation(object):
@@ -388,16 +388,17 @@ class QuaternionToMoment(object):
 class StateToMoment(object):
 
     def __init__(self, Kq=None, Kw=None):
+        self.M_q = State.Moment()
+        self.M_w = State.Moment()
         self.Kq = Kq
         self.Kw = Kw
 
     def __mul__(self, x):
-        M = State.Moment()
         if self.Kq is not None:
-            M += self.Kq * x.q
+            self.M_q = self.Kq * x.q
         if self.Kw is not None:
-            M += self.Kw * x.w
-        return M
+            self.M_w = self.Kw * x.w
+        return self.M_q + self.M_w
 
     def __neg__(self):
         if self.Kq:

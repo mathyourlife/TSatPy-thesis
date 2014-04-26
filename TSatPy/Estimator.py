@@ -330,7 +330,7 @@ class PID(EstimatorBase):
         # Ending the update, set the changes and return the
         # moments for supply to the actuators
         self.x_adj = x_adj
-        self.x_hat -= x_adj
+        self.x_hat = self.x_hat - x_adj
         if self.plant:
             self.plant.set_state(self.x_hat)
         self.last_update = t
@@ -448,7 +448,7 @@ class SMO(EstimatorBase):
         # with the new state estimate.
         # TODO: update the body rate?
         self.x_adj = x_adj
-        self.x_hat -= x_adj
+        self.x_hat = self.x_hat - x_adj
         if self.plant:
             self.plant.set_state(self.x_hat)
         self.last_update = t

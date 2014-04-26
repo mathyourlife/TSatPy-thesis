@@ -11,7 +11,7 @@ from GradientDescent import GradientDescent
 print('Sliding Mode Observer')
 
 run_time = 120
-speed = 15
+speed = 20
 dts = [0.8, 1.2]
 c = Metronome()
 c.set_speed(speed)
@@ -132,17 +132,17 @@ def calc_err(ts, q_tracking, w_tracking):
 
 def main():
     domains = [
-        ['Lq', 0.3,  0.42],
-        ['Lw', 0.3,  0.46],
-        ['Kq', 0.23, 0.37],
-        ['Kw', 0.43, 0.57],
-        ['Sq', 0.32, 0.54],
-        ['Sw', 0.0042, 0.006],
+        ['Lq', 0, 1],
+        ['Lw', 0, 1],
+        ['Kq', 0, 1],
+        ['Kw', 0, 1],
+        ['Sq', 0, 1],
+        ['Sw', 0, 1],
     ]
 
     kwargs = {
         # Number of iterations to run
-        'N': 40,
+        'N': 200,
 
         # Definition of parameter search domain
         'domains': domains,
@@ -159,19 +159,16 @@ def main():
 
 if __name__ == "__main__":
 
-    kwargs = {'S': {'q': 1.908376120345185, 'w': 6.5356517995605596}, 'K': {'q': 0.12520202719936652, 'w': 0.48433605036767613}, 'L': {'q': 0.41506774287666348, 'w': 0.35072151415483038}}
-    kwargs = {'Sq': 0.41907997065661806, 'Sw': 0.0051694684390066791, 'Lw': 0.37515549802999743, 'Kq': 0.30761968347413188, 'Kw': 0.49944203549841026, 'Lq': 0.36189863645623715}
-    # kwargs = {
-    #     'Lq': 0.9828790111278123, 'Lw': 0.48984986144901216,
-    #     'Kq': 0.3873248945634525, 'Kw': 0.7488258000760872,
-    #     'Sq': 0.8889470672534283, 'Sw': 0.00923290543465792}
-
+    kwargs = None
+    kwargs = {
+        'Lq': 0.282, 'Lw': 0.444,
+        'Kq': 0.307, 'Kw': 0.464,
+        'Sq': 0.886, 'Sw': 0.569,
+    }
 
     if kwargs is not None:
         kwargs['plot'] = True
         ts, q_tracking, w_tracking = run_test(**kwargs)
     else:
         exit(main())
-
-
 
