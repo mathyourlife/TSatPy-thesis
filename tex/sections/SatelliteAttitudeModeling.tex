@@ -2,17 +2,17 @@
 \chapter{SATELLITE ATTITUDE DYNAMICS AND KINEMATICS}
 \label{chap:SatelliteAttitudeDynamicsAndKinematics}
 
-This chapter will cover the analytical work behind in this thesis.  Starting with the choice of attitude and body rate representations in Section \ref{sec:StateRepresentation} and how the application was written to incorporate its use.  Next, a review of some of the estimation-based control methods used including variations on their use to target their use on spin-stabilized satellites such as NASA's MMS mission.  Then a summary of simulations run to validate the analytical model along with new tools used to visualize the system in ``run-time''.  Finally, testing of the analytical model against the physical system.
+This chapter covers the analytical modeling used in this research starting with the choice of attitude and body rate representations in Section \ref{sec:StateRepresentation}.  Next is a review of some of the estimation-based control methods used, including variations to target their use on spin-stabilized satellites such as NASA's MMS mission spacecraft.
 
-\section{State Representation}
+\section{Attitude Representation}
 \label{sec:StateRepresentation}
 
-To represent the general state of a spin-stabilized satellite, are often accomplished using one of two representations.  Either body rates with Euler angles or body rates with quaternions with Euler angles being slightly more common among control theory specialists and quaternions used more in the implementation of the control systems.  Euler angles with rigid body dynamics and quaternions were chosen for the state representation.  Quaternions provided unique advantages over Euler angles that are expanded on in Sections \ref{subsec:BodyRate} and \ref{subsec:QuaternionAttitude}.
+The representation of the attitude of a spin-stabilized satellite is often accomplished using one of two representations: (1) Euler angles or (2) quaternions.  Quaternions are chosen for the attitude representation, as they provide unique advantages over Euler angles (te be expanded upon in Sections \ref{subsec:BodyRate} and \ref{subsec:QuaternionAttitude}.
 
-\subsection{Body Rates}
+\subsection{Angular Body Rates}
 \label{subsec:BodyRate}
 
-NASA's MMS satellites as with all real systems are rarely linear.  When modeling the dynamics of a system with nonlinearities, a common first pass is to linearize the model and assume that the nonlinearities are either negligible or can be lumped in to system disturbances.  This approach was also taken here.  The two portions of the system's dynamics are loosely generalized into either the rigid body dynamics of the satellite's main or the flexible dynamics of the attached booms.  Kaplan \cite{kaplan} covers the creation of the rigid body Euler's moment equations.
+NASA's MMS satellites as with all real systems are rarely linear.  When modeling the dynamics of a system with nonlinearities, a common ``first pass'' is to linearize the model and assume that the nonlinearities are either negligible or can be lumped into a single system disturbances term.  This approach is also taken here.  The two portions of the system's dynamics are loosely generalized into either the rigid body dynamics of the satellite's main bus or the flexible dynamics of the attached flexible booms  Euler's Moment Equations are given as \cite{kaplan}:
 
 \begin{subequations}
   \begin{align}
@@ -23,18 +23,18 @@ NASA's MMS satellites as with all real systems are rarely linear.  When modeling
   \label{eqn:EulerMoment}
 \end{subequations}
 
-Here the equations of motion are described in terms of the body's frame of reference ($x$, $y$, $z$) which does not necessarily align with the body's principal axes.  NASA MMS TableSat 1A's construction can be simplified to an axisymmetric design.  To adjust TableSat's stability, the center screw can be raised or lowered bringing the center of mass and center of rotation closer or further apart.  As development of the observer-based controller improves the two centers can be brought closer together.  With these conditions, we can assume that the body's reference frame aligns with the body's principal axes, which simplifies Euler's equations further to.
+where M represents the applied moment about the given axis and h and $\omega$ represent the corresponding angular momentum and velocity respectively.  Here the equations of motion are described in terms of the body's frame of reference ($x$, $y$, $z$) which does not necessarily align with the body's principal axes.  NASA MMS TableSat 1A's construction can be simplified to an axisymmetric design.  To adjust TableSat's stability, the center screw can be raised or lowered bringing the center of mass and center of rotation closer or further apart.  As development of the observer-based controller improves the two centers can be brought closer together.  With these conditions, we can assume that the body's reference frame aligns with the body's principal axes, which simplifies Euler's equations further to.
 
 \begin{subequations}
   \begin{align}
-    M_1 & = I_1 \dot{\omega}_1 + \omega_2 \omega_3 (I_3 - I_2) \\
-    M_2 & = I_2 \dot{\omega}_2 + \omega_1 \omega_3 (I_1 - I_3) \\
-    M_3 & = I_3 \dot{\omega}_3 + \omega_1 \omega_2 (I_2 - I_1)
+    M_x & = I_x \dot{\omega}_x + \omega_y \omega_z (I_z - I_y) \\
+    M_y & = I_y \dot{\omega}_y + \omega_x \omega_z (I_x - I_z) \\
+    M_z & = I_z \dot{\omega}_z + \omega_x \omega_y (I_y - I_x)
   \end{align}
   \label{eqn:EulerMomentPrincipleAxes}
 \end{subequations}
 
-For implementation into the TableSat's base station observer based controller, the continuous time Euler's equations \ref{eqn:EulerMomentPrincipleAxes} get converted to discrete time with a variable time step and implemented in Appendix \ref{code:TSatPy/State.py} as
+For implementation into the TableSat's base station observer based controller, the continuous time Euler's Equations (\ref{eqn:EulerMomentPrincipleAxes}) are discretized with a variable time step and implemented (in Appendix \ref{code:TSatPy/State.py}) as
 
 \begin{subequations}
   \begin{align}
@@ -276,292 +276,3 @@ This quaternion class for TSatPy as will be covered in Chapter \ref{chap:TSatPy}
 % The advantage to this notation is that is much easier to run in a Numerical Simulation Software (NSS like Matlab or Octave) or other scripting language, but its layout is specific to our definition of the matrix where the scalar value follows the vector.  There is not clear consensus from the broader community on whether the vector or scalar should come first.  This can cause large issues when implementing a system using a externally provided library since both implementations expect a 4x4 matrix, and combining the logic from the two systems would require either rewriting of systems or spending extra cycles on the interface between the two systems converting the matrices from a scalar first to a scalar last layout and vice versa.
 
 % The object oriented nature of the code written for this thesis reduces or eliminates the confusion.  When an instance of a quaternion class is created, the vector and scalar values are set as separate parameters on the object regardless of order.  So when used in computation the $\Re^3$ and $\Re^1$ values can be referenced directly through the vector and scalar properties respectively.  Chapter \ref{ch:object_oriented} will cover the structure of the code developed for the thesis in greater detail.  The specific code that governs interactions between quaternions in the model is in section \ref{code:lib/@quaternion/quaternion.m}.
-
-
-\subsubsection{Rotating a Point with Quaternions}
-\label{subsubsec:RotatingaPointwithQuaternions}
-
-One of the main focal points of this thesis is to make sure the tools developed aide in outreach and demonstration.  To enable this goal, ``run-time'' analysis of the system is a key deliverable.  Waiting for a simulation to complete or a experimental run with TableSat before being able to access the information is not only an impedance to this end, but it also introduces complexity and higher ``run-time'' costs to collect and store the full history of the system for replay.  One advantage to having access to the system's parameters as the experiment proceeds is to be able to represent the inner workings of the algorithms for inspection.  In the case of an estimator, sensor voltages are converted to a measured state and the estimator attempts to guess the true state of the system.  A visualization of what the estimator thinks the TableSat is doing can run alongside the physical systems and the convergence between estimated and actual states can be readily observed.
-
-To facilitate this, visualization a model of the TableSat can be rotated with a rotation matrix based on the estimated state's quaternion.  The 3x3 rotation matrix is defined as a function of a rotational quaternion by
-
-\begin{equation}
-  \bs{R_q} = (q_0^2 - \bs{v}^T \bs{v}) \bs{I} + 2 \bs{v} \bs{v}^T - 2 q_0 (\bs{v} \times)
-  \label{eqn:RotationMatrix}
-\end{equation}
-
-For a $\pi/2$ radian rotation about $\bs{\hat{e}} = 0\bs{i}+0\bs{j}+1\bs{k}$, the rotational quaternion an defined in Equation \ref{eqn:RotationalQuaternionDefinition} becomes $q = 0\bs{i}+0\bs{j}-1/\sqrt{2}\bs{k}+1/\sqrt{2}$.  With Equation \ref{eqn:RotationMatrix}, the rotational matrix becomes
-
-\begin{equation}
-  \begin{aligned}
-    \bs{R_q} & = \left[ (1/\sqrt{2})^2 - (1/\sqrt{2})^2 \right] \bs{I} + 2 \begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 1/\sqrt{2} \end{bmatrix} - 2 \frac{1}{\sqrt{2}} \begin{bmatrix} 0 & 1/\sqrt{2} & 0 \\ -1/\sqrt{2} & 0 & 0 \\ 0 & 0 & 0 \\ \end{bmatrix} \\
-      & = \begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \\\end{bmatrix}
-  \end{aligned}
-\end{equation}
-
-For the visualization, a point $A (2, 4, -1)$ that in the standard orientation of body axes aligned with the global reference frame can be drawn at the current estimated location of
-
-\begin{equation}
-  A' = \bs{R_q} A = \begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \\\end{bmatrix} \begin{bmatrix} 2 \\ 4 \\ -1 \end{bmatrix} = \begin{bmatrix} -4 \\ 2 \\ -1 \end{bmatrix}
-\end{equation}
-
-\subsubsection{Quaternion-based Attitude Visualization}
-\label{subsubsec:QuaternionbasedAttitudeVisualization}
-
-% One of the largest challenges with running both simulations and live control models is having access to meaningful representations of how the system is performing.  NSS simulations are generally performed through either running of m-file scripts and analyzing logged data in a batch format after the run, or using a NSS to produce line plots of values tracked during the simulation run.
-
-
-Now that we have a method for calculating the new position of a point from an initial position, we can extend the process to a collection of points that create a wireframe for the TableSat model.  Once this base wireframe is defined, the estimated attitude of the system can be visualized.  The if the system's estimator determines that TableSat is at an attitude of $\bs{q} = -0.38\bs{i}-0.07\bs{j}+0.91\bs{k}+0.16$, that is equivalent to a 161 degree rotation about the axis $\bs{\hat{e}} = 0.3844\bs{i}+0.0708\bs{j}-0.9205\bs{k}$.  Figure \ref{fig:TSatWireframe} shows the TableSat wireframe in its default configuration with body axes align with the global reference frame.  The red dashed line shown is the axis of rotation.
-
-% Ideally, generating and updating a rendered model of the system at simulation time can improve the ability to attain the desired system behavior.
-
-\begin{figure}[H]
-  \centerline{\psfig{file=figures/q_rotation_start.eps,height=3in}}
-  \caption{TableSat Wireframe}
-  \label{fig:TSatWireframe}
-\end{figure}
-
-The collection of the points in the TableSat wireframe can be rotated as the single point was from above.  Once new locations are determined, the TableSat wireframe can be redrawn visualizing the estimated current orientation of the TableSat (Figure \ref{fig:TSatWireframeEstimatedAttitude}).  Chapter \ref{chap:ProgressionOfControlSystemSoftware} will cover the ``run-time'' visualizations in greater detail to show how as the estimator is running, updates to the estimated state, $\bs{\hat{x}}$, can be used to update the wireframe's orientation.
-
-\begin{figure}[H]
-  \centerline{\psfig{file=figures/q_rotation_end.eps,height=3in}}
-  \caption{TableSat Wireframe Estimated Attitude}
-  \label{fig:TSatWireframeEstimatedAttitude}
-\end{figure}
-
-
-\subsubsection{Incremental Quaternion Rotations}
-\label{subsubsec:IncrementalQuaternionRotations}
-
-The quaternion's definition based on Euler's theorem of a rotation about a single axis makes tracking the orientation of a spin-stabilized satellite an easier process.  NASA's MMS mission has a target spin rate of 3 rpm (~0.314 rad/sec).  A rotational quaternion representing the per second rotation about the z-axis is
-
-\begin{equation}
-  \begin{aligned}
-    \bs{q}_{rps} = & ( 0\bs{i} + 0\bs{j} + 1\bs{k} ) \sin \left( \frac{-0.314}{2} \right) + \cos \left( \frac{-0.314}{2} \right) \\
-    = & 0\bs{i} +0\bs{j} -0.156434\bs{k} + 0.987688
-  \end{aligned}
-\end{equation}
-
-In an open loop system, the best estimate of the systems state would be to apply the quaternion rotation each second to the previous steps state starting with an initially known orientation.  For example if we have the TableSat at a $+1/4$ turn about the z-axis, each second we can calculate the best guess at the current attitude using just a quaternion multiplication.
-
-\begin{equation}
-  \begin{aligned}
-    \bs{q}(t_{k+1}) = & \bs{q}_{rps} \otimes \bs{q}(t_{k}) \\
-    \text{where } \bs{q}(t_0) = & 0 \bs{i} +0 \bs{j} -0.707107 \bs{k} +0.707107
-  \end{aligned}
-  \label{eqn:3rpmQuaternionEquation}
-\end{equation}
-
-\subsubsection{Quaternion Decomposition}
-\label{subsubsec:QuaternionDecomposition}
-
-The attitude of TSat is represented by a single quaternion.  The change in attitude between two states can be modeled by the a rotation about a single axis.  Figure \ref{fig:PreDecomposedQuaternion} show the attitude of a system described by the quaternion $\bs{q} = [\alpha, \beta, \phi], 0.16953$ which is a rotation of 2.8 radians about the axis $[\alpha, \beta, \phi]^T$.  For control purposes, decomposing the single quaternion into one representing a rotation about the z-axis and a second rotation about an axis in the x-y plane as shown in Figure \ref{fig:PostDecomposedQuaternion}.
-
-\begin{figure}[H]
-  \begin{subfigure}[h!]{0.5\textwidth}
-    \includegraphics[width=\textwidth]{figures/quaternion_decompose_pre.eps}
-    \caption{Quaternion State}
-    \label{fig:PreDecomposedQuaternion}
-  \end{subfigure}
-  ~
-  \begin{subfigure}[h!]{0.5\textwidth}
-    \includegraphics[width=\textwidth]{figures/quaternion_decompose_post.eps}
-    \caption{Decomposed State}
-    \label{fig:PostDecomposedQuaternion}
-  \end{subfigure}
-  \caption{Decomposing a Quaternion into Rotation and Nutation}
-  \label{fig:QuaternionDecomposition}
-\end{figure}
-
-The quaternion that describes TSat's attitude $\bs{q}$ can be written as a sequence of two rotations.  A quaternion rotation about the z-axis $\bs{q_r}$ followed by the quaternion rotation about an axis in the x-y plane that creates a nutation $\bs{q_n}$.  Resultant rotations are performed through a left quaternion multiplication.
-\begin{equation}
-  \bs{q} = \bs{q_n} \otimes \bs{q_r} = \begin{bmatrix} \bs{v}_n \\ q_{0n} \end{bmatrix} \otimes \begin{bmatrix} \bs{v}_r \\ q_{0r} \end{bmatrix}
-\end{equation}
-\begin{equation}
-  \begin{bmatrix}\bs{v} \\ q_{0} \end{bmatrix} =
-  \begin{bmatrix} \bs{v}_n q_{0r} + \bs{v}_r q_{0n} + \bs{v}_n \times \bs{v}_r \\  q_{0n} q_{0r} - \bs{v}_n \cdot \bs{v}_r \end{bmatrix}
-  \label{eqn:rot_nut_product}
-\end{equation}
-Expanding the vector components out creates the equation.
-\begin{equation}
-  \begin{bmatrix}
-    q_{1} \\
-    q_{2} \\
-    q_{3} \\
-    q_{0}
-  \end{bmatrix}
-  =
-  \begin{bmatrix}
-    \begin{bmatrix}
-      q_{1n} \\
-      q_{2n} \\
-      q_{3n} \\
-    \end{bmatrix} q_{0r} + \begin{bmatrix}
-      q_{1r} \\
-      q_{2r} \\
-      q_{3r} \\
-    \end{bmatrix} q_{0n} + \begin{bmatrix}
-      q_{1n} \\
-      q_{2n} \\
-      q_{3n} \\
-    \end{bmatrix} \times \begin{bmatrix}
-      q_{1r} \\
-      q_{2r} \\
-      q_{3r} \\
-    \end{bmatrix}
-    \\
-    q_{0n} q_{0r} - \begin{bmatrix}
-      q_{1n} \\
-      q_{2n} \\
-      q_{3n} \\
-    \end{bmatrix} \cdot \begin{bmatrix}
-      q_{1r} \\
-      q_{2r} \\
-      q_{3r} \\
-    \end{bmatrix} \\
-  \end{bmatrix}
-\end{equation}
-and through simplification becomes
-\begin{equation}
-  \begin{bmatrix}
-    q_{1} \\
-    q_{2} \\
-    q_{3} \\
-    q_{0}
-  \end{bmatrix}
-  =
-  \begin{bmatrix}
-    q_{1n} q_{0r} + q_{1r} q_{0n} + q_{2n} q_{3r} - q_{3n} q_{2r} \\
-    q_{2n} q_{0r} + q_{2r} q_{0n} + q_{3n} q_{1r} - q_{1n} q_{3r} \\
-    q_{3n} q_{0r} + q_{3r} q_{0n} + q_{1n} q_{2r} - q_{2n} q_{1r} \\
-  q_{0n} q_{0r} - (q_{1n} q_{1r} + q_{2n} q_{2r} + q_{3n} q_{3r} ) \\
-  \end{bmatrix}
-  \label{eqn:rot_nut_product_simplified}
-\end{equation}
-Now that we have an expanded representation of the resultant quaternion, we can use the restriction from the desired spin-stabilized state for TableSat.  The rotational quaternion is allowed to move freely about the $z$-axis but should not have any displacement about the $x$ and $y$ axes.  From Equation \ref{eqn:RotationalQuaternionDefinition}, $q_{1r} = q_{2r} = 0$.
-\begin{equation}
-  \bs{q_{r}}
-  = q_{1r} \bs{i} + q_{2r} \bs{j} + q_{3r} \bs{k} + q_{0r}
-  = 0 \bs{i} + 0 \bs{j} + q_{3r} \bs{k} + q_{0r}
-  \label{eqn:rotation_quaternion_defined}
-\end{equation}
-The nutation quaternion has the opposite restrictions where rotation is allowed about the $x$ and $y$ axes but not about the $z$ axis.  From Equation \ref{eqn:RotationalQuaternionDefinition}, $q_{3n} = 0$.
-\begin{equation}
-  \bs{q_{n}}
-  = q_{1n} \bs{i} + q_{2n} \bs{j} + q_{3n} \bs{k} + q_{0n}
-  = q_{1n} \bs{i} + q_{2n} \bs{j} + 0 \bs{k} + q_{0n}
-  \label{eqn:nutation_quaternion_defined}
-\end{equation}
-Substituting equations \eqref{eqn:rotation_quaternion_defined} and \eqref{eqn:nutation_quaternion_defined} into \eqref{eqn:rot_nut_product_simplified} yields.
-\begin{equation}
-  \begin{bmatrix}
-    q_{1} \\
-    q_{2} \\
-    q_{3} \\
-    q_{0}
-  \end{bmatrix}
-  =
-  \begin{bmatrix}
-    q_{1n} q_{0r} + 0             + q_{2n} q_{3r} - 0 \\
-    q_{2n} q_{0r} + 0             + 0             - q_{1n} q_{3r} \\
-    0             + q_{3r} q_{0n} + 0             - 0 \\
-  q_{0n} q_{0r} - (q_{1n} 0 + q_{2n} 0 + 0 q_{3r} ) \\
-  \end{bmatrix}
-\end{equation}
-\begin{subequations}
-  \begin{align}
-    q_{1} &= q_{1n} q_{0r} + q_{2n} q_{3r} \label{eqn:rot_nut_1_1} \\
-    q_{2} &= q_{2n} q_{0r} - q_{1n} q_{3r} \label{eqn:rot_nut_1_2} \\
-    q_{3} &= q_{3r} q_{0n} \label{eqn:rot_nut_1_3} \\
-    q_{0} &= q_{0n} q_{0r} \label{eqn:rot_nut_1_0}
-  \end{align}
-\end{subequations}
-Solving \ref{eqn:rot_nut_1_3} and \ref{eqn:rot_nut_1_0} for $q_{3r}$ and $q_{0r}$ and substituting into \ref{eqn:rot_nut_1_1} and \ref{eqn:rot_nut_1_2}
-\begin{subequations}
-  \begin{align}
-    q_{0n} q_{1} &= q_{1n} q_{0} + q_{2n} q_{3} \label{eqn:rot_nut_2_1} \\
-    q_{0n} q_{2} &= q_{2n} q_{0} - q_{1n} q_{3} \label{eqn:rot_nut_2_2}
-  \end{align}
-\end{subequations}
-combining \ref{eqn:rot_nut_2_1} and \ref{eqn:rot_nut_2_2}
-\begin{equation}
-  0 = (q_{0}q_{2} + q_{1}q_{3}) q_{1n} + (q_{2}q_{3} - q_{0}q_{1}) q_{2n}
-\end{equation}
-\begin{subequations}
-  \begin{align}
-    q_{1n} &= Q \cdot q_{2n} \\
-    \text{where } Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
-  \end{align}
-  \label{eqn:nutation_parameter_ratio}
-\end{subequations}
-The additional restriction than rotational quaternions have a unit norm can be leveraged in finding solutions
-\begin{equation}
-  \left\| \bs{q} \right\| = \sqrt{\bs{v} \cdot \bs{v} + q_0^2} = \sqrt{q_1^2+q_2^2+q_3^2+q_0^2}
-  \label{eqn:quaternion_norm}
-\end{equation}
-Taking the norm of the rotational quaternion in Equation \ref{eqn:rotation_quaternion_defined} and substituting $q_{3r}$ and $q_{0r}$ from Equations \ref{eqn:rot_nut_1_3} and \ref{eqn:rot_nut_1_0} becomes
-\begin{equation}
-  (0)^2 + (0)^2 + \left( \frac{q_3}{q_{0n}} \right)^2 + \left( \frac{q_0}{q_{0n}} \right)^2 = 1
-\end{equation}
-solving for $q_{n0}$
-\begin{equation}
-  q_{n0} = \pm \sqrt{q_3^2 + q_0^2}
-  \label{eqn:nutation_scalar}
-\end{equation}
-substituting \ref{eqn:nutation_parameter_ratio} and \ref{eqn:nutation_scalar} into \ref{eqn:nutation_quaternion_defined}
-\begin{equation}
-  \bs{q_{n}}
-  = Q \cdot q_{2n} \bs{i} + q_{2n} \bs{j} + 0 \bs{k} \pm \sqrt{q_3^2 + q_0^2}
-\end{equation}
-and as this is a rotational quaternion, its norm should always equal one
-\begin{equation}
-  (Q \cdot q_{2n})^2 + (q_{2n})^2 + (q_3^2 + q_0^2) = 1
-\end{equation}
-which can be solved for the nutation quaternion's $q_{2n}$ term
-\begin{equation}
-  q_{2n} = \pm \sqrt{ \frac{1  - q_3^2 - q_0^2}{Q^2 + 1} }
-  \label{eqn:qn2_solution}
-\end{equation}
-
-We now have a mapping of the original state quaternion $\bs{q}$ to its decomposed rotation $\bs{q}_r$ and nutation $\bs{q}_n$ quaternions (Equation \ref{eqn:quaternion_decomposition_derivation}).  The ability to break the attitude parameters into these two quantities is particularly useful for spin-stabilized satellites as it decouples the rate and attitude controllers.  Normally the attitude controller would need to propagate the desired quaternion attitude with input from the body rates. In this approach, the controller can ignore continuously changing rotational component $\bs{q}_r$, and limit its focus on driving the nutation error $\bs{q}_n$ to zero (Figure \ref{fig:PostDecomposedQuaternion}).
-\begin{equation}
-  \begin{aligned}
-    \bs{q} &= \bs{q_n} \otimes \bs{q_r} \\
-    \text{where } \bs{q}_n &= \begin{bmatrix} q_{1n} = Q \cdot q_{2n} \\ q_{2n} = \sqrt{ \frac{1  - q_3^2 - q_0^2}{Q^2 + 1} } \\ 0 \\ q_{0n} = \sqrt{q_3^2 + q_0^2} \end{bmatrix} , \bs{q}_r = \begin{bmatrix} 0 \\ 0 \\ q_{3r} = \frac{q_3}{q_{0n}} \\ q_{0r} = \frac{q_0}{q_{0n}} \end{bmatrix} \\
-    Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
-  \end{aligned}
-  \label{eqn:quaternion_decomposition_derivation}
-\end{equation}
-
-
-\section{Satellite Dynamics}
-\label{sec:SatelliteDynamics}
-
-The goal in creating an accurate satellite dynamics model is it's ability to predict the state of the system given the last know state, the elapsed time since the last known state, and any inputs or disturbances to the system.  The initial scope of predicting the satellite's state is restricting it to a state propagation problem where only last state and elapsed time are considered.  Estimation techniques in Section \ref{chap:Estimators} will cover how a propagated state can be adjusted using the measured state.
-
-\subsection{System Clock}
-\label{subsec:SystemClock}
-
-As was mentioned at the end of section \ref{subsubsec:IncrementalQuaternionRotations}, perfectly timed updates are highly unlikely.  Small variations in the timestep size will cause predicted state errors.  A state update running every 1.0001 seconds instead of every second would accumulate over a six degree error after tracking TableSat's state for an hour.  Linearized model would also be affected because the expected timestep size is incorporated as part of the discretization processes.
-
-The preset fixed timestep is also not very fault tolerant.  When controlling the state of a stable, slow moving system the state tracking rate could be slowed down to conserve system resources.  In this circumstance a missed or series of missed updates due to faults can cause the predicted state to be several $\Delta t$ behind where it should be.  A solution built for variable steps can improve the robustness against these errors.
-
-The ability to slow down a simulation to closely watch the initial transient behavior followed speeding up the simulation to inspect long term stability hold benefits for both outreach and research purposes.  The TSatPy system was built with this idea in mind which addresses the previous two issues as the system by design needs to be able to smoothly transition between variations in step sizes in a single run.
-
-\begin{equation}
-  \begin{aligned}
-    t_k =& \sum\limits_{i=0}^{k-1} r_i (\tau_{i+1} - \tau_i)\\
-    \text{where } \tau =& \text{ real time} \\
-    t_k =& \text{ simulation time at step }k
-  \end{aligned}
-  \label{eqn:SystemTime}
-\end{equation}
-
-The system clock defined in Equation \ref{eqn:SystemTime} starts at zero and accumulates time depending on the set rate.
-
-\subsection{Body Rate and Quaternion Propagation}
-\label{subsec:BodyRateQuaternionPropagation}
-
-Predicting the body rates, $\omega_x, \omega_y, \omega_z$, for TableSat requires knowledge about the body dynamics, the last calculated body rate, time elapsed since last update, and any applied moments.  Equation \ref{eqn:DiscreteEulerMomentEquations} is used to propagate the body rate in a variable step.
-
-In Chapter \ref{chap:ObserverBasedControls} these quaternion and body rate propagation techniques will be incorporated into the observer based control system.

@@ -5,12 +5,10 @@
 
 \begin{nomenclature}
 \begin{tabular}{lp{0.75\linewidth}}
-  \multicolumn{2}{l}{\textbf{Clock}} \\
-  $t_k$ & The system clock's time for step $k$ of a subsystem.  Note: since update frequencies are allowed to vary between subsystems, the $k$ is limited in scope to it's subsystem.  i.e. $t_{k\_estimator} \ne t_{k\_controller}$.  In order to increase the legibility, the time step notations may be omitted from some equations if all parameters are from the same time step. \\
+  $t_k$ & System clock time for step $k$ of a subsystem\\
 \end{tabular}
 
 \begin{tabular}{lp{0.75\linewidth}}
-  \multicolumn{2}{l}{\textbf{State}} \\
   $\bs{x}$ & Measured state \\
   $\bs{\hat{x}}$ & Estimated state \\
   $\bs{\hat{x}}_e$ & Estimated state error (Estimated - Measured)\\
@@ -21,7 +19,6 @@
 \end{tabular}
 
 \begin{tabular}{lp{0.75\linewidth}}
-  \multicolumn{2}{l}{\textbf{Quaternions}} \\
   $\bs{q}$ & quaternion in the form $q_1\bs{i}+q_2\bs{j}+q_3\bs{k}+q_0$ \\
   $\bs{v}$ & the vector portion of a quaternion equivalent to $q_1\bs{i}+q_2\bs{j}+q_3\bs{k}$ \\
   $\bs{\hat{e}}$ & Euler's axis from $\bs{\hat{e}} = \frac{\bs{v}}{|\bs{v}|}$ \\
@@ -33,13 +30,11 @@
 \end{tabular}
 
 \begin{tabular}{lp{0.75\linewidth}}
-  \multicolumn{2}{l}{\textbf{Body-Fixed Angular Velocity (i.e. Body Rate)}} \\
   $\bs{\omega}$ & Body Rate \\
   $\bs{\omega}_d - \bs{\hat{\omega}}(t_{k+1})$ & Controller Body Rate error \\
 \end{tabular}
 
 \begin{tabular}{lp{0.75\linewidth}}
-  \multicolumn{2}{l}{\textbf{Protocols}} \\
   UDP & User Datagram Protocol: Session-less and unverified data transfer. \\
   TCP & Transmission Control Protocol: Session based data transfer where all transfers are confirmed on receipt. \\
 \end{tabular}

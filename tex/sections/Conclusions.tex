@@ -1,5 +1,7 @@
-\chapter{CONCLUSIONS}
+\chapter{CONCLUSIONS AND FUTURE WORK}
 \label{chap:Conclusions}
+
+\section{Conclusions}
 
 The two main goals for this thesis are to:
 
@@ -20,4 +22,4 @@ The second goal of designing an ADCS for TableSat 1A to maintain spin and correc
 
 For the experimental verification, the ADCS was successful at establishing a steady spin rate of 3 rpm on the TableSat using the two rotational fans for controllers.  The nutation control and related boom dynamics control goals are incomplete.  In this implementation of TableSat, the two single direction nutation fans are unable to produce the enough thrust fast enough to have any noticeable effect on damping any nutation or boom oscillation.  CO2 canisters were added experimentally to attempted to increase thrust, but force provided is too large and has a very limited capacity to make it a cost effective option
 
-For attitude measurements the coarse sun sensors provides a fairly reliable measure of yaw such that the rate of change allows for an acceptable gyroless rate control.  Through a series of calibration techniques the triple axis magnetometer was successfully utilized to establish a method of comparing the current TAM readings to a calibration set from the same yaw measure and estimating the degree of nutation.  While on a large scale with many passes and densely sampled magnetic fields an initial collection of seemingly indistinguishable data points were smoothed out to establish predictable paths (Figure \ref{fig:TAMSignal}).  That success however still did not allow for the adequate nutation detection as it took longer to filter out the noise from the TAM voltage measurements as it did for the TableSat's nutation to naturally die out due to friction in the mount point.
+For attitude measurements the coarse sun sensors provides a fairly reliable measure of yaw such that the rate of change allows for an acceptable gyroless rate control.  Through a series of calibration techniques the three-axis magnetometer was successfully utilized to establish a method of comparing the current TAM readings to a calibration set from the same yaw measure and estimating the degree of nutation.  While on a large scale with many passes and densely sampled magnetic fields an initial collection of seemingly indistinguishable data points were smoothed out to establish predictable paths (Figure \ref{fig:TAMSignal}).  That success however still did not allow for the adequate nutation detection as it took longer to filter out the noise from the TAM voltage measurements as it did for the TableSat's nutation to naturally die out due to friction in the mount point.
