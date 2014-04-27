@@ -9,7 +9,7 @@ from GradientDescent import GradientDescent
 
 print("SMC - Spin-stabilized control with nutation rejection")
 
-run_time = 200
+run_time = 60
 speed = 20
 c = Metronome()
 c.set_speed(speed)
@@ -87,6 +87,7 @@ def grid_me(ax):
 def graph_it(ts, Ms, Mls, Mss, ws, theta):
     fig = plt.figure(dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(3,1,1)
+    plt.title('Control Effort')
     ax.plot(ts, [M[0] for M in Ms], c='b', label=r'$M_x$', lw=2)
     ax.plot(ts, [M[1] for M in Ms], c='r', label=r'$M_y$', lw=2)
     ax.plot(ts, [M[2] for M in Ms], c='g', label=r'$M_z$', lw=2)
@@ -95,12 +96,14 @@ def graph_it(ts, Ms, Mls, Mss, ws, theta):
     plt.legend(prop={'size':10})
 
     ax = fig.add_subplot(3,1,2)
+    plt.title('Attitude Error')
     ax.plot(ts, theta, c='b', label=r'$\theta$', lw=2)
     ax.set_ylabel(r'Quaternion Angle (rad)')
     grid_me(ax)
     plt.legend(prop={'size':10})
 
     ax = fig.add_subplot(3,1,3)
+    plt.title('Body-fixed Angular Velocities')
     ax.plot(ts, [w[0] for w in ws], c='b', label=r'$\omega_x$', lw=2)
     ax.plot(ts, [w[1] for w in ws], c='r', label=r'$\omega_y$', lw=2)
     ax.plot(ts, [w[2] for w in ws], c='g', label=r'$\omega_z$', lw=2)
@@ -115,6 +118,7 @@ def graph_it(ts, Ms, Mls, Mss, ws, theta):
 
     fig = plt.figure(dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(2,1,1)
+    plt.title('Control Effort By SMC Term')
     ax.plot(ts, [M[0] for M in Mls], c='b', label=r'$M_x$', lw=2)
     ax.plot(ts, [M[1] for M in Mls], c='r', label=r'$M_y$', lw=2)
     ax.plot(ts, [M[2] for M in Mls], c='g', label=r'$M_z$', lw=2)
@@ -185,11 +189,7 @@ if __name__ == '__main__':
         'Kq': 0.01, 'Kx': 0.440, 'Ky': 0.510, 'Kz': 0.316,
         'Sq': 0.01, 'Sw': 0.140,
     }
-    kwargs = {'Sq': 0.062663872574474727, 'Sw': 0.3329618123659126, 'Kq': 0.072216474905679728, 'Lq': 0.087998748777940214, 'Kz': 0.33319954123327683, 'Ky': 0.28674045970892637, 'Kx': 0.36872390079128597, 'Lz': 0.32698330272848397, 'Lx': 0.34695363650490668, 'Ly': 0.34132425160986929}
-    kwargs = {'Sq': 0.027148050432234495, 'Sw': 0.13336984489717346, 'Kq': 0.021998524898371081, 'Lq': 0.025949569053072753, 'Kz': 0.38288986450255147, 'Ky': 0.38541056156243608, 'Kx': 0.41703185588006242, 'Lz': 0.3361865680671049, 'Lx': 0.3483079580278492, 'Ly': 0.33748434993203241}
-    kwargs = {'Sq': 0.018020305743649066, 'Sw': 0.17880655413259694, 'Kq': 0.044634548311351829, 'Lq': 0.042125695797577502, 'Kz': 0.39902739662878534, 'Ky': 0.40015188100200871, 'Kx': 0.34356772502518118, 'Lz': 0.35649924354251206, 'Lx': 0.34041887463581805, 'Ly': 0.34753752428861473}
-    kwargs = {'Sq': 0.04909989044977249, 'Sw': 0.3147549859665264, 'Kq': 0.077017868746220575, 'Lq': 0.07982860235511112, 'Kz': 0.3978584885214646, 'Ky': 0.27575565137778069, 'Kx': 0.42652211463627182, 'Lz': 0.34370131156238154, 'Lx': 0.34902635227802264, 'Ly': 0.31670548786536457}
-    kwargs = None
+    # kwargs = None
 
 
     if kwargs is not None:

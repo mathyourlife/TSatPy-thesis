@@ -403,6 +403,7 @@ The Sliding Mode Controllers are defined as
     \bs{M}_{\omega} &= \bs{L}_{\omega} \bs{\omega}_e + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e / S_{\omega} \big) \\
     \bs{1}_s \big(\bs{\omega}_e / S_{\omega} \big) &= \begin{bmatrix} sat (\omega_{ex} / S_{\omega}) &0 &0 \\ 0 & sat (\omega_{ey} / S_{\omega}) & 0 \\ 0 & 0 & sat (\omega_{ez} / S_{\omega}) \end{bmatrix}
   \end{aligned}
+  \label{eqn:sliding_mode_control}
 \end{equation}
 Figures \ref{fig:SMCAttitudeAndRateControl} and \ref{fig:SMCAttitudeAndRateControlMoments} show the response for the SMC to the attitude and body rate control test run.  Through a gradient descent search, the SMC parameters are tuned to
 \begin{equation}
@@ -427,7 +428,24 @@ As with the body rate comparative tests, the sliding mode controller shows a sig
 \subsection{Spin-Stabilized Control}
 \label{subsec:SpinStabilizedControl}
 
-This section verifies the ability for a controller to take the fixed attitude control problem from Section (\ref{subsec:FixedAttitudeControl}) and release the quaternion restriction on the rotational motion leaving the system to control five degrees of freedom $\omega_z = 0.314, \omega_x = \omega_y = 0$ and zero nutation about the $x$ and $y$ axes.
+This section verifies the ability for a controller to take the fixed attitude control problem from Section (\ref{subsec:FixedAttitudeControl}) and release the quaternion restriction on the rotational motion leaving the system to control five degrees of freedom $\omega_z = 0.314, \omega_x = \omega_y = 0$ and zero nutation about the $x$ and $y$ axes.  Since the Sliding Mode Controller has regularly out performed the PID controller, the spin-stabilized controller will run with control Equation (\ref{eqn:sliding_mode_control}) using the following parameters.
+\begin{equation}
+  \begin{aligned}
+    L_q &= 0.01, \bs{L}_{\omega} = \bs{I} \begin{bmatrix} 0.398 & 0.383 & 0.416 \end{bmatrix}^T \\
+    K_q &= 0.01, \bs{K}_{\omega} = \bs{I} \begin{bmatrix} 0.440 & 0.510 & 0.316 \end{bmatrix}^T \\
+    S_q &= 0.01, S_{\omega} = 0.140
+  \end{aligned}
+\end{equation}
 
+The initial convergence of to the spin stabilized state is rapid as in previous test configurations for the SMC.  In this case, the system remains with a steady state error.  Some manual gain tuning does not show any significant improvements and appears from the error measurements to be lagging behind the desired state and rocking back and forth about the desired spin axis.  Additional testing for gain tuning or improved visualizations such as the tPlot discussed in Section \ref{sec:ObjectOrientedNSSControlSystem} would help diagnose the source of the error.
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/smc_nutation_and_rate_control.eps,width=6in}}
+  \caption{SMC Nutation and Rate Control}
+  \label{fig:SMCNutationAndRateControl}
+\end{figure}
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/smc_nutation_and_rate_control_moments.eps,width=6in}}
+  \caption{SMC Nutation and Rate Control Moments}
+  \label{fig:SMCNutationAndRateControlMoments}
+\end{figure}
 
-\TODO{Trying to get good gain values so the graphs don't look hideous.. this'll be a tada see it's possible, but could be pretty with better modeling gain selection, etc}
