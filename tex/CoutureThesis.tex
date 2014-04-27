@@ -1,7 +1,8 @@
 \documentclass[11pt,doublespace]{unhthesis}
 
-% \includeonly{
-% sections/Introduction,
+
+\includeonly{
+sections/Introduction,
 % sections/SatelliteAttitudeModeling,
 % sections/TableSat1A,
 % sections/TableSatAttitudeDynamicsSoftware,
@@ -10,13 +11,15 @@
 % sections/Controllers,
 % sections/ObserverBasedControls,
 % sections/SoftwareProgression,
-% sections/TSatPy,
+sections/TSatPy,
 % sections/Conclusions,
 % sections/FutureWork,
 % sections/EquationSummary,
-% }
+}
 
 \usepackage{custom}
+\renewcommand\listingscaption{Snippet}
+
 \hyphenation{gno-mon-ly}
 
 
@@ -69,6 +72,10 @@ This thesis utilizes an experimental table top satellite prototype (NASA MMS Tab
 
 
 \include{sections/Introduction}
+\TODO{take out the '2'}
+\TODO{flow diagram}
+\TODO{code captions and labels}
+\TODO{equation refs need ()}
 \include{sections/SatelliteAttitudeModeling}
 \include{sections/TableSat1A}
 \include{sections/TableSatAttitudeDynamicsSoftware}

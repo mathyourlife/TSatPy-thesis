@@ -2,43 +2,44 @@
 \chapter{TSatPy}
 \label{chap:TSatPy}
 
-TSatPy
+Chapter \ref{chap:ProgressionOfControlSystemSoftware} detailed the progression through the initial four versions of the attitude determination and control system (ADCS) that are written in or for a Numerical Simulation Software (NSS) implementation.  While these versions provide a level of insight and control into a control system, the NSS environment is not a natural fit for that level of programming and presents issues that take a significant effort to work around.  On top of some of the issues with diagnosing problems, the NSS controller code targets a fairly narrow swath of professions that are comfortable with using and editing it.  Because of this, the final version was written in Python, a common cross-platform and open source programming language.
 
-This module is designed to run a variety of observer based controls with a rotating rigid body.
+Python is quoted as coming ``batteries included'' which is a statement to the number of common libraries that come standard with the language including a \verb|socket| library for sending and receiving User Datagram Protocol (UDP) packets used by TableSat.  Python is also known as an expressive language where what a section of code does is generally easily discernible from a quick read.
 
-Notable characteristics of this implementation of a rotating body's attitude observer based controller are:
+To support the control system written for this thesis being easily available for others to use and edit, python includes a variety of unit test frameworks for ensuring consistency, and gives the ability to write self-documenting code.  Self-documenting code means that if have an instance of a class stored in a variable \verb|v| but are unsure what can be done with the class, typing \verb|help(v)| will print out documentation about the various methods available and how they are used.
+
+Section (\ref{sec:KeyCharacteristics}) covers some of the notable characteristics about the TSatPy implementation of the ADCS, and Section (\ref{sec:Module Design}) describes the different types of classes that are written for the program and what their role is.
+
 \section{Key Characteristics}
 \label{sec:KeyCharacteristics}
 
 \subsection{Adaptive Step Algorithms}
 
-All time dependent calculations vary their parameters at run-time dependent on the time since the last time it ran. For example, calculations based on integrals or derivatives reference the system clock to scale the results based on what the clock reports is the current time step.
+All time dependent calculations vary their parameters at run-time dependent on the time since the last time it ran. For example, the integral component of a PID controller with an error measure of $+0.2$ will accumulate an error of $+0.02$ for the first $\Delta t_k = 0.1$ sec, but will only accumulate an additional $+0.016$ for the next time step of $\Delta t_{k+1} = 0.08$ sec.  This functionality avoids the errors encountered when a system is linearized about an assumed time step, but the actual time step varies which causes the controller gain values to be over or under aggressive.
 
 \subsection{Variable System Clock}
 
-The system clock is the official time keeper for the entire ADCS. Advantages to using a central clock instead of the computer time is that the speed of elapsed time can be modified at run-time during simulations to either compress the time to complete the simulation or slow down the simulation to inspect a certain event.
+The system clock is the official time keeper for the entire ADCS. Advantages to using a central clock instead of the computer time is that the rate of elapsed time can be modified at run-time during simulations to either compress the time to complete the simulation or slow down the simulation to inspect a transient event. (See Section \ref{subsec:IntegralEstimator})
 
 \subsection{Quaternion Multiplicative Corrections}
 
-Quaternions that quantify a system's position contain 4 values that are commonly tracked and controlled separately. This produces a lot of errors since the 4 values are co-dependent and altering one modifies the rest as well. Breaking the values apart also creates a disconnect between the values and the physical position they help define. Use of the quaternion multiplicative correction technique maintains the integrity of the values and their relation to the physical position of the system. Usages of quaternions in most estimators and controllers require normalization of the state to a unit vector after each calculation. In this implementation, the only time normalization that should ever be required is to correct for floating point error accumulation.
+Quaternions that quantify a system's position contain 4 values that through common control systems implementations are tracked and controlled separately. This approach ignores the restriction that rotational quaternions maintain a unit norm while the adjustments are made then scale the resulting quaternion back to a unit norm compromising the predictability and stability of the control system.  Using the object oriented programming to track the scalar and vector components ensures that controllers can be built that make use of the quaternion multiplicative correction technique which maintains the integrity of the values and their relation to the physical attitude of the system. (See Section \ref{subsec:QuaternionAttitude})
 
-\subsection{Quaternion Scaling}
+\subsection{Theta Multiplier with Quaternion Vector Balancing}
 
-Unlike body rates that can be linearly scaled, the 4 quaternion values are a sinusoidal value where multiple values can represent the same attitude (i.e. 0, 360 degrees). The common method of scaling by the raw values can have unexpected results. Due to the trig of small angle interacting with quaternions that represent small deviations in this manner introduces a little error, but the linear assumption creates larger errors as the angle increases. All quaternion scaling in this library is performed or the angle that the quaternion represents. With this method, we can maintain the linear scaling affect that is desired while maintaining the integrity of the quaternion representation.
+Unlike body rates that can be linearly scaled, the 4 quaternion values are sinusoidal values where multiple values can represent the same attitude (i.e. 0, 360 degrees). Scaling the sinusoidal values directly produces inconsistent adjustment rates. All quaternion scaling in the TSatPy software is performed against angle that the quaternion represents. With this method, we can maintain the linear scaling affect that is desired while maintaining the integrity of the quaternion representation. (See Section \ref{subsec:ThetaMultiplierWithQuaternionVectorBalancing})
 
 \subsection{Run-time interface}
 
-Through the use of a python twisted daemon process an restful API interface is available to query the state of the system in the middle of a run. This creates the ability to display meaningful representations of the system and increase insight into the system's dynamic behavior instead of relying on batch post processing.
-
-Sample video
+Through the use of a python twisted daemon process an restful API interface is available to query the state of the system in the middle of a run. This creates the ability to display meaningful representations of the system and increase insight into the system's dynamic behavior instead of relying on batch post processing.  This functionality is built into the last NSS version of the software, but has not yet been ported over to the python code base. (See Section \ref{sec:ObjectOrientedNSSControlSystem})
 
 \subsection{Concurrent Estimation/Control Algorithms}
 
-When running a comparative analysis between different types of estimators or different types of controllers, common methods are to re-run simulations for each variation and compare the results. The library allows for configurations such as providing the same measurement values to both a PID and SMO estimator to compare their performance.
+When running a comparative analysis between different types of estimators or different types of controllers, common methods are to re-run simulations for each variation and compare the results. The library allows for configurations such as providing the same measurement values to both a PID and SMO estimator to compare their performance. (See Section \ref{sec:ComparativeAnalysysofPIDandSMOEstimators})
 
 \subsection{Quaternion Decomposition}
 
-With spin-stabilized satellites the only part of the attitude quaternion that requires control is the one that quantifies the "wobble". Since the 4 values are co-dependent as mentioned above just modifying 2 of the values results in a corrupted position representation.
+With spin-stabilized satellites, five degrees of freedom are available to compare against a fixed desired value.  The quaternion decomposition method allows the separation of the yaw motion from the remained of the attitude representation enabling the 5-DOF control of constant body rates and removing nutation. (See Section \ref{subsec:SpinStabilizedControl})
 
 \subsection{Modular Design}
 
@@ -46,13 +47,11 @@ This library is designed to have interchangeable components with predefined and 
 
 \subsection{Portable Design}
 
-The portable design dictates that with the defined interfaces between modules, the observer based control methods have no knowledge of what is producing the sensor readings and what is accepting moment commands. This enforces consistency in the behavior of the system whether it's hooked up to an in-memory model of a satellite, NASA MMS TableSat 1A, or any future spin spin-stabilized platform. The only code change that may be required (Sensor.py and Actuator.py) is in applying the system to a new platform that contains new types of sensors and actuators.
+The portable design dictates that with the defined interfaces between modules, the observer based control methods have no knowledge of what is producing the sensor readings and what is accepting moment commands. This enforces consistency in the behavior of the system whether it's hooked up to an in-memory model of a satellite, NASA MMS TableSat 1A, or any future spin spin-stabilized platform.
 
 \subsection{Python}
 
-Since control systems professionals regularly work in a Numerical Simulation Software environment (like Matlab Simulink or Octave) and when it comes to implementation the logic is generally converted to a more standard language by software engineers there becomes a disconnect between the planning and implementation of a controller. By using a language like python, the code can be written in an expressive manner so that a control systems professional only needs a little programming experience to modify the code. It also keeps the controller in a language than could be reviewed for optimization by a software engineer and applied to the actual system without requiring a conversion to an entirely different system or language.
-
-
+There can be a disconnect between the control systems engineer that regularly complete their design and analytical work in a Numerical Simulation Software environment (like Matlab Simulink or Octave) and the software engineer who implementation the control method in a more standard language. By using a language like python, the code can be written in an expressive manner so that a control systems professional only needs a little programming experience to modify the code. It also keeps the controller in a language than could be reviewed for optimization by a software engineer and applied directly to the experimental platform without requiring a conversion to an entirely different system or language.
 
 
 \section{Module Design}
@@ -63,120 +62,127 @@ Below is an outline of the separate modules contained in the TSatPy library and 
 \subsection{Actuators}
 \label{subsec:actuators}
 
-This module defines the output of the controller. The actuator instance on initialization, is supplied with the physical arrangement of the actuators and when activated, what moments they are able to produce. During run-time the actuators follow the following logic:
+input: Desired moment\\
+output: Actual moment\\
 
-    Accept a $\Re^3$ moment from the controller
-    Determine the actual moment that is possible from the physical arrangement
-    Convert the desired moments to voltage settings
-    Submit the actuator voltage settings to
-        the Comm for transmission to the experimental setup or
-        the plant for theoretical simulations
-    Report the actual applied moments back to the estimator for state propagation
+This module defines the output of the controller. The actuator instance on initialization, is supplied with the physical arrangement of the actuators. During run-time the actuator module first accept a $\Re^3$ moment from the controller.  It then compares what it's being asked to do with what can actually be supplied.  That true moment is then available for use with estimator state propagation, and for conversion to actuator voltages. (See Section \ref{sec:ActuatorConfiguration})
 
 \subsection{ADCS}
 \label{subsec:ADCS}
 
+input: Configuration file\\
+output: ADCS model\\
 
-This module is the parent container for all the observer based controls, and comm instances. The instance of the ADCS should accept a json config that can be easily stored and define the setup of the model including type and number of estimators.
+This module is intended as the main parent object.  As an input it will read a json configuration file that defines all the components and parameters required for a specific observer-based controller.
 
-    input: config json
-    output: ADCS model
 
 \subsection{Clock}
 \label{subsec:Clock}
 
+input: None\\
+output: Elapsed time\\
 
-This module governs the system clock of the ADCS system and should be referenced by any logic in the observer or controller that is time dependent such as calculations reliant on integrals or derivatives of parameters. The metronome class by default track seconds since the initialization of the clock, but when running simulations can have it's speed dynamically altered to either run faster for long term simulations or run slower to get better inspection of an event.
+This module establishes the authoritative source for elapsed time and is continually referenced by any time-dependent logic such as integral or derivative based parameters. The metronome class by default track seconds since the initialization of the clock, but when running simulations can have it's speed dynamically altered to either run faster for long term simulations or run slower to get better inspection of an event.
 
-    input: None
-    output: elapsed time
 
 \subsection{Comm}
 \label{subsec:Comm}
 
+From Controller to Satellite\\
+input: Voltage setting determined by the actuator\\
+output: UDP packet to the system or in-memory model\\
+From Satellite to Controller\\
+input: Sensor voltages from the system or in-memory model\\
+output: Sensor data to submit to sensor class for conversion to a state\\
 
 This module handles the interface between the the control system and either the physical system or the theoretical model. With the physical system, a UDP socket is opened and either listens for packets transmitted from the sensors or submits voltage packets to set actuator voltages. When running in simulations, the module submits and receives the voltage messages to an in-memory model of the system that contains the system dynamics and can return mocked sensor voltages based on the behavior.
 
-From Controller to Satellite
-
-    input: Voltage setting determined by the actuator
-    output: UDP packet to the system or in-memory model
-
-From Satellite to Controller
-
-    input: Sensor voltages from the system or in-memory model
-    output: Sensor data to submit to sensor class for conversion to a state
 
 \subsection{Controller}
 \label{subsec:Controller}
 
+input: Estimated state ($\bs{\hat{x}}$)\\
+output: Moment couples ($\bs{M}$)\\
 
-This module contains the algorithms that take what we have estimated the system to be doing, compare it to what we want it to do, and determine what moments need to be applied to make the system behave as desired.
+This module contains the algorithms that compare the estimated system behavior with the desired behavior and determine what moments required to make the system behave as desired.
 
-The master control instance governs the interface between the incoming estimator state and the outgoing actuator moments. The master controller can run multiple control algorithms simultaneously which can be individually tuned to different types of system behaviors like one that can handle large errors and one for the soft corrections at steady state.
+The master controller instance governs the interface between the incoming estimator state and the outgoing actuator moments. The master controller can run multiple control algorithms simultaneously which can be individually tuned to different types of system behaviors like one that can handle large errors and one for the soft corrections at steady state.
 
-    input: configuration of what types of control algorithms should be used and the parameters required to set them up
-    output: a desired moment based on the active control algorithm's calculations
 
 \subsection{Estimator}
 \label{subsec:Estimator}
 
+input: Measured state ($\bs{x}$)\\
+output: Estimated state ($\bs{\hat{x}}$)\\
 
-This module contains the algorithm that take the measured state from the sensor model which jumps around a lot because of the noise in the originating signal and attempts to eliminate the noise and create an accurate representation of the true state of the system.
-
-    input: measured state ($\bs{x}$)
-    output: estimated true state ($\bs{\hat{x}}$)
+This module contains the algorithm that take the measured state from the sensor model which is likely based on noisy sensor data and attempts to attenuate the effects of the noise to create an accurate representation of the true state of the system.
 
 \subsection{Sensor}
 \label{subsec:Sensor}
 
+input: Voltages ($\bs{V}$)\\
+output: Measured state ($\bs{x}$)\\
 
-This module receives raw voltage measurements from either a simulated truth model of the system or from the Comm module polling sensor voltage data off the experimental system.
+This module receives raw voltage measurements from either a simulated truth model of the system or from the Comm module polling sensor voltage data off the experimental TableSat.  Each class represents a different sensor type (coarse sun sensor, magnetometer, gyroscope, ...) and contain the logic to convert sensor readings from that sensor into a state representation $x$ with quaternion and body rates.
 
-Each class represents a different sensor type (coarse sun sensor, magnetometer, gyroscope, ...) and contain the logic to convert sensor readings from that sensor into a state representation x with quaternion and body rates.
-
-    input: voltages (V)
-    output: measured state (x)
 
 \subsection{Service}
 \label{subsec:Service}
 
+input: Run configuration\\
+output: Twisted daemon\\
 
-Based off a twisted daemon. This module contains the logic setting up the daemon and establishing the socket interfaces with the physical model.
+Coupled with the ADCS module the Service module is intended to create the daemon that manages the interactions between all the modules including sockets to TableSat.
 
-    input: run configuration
-    output: twisted daemon config
 
 \subsection{StateOperator}
 \label{subsec:StateOperator}
 
-This module contains classes that are designed to modify instances from the State module or convert between them. For example a quaternion can represent the difference between two attitudes. In an estimator or controller we don't want to always just jump all the way to the new state because of noise in the readings. With a QuaternionGain we can scale back the difference and adjust our attitude based on a fraction of the difference which over time will reduce the overall error between the states. In the case of the controller, the state instance needs to be converted to a Moment by a StateToMoment class.
-Class   What it does
-BodyRateGain  Scale a BodyRate instance
-QuaternionGain  Scale a Quaternion instance
-StateGain   Scale the State instance (Wrapper for QuaternionGain, BodyRateGain)
-QuaternionSaturation  Saturate a Quaternion
-BodyRateSaturation  Saturate a BodyRate
-StateSaturation   Saturate a State (Wrapper for QuaternionSaturation, BodyRateSaturation)
-BodyRateToMoment  Convert a BodyRate to a Moment
-QuaternionToMoment  Convert a Quaternion to a Moment
-StateToMoment   Convert a State to a Moment (Wrapper for QuaternionToMoment, BodyRateToMoment)
+input: An instance from the State module\\
+output: A modified State instance or the conversion to a new State instance\\
 
-    input: An instance from the State module
-    output: A modified instance or the conversion to a new State instance
+This module contains classes that are designed to modify instances from the State module such as \verb|BodyRate| or \verb|Quaternion| or convert between them. For example an error quaternion can be scaled up or down by the QuaternionGain class.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{l|p{0.5\linewidth}}
+    Class &  What it does \\ \hline
+    BodyRateGain & Scale a BodyRate instance\\
+    QuaternionGain & Scale a Quaternion instance\\
+    StateGain &  Scale the State instance (Wrapper for QuaternionGain, BodyRateGain)\\
+    QuaternionSaturation & Saturate a Quaternion\\
+    BodyRateSaturation & Saturate a BodyRate\\
+    StateSaturation  & Saturate a State (Wrapper for QuaternionSaturation, BodyRateSaturation)\\
+    BodyRateToMoment & Convert a BodyRate to a Moment\\
+    QuaternionToMoment & Convert a Quaternion to a Moment\\
+    StateToMoment  & Convert a State to a Moment (Wrapper for QuaternionToMoment, BodyRateToMoment)\\
+  \end{tabular}
+  \caption{State Operators}
+  \label{tbl:StateOperators}
+\end{table}
+
+
 
 \subsection{State}
 \label{subsec:State}
 
 This module contains classes that are used to quantify the state of the system.
-State   Class
-Attitude  Quaternion
-Spin rates  BodyRate
-Difference in attitudes   QuaternionError
-How body rates change the attitude  QuaternionDynamics
-How moments change the body rates   EulerMomentEquations
-Position and velocity   State - Couples the position (Quaternion) with velocity (BodyRate)
-Differences in position and velocity  StateError
-In-memory model of the satellite  Plant
-Applied torques   Moment
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{l|p{0.5\linewidth}}
+State  & Class \\ \hline
+Quaternion & Attitude \\
+BodyRate & Body-fixed angular velocities \\
+QuaternionError & Difference in attitudes \\
+QuaternionDynamics & How body rates change the attitude \\
+EulerMomentEquations & How moments change the body rates  \\
+State & Position and velocity \\
+StateError & Differences in position and velocity \\
+Plant & In-memory model of the satellite \\
+Moment & Applied torques \\
+  \end{tabular}
+  \caption{State Measurements}
+  \label{tbl:State}
+\end{table}
 

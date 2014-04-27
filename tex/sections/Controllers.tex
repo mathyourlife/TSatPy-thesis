@@ -427,13 +427,8 @@ As with the body rate comparative tests, the sliding mode controller shows a sig
 \subsection{Spin-Stabilized Control}
 \label{subsec:SpinStabilizedControl}
 
-This section assesses the PID and SMC controller's capability to take a satellite from an initialized state defined in Equation \ref{eqn:attitude_and_body_rate_control_ic} to the spin-stabilized state of $\omega_z = 0.314$ rad/sec without nutation.
-
-\TODO{Get good gains for SMC}
+This section verifies the ability for a controller to take the fixed attitude control problem from Section (\ref{subsec:FixedAttitudeControl}) and release the quaternion restriction on the rotational motion leaving the system to control five degrees of freedom $\omega_z = 0.314, \omega_x = \omega_y = 0$ and zero nutation about the $x$ and $y$ axes.
 
 
-
-
-
-
+\TODO{Trying to get good gain values so the graphs don't look hideous.. this'll be a tada see it's possible, but could be pretty with better modeling gain selection, etc}
 

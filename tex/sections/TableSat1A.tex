@@ -4,7 +4,7 @@
 
 The NASA MMS TableSat 1A is a limited 3-DOF experimental test platform for the NASA MMS satellite (Figure \ref{fig:TSatFullView}).  The experimental platform is designed and constructed with the aid of other UNH Advanced Control Lab researchers to mimic the actual MMS spacecraft.  All electronics, booms, and actuators are attached to a circular PVC bus.  The aluminum hub at its center has a hollow center which allow it to rest on a center post giving the main platform full rotation about its z-axis and limited rotation about its x and y-axes.  Five out of the six booms present on the MMS spacecraft are represented on TableSat 1A.  The four Spin-plane Double Probe (SDP) booms extend radially from the bus at 90 degree intervals.  One of the MMS's Axial Double Probe (ADP) booms is modeled with a boom attached to the center post of the TableSat.
 
-\begin{figure}[h]
+\begin{figure}[ht]
   \centerline{\psfig{file=figures/tsat_full_view.eps,height=4in}}
   \caption{TableSat 1A Full View}
   \label{fig:TSatFullView}
@@ -13,7 +13,16 @@ The NASA MMS TableSat 1A is a limited 3-DOF experimental test platform for the N
 \section{Booms}
 \label{sec:Booms}
 
-The ADP booms are modeled with a selection of flexible antenna.  The physical model provides a basis for understanding the boom dynamics under rotation where the analytical tool in previous research \cite{mushaweh} were unable to.  Attaching weights to the tip and varying the stiffness of the selected antenna allows for some tuning to their fundamental frequency.  Since the SDP booms extend perpendicularly to gravity, two choices are made for their modeling.  For free motion, the cylindrical antenna for the ADP boom are also used for the SDP booms.  The disadvantage to these booms especially when adding weights to reduce their natural frequency is that they droop under the pull of gravity.  An alternative to the cylindrical antenna for the SPD booms is thin and flat strips of metal.  Attaching them to the TableSat's bus such that they are standing on edge removes the gravitational drooping, but still allows for the boom to bend back and forth in the spin plane.  This also restricts the boom's freedom of movement, so a combination of results is be needed to predict the MMS boom's behavior while in orbit.
+The ADP booms are modeled with a selection of flexible antenna.  The physical model provides a basis for understanding the boom dynamics under rotation where the analytical tool in previous research \cite{mushawehthesis} were unable to.  Attaching weights to the tip and varying the stiffness of the selected antenna allows for some tuning to their fundamental frequency.  Since the SDP booms extend perpendicularly to gravity, two choices are made for their modeling.  For free motion, the cylindrical antenna for the ADP boom are also used for the SDP booms.  The disadvantage to these booms especially when adding weights to reduce their natural frequency is that they droop under the pull of gravity.  An alternative to the cylindrical antenna for the SPD booms is thin and flat strips of metal.  Attaching them to the TableSat's bus such that they are standing on edge removes the gravitational drooping, but still allows for the boom to bend back and forth in the spin plane.  This also restricts the boom's freedom of movement, so a combination of results is be needed to predict the MMS boom's behavior while in orbit.
+
+\TODO{From the results above it seems that the Ford Focus antenna could be used to model the ADP on TableSat as long as there is a mass adjustment on the antenna itself raising the frequency of the antenna. It would seem that the Ford Focus antenna would most likely be able to handle a wider range of frequencies because initially it has the lowest frequency. To model the 0.1 Hz ADP with the Ford antenna 3.646 Kg would have to be added to the antenna but for 0.3 Hz only 0.368 Kg would have to be added. Thus scaling TableSat up a factor of three while using the Ford antenna seems feasible. \cite{laakso}}
+
+\begin{figure}[ht]
+  \centerline{\psfig{file=figures/sdp_boom_droop.eps,height=4in}}
+  \caption{Weighted SDP Booms}
+  \label{fig:WeightedSDPBooms}
+\end{figure}
+
 
 \begin{figure}[H]
 \centerline{\psfig{file=figures/tsat_components.eps,height=4in}}
@@ -27,6 +36,13 @@ The ADP booms are modeled with a selection of flexible antenna.  The physical mo
 The onboard flight controller is an Athena PC from Diamond Systems powered by a Jupiter power supply and lithium-ion rechargeable battery.  The Athena processor and Jupiter power supply are mounted in a rapid prototyping housing with open sides for ventilation.  A custom printed circuit board designed by members of the UNH TableSat 1A team is mounted on top of the rapid prototyping housing.  User Datagram Protocol (UDP) based communication (Section \ref{subsec:MessageDefinitions}) to the base station is transmitted through a wireless access point.
 
 The UNH TableSat 1A team also created a C program based off of Vess' ``open-loop'' flight controller \cite{vessthesis} .  This program is responsible for listening on a UDP socket on the TableSat and performing a limited set of actions based on the message packets it receives from the base station.  The most common messages triggered are actions such as altering the voltage commands to the actuators, scanning the sensor ports, and sending back the voltage measurements to the base station through UDP.
+
+\begin{figure}[ht]
+  \centerline{\psfig{file=figures/pcb_wired.eps,height=4in}}
+  \caption{Wired Printed Circuit Board}
+  \label{fig:WiredPCB}
+\end{figure}
+
 
 \section{Actuators}
 \label{sec:Actuators}
@@ -63,11 +79,16 @@ Two 2-axis accelerometers are mounted at the circumference or TableSat's bus.  T
 
 The coarse sun sensor (CSS) for UNH TableSat 1A was constructed from a hexagonal piece of PVC pipe with a photodiode mounted in each face (Figure \ref{fig:CSS}).  Photodiodes are light detectors that convert captured light to electricity.  Given the inability to use the gyroscope and the accelerometer's high level of noise, the coarse sun sensor proved to be the most reliable sensor, but was limited to measuring a single value from the state matrix corresponding to rotations about the z-axis.  Each photo diode detected light level in its field of view and would generate a voltage generally proportional to that value.  The photodiodes are mounted above the center hub and faced out around the spin plane.  By placing a single light source in a dark room, the coarse sun sensor's voltages could be used to calculate the angular displacement about the body's z-axis.
 
+\begin{figure}[ht]
+  \centerline{\psfig{file=figures/css_mounted.eps,height=4in}}
+  \caption{Coarse Sun Sensor Assembly}
+  \label{fig:CoarseSunSensorAssembly}
+\end{figure}
 
 \begin{figure}[H]
-\centerline{\psfig{file=figures/css.eps,height=2in}}
-\caption{Coarse Sun Sensor Configuration}
-\label{fig:CSS}
+  \centerline{\psfig{file=figures/css.eps,height=2in}}
+  \caption{Coarse Sun Sensor Configuration}
+  \label{fig:CSS}
 \end{figure}
 
 Calculating the angular displacement about the body's z-axis is done using a method similar to a resultant force calculation.  Assuming all of the photodiodes volts per lumen rates are consistent, the voltages can be described as an equivalent force it the direction of the photodiode face.  Each force is decomposed into x and y components and then summed into a resultant force vector who's angle is used to represent the angular displacement of the TableSat.  Even though this method is fairly simplistic and that individual sensor voltage readings contained a moderate level of noise, this method proved to generate a very reliable and clean signal before even using filtering and estimation techniques.
@@ -293,7 +314,7 @@ Despite the improved speed and simplicity, this classification method has some l
 
 Communication between the controller and the experimental TableSat is negotiated over a User Datagram Protocol (UDP) socket.  Both the controller and TableSat read and write over port 9877.  UDP is used for a stateless connection more generally used for pushing data over a large number of connections.  The other common communication protocol is Transmission Control Protocol (TCP) where a session is established between server and client and successful transferral of data is acknowledged by the recipient.
 
-Advantages and disadvantages exist between the TCP and UDP protocols and became a critical factor in influencing the design of TableSat 1A base station controller. Section \ref{sec:Simulink} goes into further detail in how this difference in protocols cropped up early in the development of the base station controller where the combination of a Numerical Simulation Software (like Matlab Simulink or Octave) with a UDP communication protocol produced a very fragile system.
+Advantages and disadvantages exist between the TCP and UDP protocols and became a critical factor in influencing the design of TableSat 1A base station controller. Section \ref{sec:NSSModel} goes into further detail in how this difference in protocols cropped up early in the development of the base station controller where the combination of a Numerical Simulation Software (like Matlab Simulink or Octave) with a UDP communication protocol produced a very fragile system.
 
 A UDP message transmission is done in a ``fire and forget'' fashion.  The message header can generally include the originating hosts ip address and port so that the server knows where to send the response.  The session-less nature of UDP means that the originating server sends the message, but does not receive confirmation that the message transmitted successfully as with TCP where ever interaction is followed up with an acknowledgment from the other host.
 

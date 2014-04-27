@@ -38,9 +38,9 @@ For implementation into the TableSat's base station observer based controller, t
 
 \begin{subequations}
   \begin{align}
-    \dot{\omega}_{x}(t_{k+1}) & = \frac{1}{I_x} \left[ M_1(t_{k+1}) - (I_z - I_y) \omega_{y}(t_k) \omega_{z}(t_k) \right] \\
-    \dot{\omega}_{y}(t_{k+1}) & = \frac{1}{I_y} \left[ M_2(t_{k+1}) - (I_x - I_z) \omega_{x}(t_k) \omega_{z}(t_k) \right] \\
-    \dot{\omega}_{z}(t_{k+1}) & = \frac{1}{I_z} \left[ M_3(t_{k+1}) - (I_y - I_x) \omega_{x}(t_k) \omega_{y}(t_k) \right]
+    \dot{\omega}_{x}(t_{k}) & = \frac{1}{I_x} \left[ M_1(t_{k}) - (I_z - I_y) \omega_{y}(t_k) \omega_{z}(t_k) \right] \\
+    \dot{\omega}_{y}(t_{k}) & = \frac{1}{I_y} \left[ M_2(t_{k}) - (I_x - I_z) \omega_{x}(t_k) \omega_{z}(t_k) \right] \\
+    \dot{\omega}_{z}(t_{k}) & = \frac{1}{I_z} \left[ M_3(t_{k}) - (I_y - I_x) \omega_{x}(t_k) \omega_{y}(t_k) \right]
   \end{align}
   \label{eqn:DiscreteEulerMomentEquations}
 \end{subequations}

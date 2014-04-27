@@ -265,6 +265,13 @@ The Sliding Mode Observer (SMO) is a proportional estimator with an additional s
   \label{eqn:SMOContinuous}
 \end{equation}
 
+\begin{figure}[ht]
+  \centerline{\psfig{file=figures/saturation_function.eps,height=4in}}
+  \caption{Saturation Function}
+  \label{fig:SaturationFunction}
+\end{figure}
+
+
 Where L is a luenberger gain and $\bs{1}_s$ is a switching function based on $s$.  The sliding mode terms allow additional control of the state adjustments without adding a lot of computational complexity.  The SMO can continue to use the nonlinear model's state predictions as in the PID estimators in Section \ref{subsec:PIDEstimatorwithStatePrediction}, which is an advantage over methods such as the Extended Kalman Filter (EKF) where the system is linearized about an operating point and assumes a constant time step.
 
 This thesis takes the discretized form of Equation \ref{eqn:SMOContinuous} with a quaternion multiplicative correction
