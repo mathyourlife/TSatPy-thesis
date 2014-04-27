@@ -18,7 +18,7 @@ The ADP booms are modeled with a selection of flexible antenna.  The physical mo
 \TODO{From the results above it seems that the Ford Focus antenna could be used to model the ADP on TableSat as long as there is a mass adjustment on the antenna itself raising the frequency of the antenna. It would seem that the Ford Focus antenna would most likely be able to handle a wider range of frequencies because initially it has the lowest frequency. To model the 0.1 Hz ADP with the Ford antenna 3.646 Kg would have to be added to the antenna but for 0.3 Hz only 0.368 Kg would have to be added. Thus scaling TableSat up a factor of three while using the Ford antenna seems feasible. \cite{laakso}}
 
 \begin{figure}[ht]
-  \centerline{\psfig{file=figures/sdp_boom_droop.eps,height=4in}}
+  \centerline{\psfig{file=figures/sdp_boom_droop.eps,width=6in}}
   \caption{Weighted SDP Booms \cite{laakso}}
   \label{fig:WeightedSDPBooms}
 \end{figure}
@@ -77,18 +77,12 @@ Two 2-axis accelerometers are mounted at the circumference or TableSat's bus.  T
 \subsection{Coarse Sun Sensor}
 \label{subsec:CoarseSunSensor}
 
-The coarse sun sensor (CSS) for UNH TableSat 1A was constructed from a hexagonal piece of PVC pipe with a photodiode mounted in each face (Figure \ref{fig:CSS}).  Photodiodes are light detectors that convert captured light to electricity.  Given the inability to use the gyroscope and the accelerometer's high level of noise, the coarse sun sensor proved to be the most reliable sensor, but was limited to measuring a single value from the state matrix corresponding to rotations about the z-axis.  Each photo diode detected light level in its field of view and would generate a voltage generally proportional to that value.  The photodiodes are mounted above the center hub and faced out around the spin plane.  By placing a single light source in a dark room, the coarse sun sensor's voltages could be used to calculate the angular displacement about the body's z-axis.
+The coarse sun sensor (CSS) for UNH TableSat 1A was constructed from a hexagonal piece of PVC pipe with a photodiode mounted in each face (Figure \ref{fig:CoarseSunSensorAssembly}).  Photodiodes are light detectors that convert captured light to electricity.  Given the inability to use the gyroscope and the accelerometer's high level of noise, the coarse sun sensor proved to be the most reliable sensor, but was limited to measuring a single value from the state matrix corresponding to rotations about the z-axis.  Each photo diode detected light level in its field of view and would generate a voltage generally proportional to that value.  The photodiodes are mounted above the center hub and faced out around the spin plane.  By placing a single light source in a dark room, the coarse sun sensor's voltages could be used to calculate the angular displacement about the body's z-axis.
 
 \begin{figure}[ht]
-  \centerline{\psfig{file=figures/css_mounted.eps,height=4in}}
+  \centerline{\psfig{file=figures/css_mounted.eps,height=2.5in}}
   \caption{Coarse Sun Sensor Assembly}
   \label{fig:CoarseSunSensorAssembly}
-\end{figure}
-
-\begin{figure}[H]
-  \centerline{\psfig{file=figures/css.eps,height=2in}}
-  \caption{Coarse Sun Sensor Configuration}
-  \label{fig:CSS}
 \end{figure}
 
 Calculating the angular displacement about the body's z-axis is done using a method similar to a resultant force calculation.  Assuming all of the photodiodes volts per lumen rates are consistent, the voltages can be described as an equivalent force it the direction of the photodiode face.  Each force is decomposed into x and y components and then summed into a resultant force vector who's angle is used to represent the angular displacement of the TableSat.  Even though this method is fairly simplistic and that individual sensor voltage readings contained a moderate level of noise, this method proved to generate a very reliable and clean signal before even using filtering and estimation techniques.

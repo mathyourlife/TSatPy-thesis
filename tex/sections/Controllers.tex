@@ -220,7 +220,7 @@ With Equation \ref{eqn:quat_vector_to_moment} establishing the direction for the
 \end{equation}
 $q_{0e}$, as with the vector, is a sinusoidal measure.  The underlying $\theta$ measure of the quaternion rotation however is a direct measure of the attitude error.  Extracting the $\theta$ measure from $q_{0e}$ and incorporating into the moment calculation yields
 \begin{equation}
-  \bs{M}_{q} = \left[-2 k \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e
+  \bs{M}_{q} = \left[- k \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e
   \label{eqn:QuaternionToMomentConversion}
 \end{equation}
 This conversion is used throughout all attitude control calculations in the remainder of this chapter and in the observer-based controllers in Chapter \ref{chap:ObserverBasedControls}.
@@ -244,7 +244,7 @@ Section \ref{sec:RateControl} covered the design of the rate controller which ad
 
 Starting with a simplest design of the proportional attitude control, equation \ref{eqn:QuaternionToMomentConversion} can be directly applied as
 \begin{equation}
-  \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} \big(q_{0e} \big) \right] \bs{\hat{e}}_e \\
+  \bs{M}_{q} = \left[- K_{qp} \cos^{-1} \big(q_{0e} \big) \right] \bs{\hat{e}}_e \\
   \label{eqn:PAttitudeControl}
 \end{equation}
 This format of the proportional controller provides a significant time savings over the common method in Equation \ref{eqn:traditional_attitude_controller} when optimizing gains since instead of 12 gain values to tune, the controller is limited to a single gain.
@@ -284,7 +284,7 @@ Prior to combining the attitude control from Section \ref{subsec:PAttitudeContro
 
 The proportional attitude control from Equation \ref{eqn:PAttitudeControl} becomes
 \begin{equation}
-  \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} \big(q_{0en} \big) \right] \bs{\hat{e}}_{en} \\
+  \bs{M}_{q} = \left[- K_{qp} \cos^{-1} \big(q_{0en} \big) \right] \bs{\hat{e}}_{en} \\
 \end{equation}
 where $q_{0en}$ is the scalar component of the error quaternion's nutation component, and $\bs{\hat{e}}_{en}$ is the normalized Euler axis for the nutation component.
 
@@ -330,7 +330,7 @@ Now that there is a defined method for separating the allowed rotation from the 
 
 Using the proportional control
 \begin{equation}
-  \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} (q_{0n}) \right] \bs{\hat{e}}_n
+  \bs{M}_{q} = \left[- K_{qp} \cos^{-1} (q_{0n}) \right] \bs{\hat{e}}_n
   \label{eqn:PNutationControl}
 \end{equation}
 with the same initial state and desired quaternion as the proportional attitude controller
@@ -368,7 +368,7 @@ The PID controllers are defined as
 \begin{equation}
   \begin{aligned}
     \bs{M} &= \bs{M}_{q} + \bs{M}_{\omega} \\
-    \bs{M}_{q} &= \left[-2 K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[-2 K_{qi} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[-2 K_{qd} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed} \\
+    \bs{M}_{q} &= \left[- K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[- K_{qi} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[- K_{qd} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed} \\
     \bs{M}_{\omega} &= \bs{K}_{\omega p} \bs{\omega}_e + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e
   \end{aligned}
 \end{equation}
@@ -399,7 +399,7 @@ The Sliding Mode Controllers are defined as
 \begin{equation}
   \begin{aligned}
     \bs{M} &= \bs{M}_{q} + \bs{M}_{\omega} \\
-    \bs{M}_{q} &= \left[-2 L_{q} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[ K_{q} sat \left( \frac{-2\cos^{-1} (q_{0e})}{S_q} \right) \right] \bs{\hat{e}}_e \\
+    \bs{M}_{q} &= \left[- L_{q} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[ K_{q} sat \left( \frac{-2\cos^{-1} (q_{0e})}{S_q} \right) \right] \bs{\hat{e}}_e \\
     \bs{M}_{\omega} &= \bs{L}_{\omega} \bs{\omega}_e + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e / S_{\omega} \big) \\
     \bs{1}_s \big(\bs{\omega}_e / S_{\omega} \big) &= \begin{bmatrix} sat (\omega_{ex} / S_{\omega}) &0 &0 \\ 0 & sat (\omega_{ey} / S_{\omega}) & 0 \\ 0 & 0 & sat (\omega_{ez} / S_{\omega}) \end{bmatrix}
   \end{aligned}
@@ -431,4 +431,3 @@ This section verifies the ability for a controller to take the fixed attitude co
 
 
 \TODO{Trying to get good gain values so the graphs don't look hideous.. this'll be a tada see it's possible, but could be pretty with better modeling gain selection, etc}
-

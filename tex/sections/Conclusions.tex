@@ -1,87 +1,23 @@
 \chapter{CONCLUSIONS}
 \label{chap:Conclusions}
 
-The goal of this thesis was to determine the viability of the NASA MMS TableSat 1A's platform for comparison and experimental verification of various observer-based controllers.
+The two main goals for this thesis are to:
 
+\begin{itemize}
+\item create a software application that runs the TableSat 1A attitude determination and control system (ADCS), but can be applicable to the wider class of spin-stabilized satellites.  The software should incorporate tools that provide the researcher opportunities to gain greater insight into the system's dynamics and interdependencies.
+\item design a gyroless ADCS that is capable of maintaining a 3 rpm rotation while detecting and eliminating boom oscillations and satellite nutation.  The ADCS is to validate it's analytical operation against the experimental UNH NASA MMS TableSat 1A.
+\end{itemize}
 
-Prior implementations of TableSat generally stuck with a static actuator layout which requires a significant portion of time to rewrite code and/or rewire electronics to assess variations on the actuator layout.  With the use of TSatPy, most modifications to the actuators during testing can be done with just a change to the config structure that provides a much faster turn around time between tests.
+This thesis successfully covers the first goal of a software system to run the TableSat 1A's ADCS.  Though multiple iterations, the final TSatPy is a robust analytical and experimental application through which to assess the performance of control systems of spin-stabilized satellites.  The system handles intentional and unexpected variations in time steps caused by situations such as dropped packets in experimental testing or user manipulation of the system clock in simulations.  Through the system's adaptive step algorithms, all aspects of the estimators and controllers need not be preconfigured through linearization but can adjust their scale depending on the elapsed time since they were last updated.
 
-\TODO{CO2 thrusters}
+The quaternion attitude parametrization plays a key role in the success of the ADCS as its numerical stability through rotations avoids issues such as gimbal lock for Euler angles and gracefully handled edge cases where control efforts switch direction upon passing the antipodal point, and attitude measurements pass through $360^o$ back to $0^o$.  Using the quaternion multiplicative method for all quaternion transformations ensures the integrity of the quaternion measurements rather than the traditional state difference and normalization process.  When adjusting the quaternion state, the theta multiplication and quaternion vector balancing preserves the integrity of the rotational quaternion while also providing a single gain to scale the attitude linearly with the angular displacement rather than linearly with the cosine of the half-angle.  The derivation of the quaternion decomposition, Equation (\ref{eqn:quaternion_decomposition_derivation}), also enabled a 5-DOF control system leaving the yaw attitude unrestricted.
 
+The fourth version of the software incorporates some advanced visualizations bringing together information from various sources such as estimators, controllers, and actuators into a singe representation of the ADCS system that gives the researcher feedback on how the separate algorithms work together to create the whole system. (See http://vimeo.com/user11804289/videos for more samples)
 
-\TODO{Finish this}
+Additionally the TSatPy system is design to be modular.  Multiple estimation and control techniques can run under their associated master instances.  This thesis demonstrated the concurrent testing of a PID and Sliding Mode Observer which illuminated subtle differences in their operation that would not likely be seen if tested separately.  The modular design extends to the entire system itself as it is written in a widely used and relatively easy to learn programming language so that future researcher can expand on the current foundation by adding more estimation or control techniques, incorporating more inspection tools, or modifying the ingress and output points to control other experimental platforms.
 
-Estimator:
-  SMO bettor for initial response
-  Toss up between SMO/PID for ss response, SMO update state sooner, PID less error
+The second goal of designing an ADCS for TableSat 1A to maintain spin and correct for boom oscillation and s/c nutation is partially complete.  An analytical model of an observer-based controller of a Sliding Mode Observer with a very effective Sliding Mode Controller was developed and tested to control the 5-DOF problem.  A gradient descent algorithm (Appendix \ref{code:TSatPySamples/GradientDescent.py}) was created for the purpose of optimizing the gains to minimize the control effort and attitude error measurement.   Additional tuning of the model is possible, but would benefit from initially porting the tPlot library from the NSS format to python in better visualize how all the gain adjustments affect the overall performance.
 
-Controller:
-  SMC rate controller performs far better with perfect estimates
+For the experimental verification, the ADCS was successful at establishing a steady spin rate of 3 rpm on the TableSat using the two rotational fans for controllers.  The nutation control and related boom dynamics control goals are incomplete.  In this implementation of TableSat, the two single direction nutation fans are unable to produce the enough thrust fast enough to have any noticeable effect on damping any nutation or boom oscillation.  CO2 canisters were added experimentally to attempted to increase thrust, but force provided is too large and has a very limited capacity to make it a cost effective option
 
-State Error
-  Multiplicative quaternion corrections
-  Scaling based or the represented angle rather than the quaternion scalar
-  Estimating the vector quantities of the quaternion can interfere with the angular component, only control the use of the angular component (fewer parameters to tune)
-
-Python so much better than Numerical Simulation Software (like Matlab or Octave) for programming
-Slow progress to establish the foundation, but became faster as building blocks were created and vetted through unit tests
-
-run-time feedback ++
-
-Attitude control
-  Surprising level of control with just a single gain in a P-controller!!!
-
-
-Antipodal response with P-attitude and body rate control
-
-Quaternion decomposition Equation \ref{eqn:quaternion_decomposition_derivation}
-
-
-
-TSatPy
-
-This module is designed to run a variety of observer based controls with a rotating rigid body.
-
-Notable characteristics of this implementation of a rotating body's attitude observer based controller are:
-
-Adaptive Step Algorithms
-
-All time dependent calculations vary their parameters at run-time dependent on the time since the last time it ran. For example, calculations based on integrals or derivatives reference the system clock to scale the results based on what the clock reports is the current time step.
-
-Variable System Clock
-
-The system clock is the official time keeper for the entire ADCS. Advantages to using a central clock instead of the computer time is that the speed of elapsed time can be modified at run-time during simulations to either compress the time to complete the simulation or slow down the simulation to inspect a certain event.
-
-Quaternion Multiplicative Corrections
-
-Quaternions that quantify a system's position contain 4 values that are commonly tracked and controlled separately. This produces a lot of errors since the 4 values are co-dependent and altering one modifies the rest as well. Breaking the values apart also creates a disconnect between the values and the physical position they help define. Use of the quaternion multiplicative correction technique maintains the integrity of the values and their relation to the physical position of the system. Usages of quaternions in most estimators and controllers require normalization of the state to a unit vector after each calculation. In this implementation, the only time normalization that should ever be required is to correct for floating point error accumulation.
-
-Quaternion Scaling
-
-Unlike body rates that can be linearly scaled, the 4 quaternion values are a sinusoidal value where multiple values can represent the same attitude (i.e. 0, 360 degrees). The common method of scaling by the raw values can have unexpected results. Due to the trig of small angle interacting with quaternions that represent small deviations in this manner introduces a little error, but the linear assumption creates larger errors as the angle increases. All quaternion scaling in this library is performed or the angle that the quaternion represents. With this method, we can maintain the linear scaling affect that is desired while maintaining the integrity of the quaternion representation.
-
-Run-time interface
-
-Through the use of a python twisted daemon process an restful API interface is available to query the state of the system in the middle of a run. This creates the ability to display meaningful representations of the system and increase insight into the system's dynamic behavior instead of relying on batch post processing.
-
-Sample video
-
-Concurrent Estimation/Control Algorithms
-
-When running a comparative analysis between different types of estimators or different types of controllers, common methods are to re-run simulations for each variation and compare the results. The library allows for configurations such as providing the same measurement values to both a PID and SMO estimator to compare their performance.
-
-Quaternion Decomposition
-
-With spin-stabilized satellites the only part of the attitude quaternion that requires control is the one that quantifies the "wobble". Since the 4 values are co-dependent as mentioned above just modifying 2 of the values results in a corrupted position representation.
-
-Modular Design
-
-This library is designed to have interchangeable components with predefined and consistent interfaces and roles by allowing for the inclusion of additional estimation and control techniques. In the case of estimation, an Extended Kalman Filter (EKF) class can be added by creating a new class in Estimator.py that has contains the common properties ($\bs{\hat{x}}$, $\bs{x}_e$..) and common methods ($\bs{\hat{x}}$ = update($\bs{x}$)).
-
-Portable Design
-
-The portable design dictates that with the defined interfaces between modules, the observer based control methods have no knowledge of what is producing the sensor readings and what is accepting moment commands. This enforces consistency in the behavior of the system whether it's hooked up to an in-memory model of a satellite, NASA MMS TableSat 1A, or any future spin spin-stabilized platform. The only code change that may be required (Sensor.py and Actuator.py) is in applying the system to a new platform that contains new types of sensors and actuators.
-
-Python
-
-Since control systems professionals regularly work in a Numerical Simulation Software environment (like Matlab Simulink or Octave) and when it comes to implementation the logic is generally converted to a more standard language by software engineers there becomes a disconnect between the planning and implementation of a controller. By using a language like python, the code can be written in an expressive manner so that a control systems professional only needs a little programming experience to modify the code. It also keeps the controller in a language than could be reviewed for optimization by a software engineer and applied to the actual system without requiring a conversion to an entirely different system or language.
+For attitude measurements the coarse sun sensors provides a fairly reliable measure of yaw such that the rate of change allows for an acceptable gyroless rate control.  Through a series of calibration techniques the triple axis magnetometer was successfully utilized to establish a method of comparing the current TAM readings to a calibration set from the same yaw measure and estimating the degree of nutation.  While on a large scale with many passes and densely sampled magnetic fields an initial collection of seemingly indistinguishable data points were smoothed out to establish predictable paths (Figure \ref{fig:TAMSignal}).  That success however still did not allow for the adequate nutation detection as it took longer to filter out the noise from the TAM voltage measurements as it did for the TableSat's nutation to naturally die out due to friction in the mount point.

@@ -378,8 +378,8 @@ The section will cover the final version of the quaternion adjustment calculatio
 
 \begin{equation}
   \begin{aligned}
-    \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot 2\cos^{-1} (q_0))  \end{bmatrix} \\
-    \text{where } \gamma &= \sqrt{\frac{\bs{v} \bullet \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}} \\
+    \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot \cos^{-1} (q_0))  \end{bmatrix} \\
+    \text{where } \gamma &= \sqrt{\frac{\bs{v} \bullet \bs{v}}{\sin^2 ( k \cdot \cos^{-1} (q_0))}} \\
   \end{aligned}
   \label{eqn:PSI}
 \end{equation}
@@ -443,8 +443,8 @@ Adjustment Quaternions
 \begin{equation}
   \begin{aligned}
     \bs{q}_{adj} &= \bs{\psi}(\bs{q}_e, K_{qp}) \\
-    \text{where } \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot 2\cos^{-1} (q_0))  \end{bmatrix} \\
-    \gamma &= \sqrt{\frac{\bs{v} \bullet \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}}
+    \text{where } \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot \cos^{-1} (q_0))  \end{bmatrix} \\
+    \gamma &= \sqrt{\frac{\bs{v} \bullet \bs{v}}{\sin^2 ( k \cdot \cos^{-1} (q_0))}}
   \end{aligned}
 \end{equation}
 

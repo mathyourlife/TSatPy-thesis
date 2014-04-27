@@ -83,8 +83,8 @@ Quaternion Error
 Theta Multiplier with Quaternion Vector Balancing\\
 \begin{equation}
   \begin{aligned}
-    \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot 2\cos^{-1} (q_0))  \end{bmatrix} \\
-    \text{where } \gamma &= \sqrt{\frac{\bs{v} \bullet \bs{v}}{\sin^2 ( k \cdot 2\cos^{-1} (q_0))}}
+    \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot \cos^{-1} (q_0))  \end{bmatrix} \\
+    \text{where } \gamma &= \sqrt{\frac{\bs{v} \bullet \bs{v}}{\sin^2 ( k \cdot \cos^{-1} (q_0))}}
    \end{aligned}
 \end{equation}
 Discrete Quaternion Dynamics
@@ -121,13 +121,13 @@ Body Rate PID Estimation with State Prediction
   \bs{\hat{\omega}}(t_{k+1}) = \bs{\hat{\omega}}(t_{k+1})^- + \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k})
 \end{equation}
 Quaternion to moment conversion\\
-\begin{equation} \bs{M}_{q} = \left[-2 K_{q} \cos^{-1} (q_{0}) \right] \bs{\hat{e}} \end{equation}
+\begin{equation} \bs{M}_{q} = \left[- K_{q} \cos^{-1} (q_{0}) \right] \bs{\hat{e}} \end{equation}
 Quaternion PID Controller \\
-\begin{equation} \bs{M}_{q} = \left[-2 K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[-2 K_{q} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[-2 K_{q} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed} \end{equation}
+\begin{equation} \bs{M}_{q} = \left[- K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[- K_{q} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[- K_{q} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed} \end{equation}
 Body Rate PID Controller with Adaptive Time Steps\\
 \begin{equation}\bs{M}_{\omega} = \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k})\end{equation}
 Quaternion Saturation
-\begin{equation} \bs{1}_s\big(\bs{q} \big) = \begin{bmatrix} \bs{v} \\ sat\left( \frac{2\cos^{-1} q_{0} }{S_{q}} \right) \end{bmatrix} \end{equation}
+\begin{equation} \bs{1}_s\big(\bs{q} \big) = \begin{bmatrix} \bs{v} \\ sat\left( \frac{\cos^{-1} q_{0} }{S_{q}} \right) \end{bmatrix} \end{equation}
 Sliding Mode Observer \\
 \begin{subequations}
   \begin{align}
