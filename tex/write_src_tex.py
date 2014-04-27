@@ -58,7 +58,6 @@ def TSatPySamples():
 
 
 def MatlabOOTeX():
-    code_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), '../beta_versions/matlab_object_oriented'))
     src_tex = os.path.join(os.path.dirname(__file__), 'sections/NSSSource.tex')
 
     header = """
@@ -71,6 +70,7 @@ def MatlabOOTeX():
     with open(src_tex, 'w') as tex:
         tex.write(header)
 
+        code_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), '../beta_versions/matlab_object_oriented/lib'))
         for f in sorted([os.path.join(dirpath, fname)
             for dirpath, dirnames, files in os.walk(code_dir)
             for fname in fnmatch.filter(files, '*.m')]):
@@ -81,8 +81,17 @@ def MatlabOOTeX():
             tex.write('\section*{NSS/%s}\label{code:NSS/%s}\n' % (fn.replace('_', '\_'), fn))
             tex.write('\inputminted[linenos,fontsize=\scriptsize]{matlab}{%s}\n' % f)
 
-            # tex.write('\section{MatlabOO/%s}\label{code:MatlabOO/%s}\n' % (fn.replace('_', '\_'), fn))
-            # tex.write('\lstinputlisting{%s}\n' % f)
+        code_dir = os.path.realpath(os.path.join(os.path.dirname(__file__), '../beta_versions/matlab_object_oriented/sims'))
+        for f in sorted([os.path.join(dirpath, fname)
+            for dirpath, dirnames, files in os.walk(code_dir)
+            for fname in fnmatch.filter(files, '*.m')]):
+
+            fn = f[len(code_dir)+1:]
+            tex.write('\n')
+            tex.write('\pagebreak\n')
+            tex.write('\section*{NSS/%s}\label{code:NSS/%s}\n' % (fn.replace('_', '\_'), fn))
+            tex.write('\inputminted[linenos,fontsize=\scriptsize]{matlab}{%s}\n' % f)
+
 
 
 if __name__ == "__main__":
