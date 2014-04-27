@@ -8,17 +8,17 @@ function data = RetrieveSensorLog()
     log_size = msg_data;
     reply=sprintf('Retrieving %d log entries.',log_size);
     disp(reply)
-	
-	progress = 0;
+  
+  progress = 0;
     for i=1:log_size
         [msg_num, msg_data] = SendCommandAndWait(23,i,64);
 
-		if i/log_size*100 > progress
-			progress = progress + 10;
-		    reply=sprintf('%d%%',progress);
-		    disp(reply)
-			
-		end
+    if i/log_size*100 > progress
+      progress = progress + 10;
+        reply=sprintf('%d%%',progress);
+        disp(reply)
+      
+    end
         data_list='';
         for n=1:length(msg_data)
             if n==1

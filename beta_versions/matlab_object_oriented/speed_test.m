@@ -9,16 +9,16 @@ iter = 1000;
 
 args = struct;
 for i=1:iter
-	args.M = rand(3, 1);
-	if mod(i,2) == 0
-		tic;
-		p_o.propagate(args);
-		duration_1 = duration_1 + toc;
-	else
-		tic;
-		%p_o.propagate(args);
-		duration_2 = duration_2 + toc;
-	end
+  args.M = rand(3, 1);
+  if mod(i,2) == 0
+    tic;
+    p_o.propagate(args);
+    duration_1 = duration_1 + toc;
+  else
+    tic;
+    %p_o.propagate(args);
+    duration_2 = duration_2 + toc;
+  end
 end
 disp(sprintf('iterations: %d',iter))
 disp(sprintf('method 1: %0.3f sec',duration_1))

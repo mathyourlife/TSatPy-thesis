@@ -27,26 +27,26 @@ last_thrust = t.now();
 desired_moment = (rand(3,1)*2.-1).*10;
 info = text(0.5,0.5,0.5,sprintf('$$RequestedMoment = \\left( {\\matrix{ %0.2f \\cr %0.2f \\cr %0.2f } } \\right)$$',desired_moment(1),desired_moment(2),desired_moment(3)),'interpreter','latex','VerticalAlignment','bottom','FontSize',12);
 for i=0:ceil(run_time/pause_time)
-	% increment frame counter
-	% Allow for redraw
-	pause(pause_time);
-	if last_thrust + thruster_pulse_duration < t.now()
-		last_thrust = t.now();
-		desired_moment = (rand(3,1)*2.-1).*10;
-		
-		set(info,'String',sprintf('$$RequestedMoment = \\left( {\\matrix{ %0.2f \\cr %0.2f \\cr %0.2f } } \\right)$$',desired_moment(1),desired_moment(2),desired_moment(3)));
-	end
-	
-	args = struct;
-	args.M = desired_moment;
-	tsat.actuators = tsat.actuators.requestMoment(args);
-	
-	
-	% Push effective moment to plant propagation
-	args = struct;
-	args.M = tsat.actuators.effective_moment;
-	p.propagate(args);
-	args = struct; args.graph = 'sim_random_moment'; args.state = p.state;
-	tm_prop.updatePlot(args);
+  % increment frame counter
+  % Allow for redraw
+  pause(pause_time);
+  if last_thrust + thruster_pulse_duration < t.now()
+    last_thrust = t.now();
+    desired_moment = (rand(3,1)*2.-1).*10;
+    
+    set(info,'String',sprintf('$$RequestedMoment = \\left( {\\matrix{ %0.2f \\cr %0.2f \\cr %0.2f } } \\right)$$',desired_moment(1),desired_moment(2),desired_moment(3)));
+  end
+  
+  args = struct;
+  args.M = desired_moment;
+  tsat.actuators = tsat.actuators.requestMoment(args);
+  
+  
+  % Push effective moment to plant propagation
+  args = struct;
+  args.M = tsat.actuators.effective_moment;
+  p.propagate(args);
+  args = struct; args.graph = 'sim_random_moment'; args.state = p.state;
+  tm_prop.updatePlot(args);
 end
 close(graphs.sim_random_moment.obj.fig_id)

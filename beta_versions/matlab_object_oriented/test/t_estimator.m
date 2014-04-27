@@ -32,12 +32,12 @@ checktype = 'pid';
 args = struct; args.type = checktype;
 e=e.setoutput(args);
 for i = 1:numel(e.types)
-	if (strcmp(checktype,e.types(i)))
-		shouldbe = 1;
-	else
-		shouldbe = 0;
-	end
-	tb.assertEquals(shouldbe,e.output.(char(e.types(i))),['Estimator "' char(e.types(i)) '" has the correct output setting.']);
+  if (strcmp(checktype,e.types(i)))
+    shouldbe = 1;
+  else
+    shouldbe = 0;
+  end
+  tb.assertEquals(shouldbe,e.output.(char(e.types(i))),['Estimator "' char(e.types(i)) '" has the correct output setting.']);
 end
 
 %{

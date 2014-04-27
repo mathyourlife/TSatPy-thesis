@@ -102,16 +102,16 @@ function CalibrateTSat(calibration_step)
                 % acceleration while accelerometers 2 and 4 detect nutation
                 switch i
                     case 1
-                        baseline.accel.nut(1)=mean(data(1:end,j));	% baseline accel voltage
+                        baseline.accel.nut(1)=mean(data(1:end,j));  % baseline accel voltage
                         noise_var.accel.nut(1)=var(data(1:end,j));  % accel measurement variance
                     case 2
-                        baseline.accel.rot(1)=mean(data(1:end,j));	% baseline accel voltage
+                        baseline.accel.rot(1)=mean(data(1:end,j));  % baseline accel voltage
                         noise_var.accel.rot(1)=var(data(1:end,j));  % accel measurement variance
                     case 3
-                        baseline.accel.nut(2)=mean(data(1:end,j));	% baseline accel voltage
+                        baseline.accel.nut(2)=mean(data(1:end,j));  % baseline accel voltage
                         noise_var.accel.nut(2)=var(data(1:end,j));  % accel measurement variance
                     case 4
-                        baseline.accel.rot(2)=mean(data(1:end,j));	% baseline accel voltage
+                        baseline.accel.rot(2)=mean(data(1:end,j));  % baseline accel voltage
                         noise_var.accel.rot(2)=var(data(1:end,j));  % accel measurement variance
                 end
                 j=j+1;

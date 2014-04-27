@@ -6,7 +6,7 @@ global calibration
 css_deg = css_theta * 180 / pi;
 css_deg = round(css_deg);
 if css_deg == 0
-	css_deg = 360;
+  css_deg = 360;
 end
 
 vec = sensordata(12:14) - calibration.steady_avg(css_deg,:);

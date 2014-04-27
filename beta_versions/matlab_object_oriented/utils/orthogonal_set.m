@@ -20,19 +20,19 @@
 %           @data.y, @data.y, @data.z
 %   type  - 3x1 vector
 function [x, y, z] = orthogonal_set(z)
-	
-	z = z / norm(z);
-	
-	tmp = rand(3,1);
-	while sum(cross(z,tmp)) == 0
-		tmp = rand(3,1);
-	end
-	tmp = tmp / norm(tmp);
-	
-	y = cross(tmp,z);
-	y = y / norm(y);
-	
-	x = cross(y,z);
-	x = x / norm(x);
-	
+  
+  z = z / norm(z);
+  
+  tmp = rand(3,1);
+  while sum(cross(z,tmp)) == 0
+    tmp = rand(3,1);
+  end
+  tmp = tmp / norm(tmp);
+  
+  y = cross(tmp,z);
+  y = y / norm(y);
+  
+  x = cross(y,z);
+  x = x / norm(x);
+  
 end

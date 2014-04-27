@@ -25,9 +25,9 @@ item.data.x = 0;
 item.data.y = 0;
 fig =fig.addSeries(item);
 for i = 1:3
-	item.name = sprintf('q%d',i);
-	item.style = 'g--';
-	fig = fig.addSeries(item);
+  item.name = sprintf('q%d',i);
+  item.style = 'g--';
+  fig = fig.addSeries(item);
 end
 
 f_prop = 4;
@@ -37,40 +37,40 @@ elapse = 60;
 
 h = hist()
 for i=1:elapse*f_prop
-	pause(dt)
-	disp('')
-	disp(sprintf('Step %d',i))
+  pause(dt)
+  disp('')
+  disp(sprintf('Step %d',i))
 
-	q_dot = q_w * q;
-	
-	q_dot.vector = q_dot.vector;
-	q_dot.scalar = q_dot.scalar;
+  q_dot = q_w * q;
+  
+  q_dot.vector = q_dot.vector;
+  q_dot.scalar = q_dot.scalar;
 
-	disp(sprintf('q_dot = %s',q_dot.str))
-	
-	% scale basd on propigation frequency
-	q_dot.scalar = q_dot.scalar * dt;
-	q_dot.vector = q_dot.vector * dt;
-	
-	q = q + q_dot;
-	disp(sprintf('q     = %s',q.str))
-	disp('Normalized')
-	
-	q.normalize();
-	disp(sprintf('q     = %s',q.str))
-	args = struct; args.var = 'q'; args.value = q;
-	h = h.log(args);
-	
-	item = struct;
-	item.name = 'q0';
-	item.type = 'plot';
-	item.data.x = h.values.q(:,1);
-	item.data.y = h.values.q(:,5);
-	fig = fig.updateSeries(item);
-	for i = 1:3
-		item.name = sprintf('q%d',i);
-		item.data.x = h.values.q(:,1);
-		item.data.y = h.values.q(:,i+1);
-		fig = fig.updateSeries(item);
-	end
+  disp(sprintf('q_dot = %s',q_dot.str))
+  
+  % scale basd on propigation frequency
+  q_dot.scalar = q_dot.scalar * dt;
+  q_dot.vector = q_dot.vector * dt;
+  
+  q = q + q_dot;
+  disp(sprintf('q     = %s',q.str))
+  disp('Normalized')
+  
+  q.normalize();
+  disp(sprintf('q     = %s',q.str))
+  args = struct; args.var = 'q'; args.value = q;
+  h = h.log(args);
+  
+  item = struct;
+  item.name = 'q0';
+  item.type = 'plot';
+  item.data.x = h.values.q(:,1);
+  item.data.y = h.values.q(:,5);
+  fig = fig.updateSeries(item);
+  for i = 1:3
+    item.name = sprintf('q%d',i);
+    item.data.x = h.values.q(:,1);
+    item.data.y = h.values.q(:,i+1);
+    fig = fig.updateSeries(item);
+  end
 end

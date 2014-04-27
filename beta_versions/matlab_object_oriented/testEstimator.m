@@ -105,7 +105,7 @@ disp(' ')
 disp('Combining for estimator xdot')
 estimator.qdot = estimator.plant.qdot + estimator.sensor.qdot;
 disp(estimator.qdot.str)
-estimator.wdot = estimator.plant.wdot; % + input force?	
+estimator.wdot = estimator.plant.wdot; % + input force?  
 disp(estimator.wdot.str)
 
 disp(' ')

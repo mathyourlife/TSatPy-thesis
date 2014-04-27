@@ -11,9 +11,9 @@ item.data.x = 0;
 item.data.y = 0;
 fig =fig.addSeries(item);
 for i = 1:3
-	item.name = sprintf('q%d',i);
-	item.style = 'g--';
-	fig = fig.addSeries(item);
+  item.name = sprintf('q%d',i);
+  item.style = 'g--';
+  fig = fig.addSeries(item);
 end
 
 
@@ -31,19 +31,19 @@ ts = datenummx(clock)*24*3600;
 
 h = hist();
 while datenummx(clock)*24*3600 < ts + 40
-	pause(0.1)
-	qd.propagate();
-	args = struct; args.var = 'q'; args.value = qd.q;
-	h = h.log(args);
+  pause(0.1)
+  qd.propagate();
+  args = struct; args.var = 'q'; args.value = qd.q;
+  h = h.log(args);
 
-	item.name = 'q0';
-	item.data.x = h.values.q(:,1);
-	item.data.y = h.values.q(:,5);
-	fig = fig.updateSeries(item);
-	for i = 1:3
-		item.name = sprintf('q%d',i);
-		item.data.x = h.values.q(:,1);
-		item.data.y = h.values.q(:,i+1);
-		fig = fig.updateSeries(item);
-	end
+  item.name = 'q0';
+  item.data.x = h.values.q(:,1);
+  item.data.y = h.values.q(:,5);
+  fig = fig.updateSeries(item);
+  for i = 1:3
+    item.name = sprintf('q%d',i);
+    item.data.x = h.values.q(:,1);
+    item.data.y = h.values.q(:,i+1);
+    fig = fig.updateSeries(item);
+  end
 end

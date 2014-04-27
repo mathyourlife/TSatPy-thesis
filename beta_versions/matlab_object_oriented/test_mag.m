@@ -20,16 +20,16 @@ l = logProcessing();
 
 sensors_args = struct;
 for r=1:size(xpos.css,1)
-	pause(0.1)
-	plot_args = struct; plot_args.plot = graphs.test_mag.obj;
-	
-	sensors_args.volts.css = xpos.css(r,:);
-	sensors_args.volts.accel = xpos.accel(r,:);
-	sensors_args.volts.gyro = xpos.gyro(r,:);
-	sensors_args.volts.mag = xpos.mag(r,:);
-	tsat.sensors = tsat.sensors.update(sensors_args);
-	s.q = tsat.sensors.state.q;
-	plot_args.state = s;
-	graphs.test_mag.obj = xpos_tm.updatePlot(plot_args);
-	
+  pause(0.1)
+  plot_args = struct; plot_args.plot = graphs.test_mag.obj;
+  
+  sensors_args.volts.css = xpos.css(r,:);
+  sensors_args.volts.accel = xpos.accel(r,:);
+  sensors_args.volts.gyro = xpos.gyro(r,:);
+  sensors_args.volts.mag = xpos.mag(r,:);
+  tsat.sensors = tsat.sensors.update(sensors_args);
+  s.q = tsat.sensors.state.q;
+  plot_args.state = s;
+  graphs.test_mag.obj = xpos_tm.updatePlot(plot_args);
+  
 end

@@ -10,7 +10,7 @@ function [ css_mag, css_theta ] = conv_css_to_theta( css_voltages )
 %   theta are returned.
 %
 if (size(css_voltages,1)==1 || size(css_voltages,2)==6)
-	css_voltages = css_voltages';
+  css_voltages = css_voltages';
 end 
 css_x=0;
 css_y=0;

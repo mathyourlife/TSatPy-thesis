@@ -19,7 +19,7 @@ tb.assertEquals([3; -5],h.logs.my_scalar(:,2),'multiple scalar values in history
 
 h.historylen = 5;
 for i = 1:20
-	h = h.log(args);
+  h = h.log(args);
 end
 
 tb.assertEquals(5,size(h.logs.my_scalar,1),'checking history length is observed for scalar history');

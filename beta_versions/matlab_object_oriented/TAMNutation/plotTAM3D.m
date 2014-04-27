@@ -1,7 +1,7 @@
 function fitNormal = plotTAM3D(data,color)
 
 if nargin < 2
-	color = 'b';
+  color = 'b';
 end
 
 x = data(:,1);

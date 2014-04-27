@@ -12,12 +12,12 @@ tb.assertEquals(1,r,'getting an int returned correct value');
 args = struct;
 args.new = 1;
 try
-	r = getArg(args,'new_one');
-	tb.fail('An exception should have been thrown');
+  r = getArg(args,'new_one');
+  tb.fail('An exception should have been thrown');
 catch
-	msg = lasterror.message;
-	e_msg = 'Missing "new_one" argument';
-	tb.assertErrorMsg(e_msg,msg,'Did not request a moment torque from the actuators.');
+  msg = lasterror.message;
+  e_msg = 'Missing "new_one" argument';
+  tb.assertErrorMsg(e_msg,msg,'Did not request a moment torque from the actuators.');
 end
 
 args = struct;

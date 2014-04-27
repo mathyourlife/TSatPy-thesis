@@ -38,29 +38,29 @@ b = a * 2;
 
 msg = 'Comparison of the two body rates (lt)';
 if (a < b)
-	tb.pass(msg);
+  tb.pass(msg);
 else
-	tb.fail(msg);
+  tb.fail(msg);
 end
 
 msg = 'Comparison of the two body rates (gt)';
 if (b > a)
-	tb.pass(msg);
+  tb.pass(msg);
 else
-	tb.fail(msg);
+  tb.fail(msg);
 end
 
 msg = 'Comparison of the two body rates (le)';
 if (a <= a)
-	tb.pass(msg);
+  tb.pass(msg);
 else
-	tb.fail(msg);
+  tb.fail(msg);
 end
 
 msg = 'Comparison of the two body rates (ge)';
 if (b >= b)
-	tb.pass(msg);
+  tb.pass(msg);
 else
-	tb.fail(msg);
+  tb.fail(msg);
 end
 

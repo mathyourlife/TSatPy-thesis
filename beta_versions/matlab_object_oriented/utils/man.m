@@ -8,8 +8,8 @@
 %    value - Name of the function to print the manual
 %    type - char
 function man(varargin)
-	if nargin == 0
-		disp('What function did you want help with?')
-		return;
-	end
-	help(varargin{:})
+  if nargin == 0
+    disp('What function did you want help with?')
+    return;
+  end
+  help(varargin{:})

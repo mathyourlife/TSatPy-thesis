@@ -49,63 +49,63 @@ eh=hist();
 
 loop = 1;
 while loop
-	pause(pause_time)
-	
-	theta = rem(now,1)*24*3600*rad_per_sec;
-	args = struct; args.vector = [0 0 1]; args.theta = theta;
-	actual_state.q = quaternion(args);
-	args = struct; args.plot = fig; args.state = actual_state;
-	fig=tm_act.updatePlot(args);
-	
-	args = struct; args.w = w_est;
-	qd.propagate(args);
-	
-	args = struct; args.var = 'q_hat'; args.value = qd.q;
-	h = h.log(args);
-	
-	args = struct; args.q = qd.d;
-	s = state(args);
-	args = struct; args.plot = fig; args.state = s;
-	fig = tm_est.updatePlot(args);
+  pause(pause_time)
+  
+  theta = rem(now,1)*24*3600*rad_per_sec;
+  args = struct; args.vector = [0 0 1]; args.theta = theta;
+  actual_state.q = quaternion(args);
+  args = struct; args.plot = fig; args.state = actual_state;
+  fig=tm_act.updatePlot(args);
+  
+  args = struct; args.w = w_est;
+  qd.propagate(args);
+  
+  args = struct; args.var = 'q_hat'; args.value = qd.q;
+  h = h.log(args);
+  
+  args = struct; args.q = qd.d;
+  s = state(args);
+  args = struct; args.plot = fig; args.state = s;
+  fig = tm_est.updatePlot(args);
 
-	% Update measured model
-	Buffer2Sensor;
-	
-	args = struct; args.var = 'q'; args.value = tsat.sensors.state.q;
-	h = h.log(args);
-	
-%	args = struct; args.plot = fig; args.state = tsat.sensors.state;
-%	fig=tm_meas.updatePlot(args);
-	
-	args = struct; args.q = tsat.sensors.state.q; args.q_hat = qd.q;
-	q_e = quaternionError(args);
-	args = struct; args.var = q; args.value = q_e;
-	eh = eh.log(args);
-	
-	% Estimator
-	args = struct; args.q = q_e;
-	s = state(args);
-	args = struct; args.state = s;
-	o_pid = o_pid.update(args);
-	q_e = o_pid.state.q;
-	
-	% Update the estimated quaternion state
-	qd.q = qd.q * q_e.conj;
-	
-	% Display calculated body rates
-	wt = qd.q.conj * qd.q_dot;
-	wt.vector = -2 * wt.vector;
-	%w_est = wt.vector;
-	%disp(wt.str);
-	
-%	disp(sprintf('w=%s q_e=%s q=%s',wt.str,q_e.str,qd.q.str))
-	if (size(eh.values.q,1) > check_last)
-%		disp(sprintf('%0.5f',mean(abs(eh.q.scalar(end-20:end,2)))))
-		if (mean(abs(eh.values.q(end-check_last:end,5))) > 0.9995)
-			disp('Error Quaternon is stable')
-			loop = 0;
-		end
-	end
+  % Update measured model
+  Buffer2Sensor;
+  
+  args = struct; args.var = 'q'; args.value = tsat.sensors.state.q;
+  h = h.log(args);
+  
+%  args = struct; args.plot = fig; args.state = tsat.sensors.state;
+%  fig=tm_meas.updatePlot(args);
+  
+  args = struct; args.q = tsat.sensors.state.q; args.q_hat = qd.q;
+  q_e = quaternionError(args);
+  args = struct; args.var = q; args.value = q_e;
+  eh = eh.log(args);
+  
+  % Estimator
+  args = struct; args.q = q_e;
+  s = state(args);
+  args = struct; args.state = s;
+  o_pid = o_pid.update(args);
+  q_e = o_pid.state.q;
+  
+  % Update the estimated quaternion state
+  qd.q = qd.q * q_e.conj;
+  
+  % Display calculated body rates
+  wt = qd.q.conj * qd.q_dot;
+  wt.vector = -2 * wt.vector;
+  %w_est = wt.vector;
+  %disp(wt.str);
+  
+%  disp(sprintf('w=%s q_e=%s q=%s',wt.str,q_e.str,qd.q.str))
+  if (size(eh.values.q,1) > check_last)
+%    disp(sprintf('%0.5f',mean(abs(eh.q.scalar(end-20:end,2)))))
+    if (mean(abs(eh.values.q(end-check_last:end,5))) > 0.9995)
+      disp('Error Quaternon is stable')
+      loop = 0;
+    end
+  end
 end
 
 figure(3)

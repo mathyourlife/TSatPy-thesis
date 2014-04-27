@@ -24,12 +24,12 @@ f = fieldnames(a.thrusters);
 tb.assertEquals(1,numel(f),'Single thruster was mounted');
 
 try
-	a = a.requestMoment();
-	tb.fail('An exception should have been thrown');
+  a = a.requestMoment();
+  tb.fail('An exception should have been thrown');
 catch
-	msg = lasterror.message;
-	e_msg = 'Missing "M" argument in actuators';
-	tb.assertErrorMsg(e_msg,msg,'Did not request a moment torque from the actuators.');
+  msg = lasterror.message;
+  e_msg = 'Missing "M" argument in actuators';
+  tb.assertErrorMsg(e_msg,msg,'Did not request a moment torque from the actuators.');
 end
 
 args = struct;

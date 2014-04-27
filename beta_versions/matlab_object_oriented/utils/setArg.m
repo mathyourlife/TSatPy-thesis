@@ -8,8 +8,8 @@ function args = setArg(key,value,args)
 % in: struct args    Structure to add/modify value to
 % out: struct        Passed struct + new/modified field
 
-	if (strcmp('cell',class(key)))
-		key = char(key);
-	end
-	args.(key) = value;
+  if (strcmp('cell',class(key)))
+    key = char(key);
+  end
+  args.(key) = value;
 end

@@ -8,15 +8,15 @@ function val = getConfig(varargin)
 % Output:
 %    return the value/structure stored.
 %    If the path does not exist, return false.
-	global config
-	
-	try
-		tmp = config;
-		for i=1:nargin
-			tmp = tmp.(varargin{i});
-		end
-		val = tmp;
-	catch
-		val = false;
-	end
-	return
+  global config
+  
+  try
+    tmp = config;
+    for i=1:nargin
+      tmp = tmp.(varargin{i});
+    end
+    val = tmp;
+  catch
+    val = false;
+  end
+  return

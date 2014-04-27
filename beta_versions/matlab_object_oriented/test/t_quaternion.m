@@ -89,34 +89,34 @@ q_b = quaternion();
 q_t = quaternion();
 
 try
-	q = q_b.fromRotation();
-	tb.fail('An exception should have been thrown');
+  q = q_b.fromRotation();
+  tb.fail('An exception should have been thrown');
 catch
-	arg = 'vector';
-	e_msg = sprintf('Missing "%s" argument in quaternion',arg);
-	tb.assertErrorMsg(e_msg,lasterror.message,sprintf('Accurately rejected a missing argument "%s"',arg));
+  arg = 'vector';
+  e_msg = sprintf('Missing "%s" argument in quaternion',arg);
+  tb.assertErrorMsg(e_msg,lasterror.message,sprintf('Accurately rejected a missing argument "%s"',arg));
 end
 
 args = struct;
 args.vector = rand(3,1);
 try
-	q = q_b.fromRotation(args);
-	tb.fail('An exception should have been thrown');
+  q = q_b.fromRotation(args);
+  tb.fail('An exception should have been thrown');
 catch
-	arg = 'theta';
-	e_msg = sprintf('Missing "%s" argument in quaternion',arg);
-	tb.assertErrorMsg(e_msg,lasterror.message,sprintf('Accurately rejected a missing argument "%s"',arg));
+  arg = 'theta';
+  e_msg = sprintf('Missing "%s" argument in quaternion',arg);
+  tb.assertErrorMsg(e_msg,lasterror.message,sprintf('Accurately rejected a missing argument "%s"',arg));
 end
 
 for i=0:pi/4:2*pi
-	args = struct;
-	args.vector = rand(3,1);
-	args.theta = i;
-	q = q_b.fromRotation(args);
+  args = struct;
+  args.vector = rand(3,1);
+  args.theta = i;
+  q = q_b.fromRotation(args);
 
-	q_t.vector = (args.vector / norm(args.vector)) * sin(-args.theta/2);
-	q_t.scalar = cos(-args.theta/2);
-	tb.assertEquals(q_t, q, sprintf('fromRotation produced the correct quaternion for angle %0.4f',i));
+  q_t.vector = (args.vector / norm(args.vector)) * sin(-args.theta/2);
+  q_t.scalar = cos(-args.theta/2);
+  tb.assertEquals(q_t, q, sprintf('fromRotation produced the correct quaternion for angle %0.4f',i));
 end
 
 vec = rand(3,1);
@@ -149,31 +149,31 @@ tb.assertMaxError(q_1, q_3, 0.0001, 'Verifying full rotation');
 %
 
 for e_theta = -5*pi:pi/4:5*pi
-	
-	vector = rand(3,1)*2 - 1;
-	vector = vector / norm(vector);
-	
-	args = struct;
-	args.vector = vector;
-	args.theta = e_theta;
-	
-	q1 = quaternion(args);
-	
-	[r_vector, r_theta] = q1.toRotation();
-	
-	args2 = struct;
-	args2.theta = r_theta;
-	args2.vector = r_vector;
-	
-	q2 = quaternion(args2);
-	
-	q1.vector = round(q1.vector .* 10000000) ./ 10000000;
-	q2.vector = round(q2.vector .* 10000000) ./ 10000000;
-	q1.scalar = round(q1.scalar .* 10000000) ./ 10000000;
-	q2.scalar = round(q2.scalar .* 10000000) ./ 10000000;
-	
-	msg = sprintf('Converted back and forth between angle and quaternion representation for a %0.1f degrees',e_theta/pi*180);
-	tb.assertMaxError(q1,q2,0.1,msg);
+  
+  vector = rand(3,1)*2 - 1;
+  vector = vector / norm(vector);
+  
+  args = struct;
+  args.vector = vector;
+  args.theta = e_theta;
+  
+  q1 = quaternion(args);
+  
+  [r_vector, r_theta] = q1.toRotation();
+  
+  args2 = struct;
+  args2.theta = r_theta;
+  args2.vector = r_vector;
+  
+  q2 = quaternion(args2);
+  
+  q1.vector = round(q1.vector .* 10000000) ./ 10000000;
+  q2.vector = round(q2.vector .* 10000000) ./ 10000000;
+  q1.scalar = round(q1.scalar .* 10000000) ./ 10000000;
+  q2.scalar = round(q2.scalar .* 10000000) ./ 10000000;
+  
+  msg = sprintf('Converted back and forth between angle and quaternion representation for a %0.1f degrees',e_theta/pi*180);
+  tb.assertMaxError(q1,q2,0.1,msg);
 end
 
 %
@@ -359,19 +359,19 @@ r=quaternion(args);
 tb.assertEquals(r,q/2,'check quotient of quaternion / scalar');
 
 try
-	2/q;
-	tb.fail('An exception should have been thrown');
+  2/q;
+  tb.fail('An exception should have been thrown');
 catch
-	e_msg = 'Attempt to reference field of non-structure array.';
-	tb.assertErrorMsg(e_msg,lasterror.message,'Error thown when attempting to divide scalar / quaternion');
+  e_msg = 'Attempt to reference field of non-structure array.';
+  tb.assertErrorMsg(e_msg,lasterror.message,'Error thown when attempting to divide scalar / quaternion');
 end
 
 try
-	q/q;
-	tb.fail('An exception should have been thrown');
+  q/q;
+  tb.fail('An exception should have been thrown');
 catch
-	e_msg = 'Attempt to reference field of non-structure array.';
-	tb.assertErrorMsg(e_msg,lasterror.message,'Error thown when attempting to divide quaternion / quaternion');
+  e_msg = 'Attempt to reference field of non-structure array.';
+  tb.assertErrorMsg(e_msg,lasterror.message,'Error thown when attempting to divide quaternion / quaternion');
 end
 
 %
@@ -393,19 +393,19 @@ v=quaternion(args);
 tb.assertEquals(v,s,'sum of two quaternions.');
 
 try
-	q + 3;
-	tb.fail('An exception should have been thrown');
+  q + 3;
+  tb.fail('An exception should have been thrown');
 catch
-	e_msg = 'Attempt to reference field of non-structure array.';
-	tb.assertErrorMsg(e_msg,lasterror.message,'Error thown when attempting to sum a quaternion and a scalar');
+  e_msg = 'Attempt to reference field of non-structure array.';
+  tb.assertErrorMsg(e_msg,lasterror.message,'Error thown when attempting to sum a quaternion and a scalar');
 end
 
 try
-	4 + q;
-	tb.fail('An exception should have been thrown');
+  4 + q;
+  tb.fail('An exception should have been thrown');
 catch
-	e_msg = 'Attempt to reference field of non-structure array.';
-	tb.assertErrorMsg(e_msg,lasterror.message,'Error thown when attempting to sum a scalar and a quaternion');
+  e_msg = 'Attempt to reference field of non-structure array.';
+  tb.assertErrorMsg(e_msg,lasterror.message,'Error thown when attempting to sum a scalar and a quaternion');
 end
 
 %
@@ -427,19 +427,19 @@ v=quaternion(args);
 tb.assertEquals(v,s,'difference of two quaternions.');
 
 try
-	q - 3;
-	tb.fail('An exception should have been thrown');
+  q - 3;
+  tb.fail('An exception should have been thrown');
 catch
-	e_msg = 'Attempt to reference field of non-structure array.';
-	tb.assertErrorMsg(e_msg,lasterror.message,'Error thown when attempting to find the difference a quaternion and a scalar');
+  e_msg = 'Attempt to reference field of non-structure array.';
+  tb.assertErrorMsg(e_msg,lasterror.message,'Error thown when attempting to find the difference a quaternion and a scalar');
 end
 
 try
-	4 - q;
-	tb.fail('An exception should have been thrown');
+  4 - q;
+  tb.fail('An exception should have been thrown');
 catch
-	e_msg = 'Attempt to reference field of non-structure array.';
-	tb.assertErrorMsg(e_msg,lasterror.message,'Error thown when attempting to find the difference a scalar and a quaternion');
+  e_msg = 'Attempt to reference field of non-structure array.';
+  tb.assertErrorMsg(e_msg,lasterror.message,'Error thown when attempting to find the difference a scalar and a quaternion');
 end
 
 %
@@ -663,18 +663,18 @@ tb.assertEquals([],pts,'Empty set returned');
 
 args = struct;
 args.points = [
-	1 0 0;
-	0 1 0;
-	0 0 1
-	];
+  1 0 0;
+  0 1 0;
+  0 0 1
+  ];
 
 pts = q.rotate_points(args);
 
 r_pts = [
-	0 1 0;
-	-1 0 0;
-	0 0 1
-	];
+  0 1 0;
+  -1 0 0;
+  0 0 1
+  ];
 
 tb.assertMaxError(r_pts, pts, 0.1, 'Rotate a set of points');
 
@@ -685,16 +685,16 @@ q = quaternion(args);
 
 args = struct;
 args.points = [
-	1 0 0;
-	0 1 0
-	];
+  1 0 0;
+  0 1 0
+  ];
 
 pts = q.rotate_points(args);
 
 r_pts = [
-	1 0 0;
-	0 1/sqrt(2) -1/sqrt(2)
-	];
+  1 0 0;
+  0 1/sqrt(2) -1/sqrt(2)
+  ];
 
 tb.assertMaxError(r_pts, pts, 0.1, 'Rotate a set of points negative angle');
 
@@ -708,35 +708,35 @@ tb.assertMaxError(r_pts, pts, 0.1, 'Rotate a set of points negative angle');
 
 q = quaternion();
 try
-	q.rotate_surf_points();
-	tb.fail('An exception should have been thrown');
+  q.rotate_surf_points();
+  tb.fail('An exception should have been thrown');
 catch
-	arg = 'x';
-	e_msg = sprintf('Missing "%s" argument in quaternion',arg);
-	tb.assertErrorMsg(e_msg,lasterror.message,sprintf('Accurately rejected a missing argument "%s"',arg));
+  arg = 'x';
+  e_msg = sprintf('Missing "%s" argument in quaternion',arg);
+  tb.assertErrorMsg(e_msg,lasterror.message,sprintf('Accurately rejected a missing argument "%s"',arg));
 end
 
 args = struct;
 args.x = [];
 
 try
-	q.rotate_surf_points(args);
-	tb.fail('An exception should have been thrown');
+  q.rotate_surf_points(args);
+  tb.fail('An exception should have been thrown');
 catch
-	arg = 'y';
-	e_msg = sprintf('Missing "%s" argument in quaternion',arg);
-	tb.assertErrorMsg(e_msg,lasterror.message,sprintf('Accurately rejected a missing argument "%s"',arg));
+  arg = 'y';
+  e_msg = sprintf('Missing "%s" argument in quaternion',arg);
+  tb.assertErrorMsg(e_msg,lasterror.message,sprintf('Accurately rejected a missing argument "%s"',arg));
 end
 
 args.y = [];
 
 try
-	q.rotate_surf_points(args);
-	tb.fail('An exception should have been thrown');
+  q.rotate_surf_points(args);
+  tb.fail('An exception should have been thrown');
 catch
-	arg = 'z';
-	e_msg = sprintf('Missing "%s" argument in quaternion',arg);
-	tb.assertErrorMsg(e_msg,lasterror.message,sprintf('Accurately rejected a missing argument "%s"',arg));
+  arg = 'z';
+  e_msg = sprintf('Missing "%s" argument in quaternion',arg);
+  tb.assertErrorMsg(e_msg,lasterror.message,sprintf('Accurately rejected a missing argument "%s"',arg));
 end
 
 args = struct;

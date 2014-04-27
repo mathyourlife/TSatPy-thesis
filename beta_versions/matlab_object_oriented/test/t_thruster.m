@@ -2,23 +2,23 @@ disp('Testing thruster class')
 
 tb=testBase;
 try
-	th = thruster();
-	tb.fail('An exception should have been thrown');
+  th = thruster();
+  tb.fail('An exception should have been thrown');
 catch
-	msg = lasterror.message;
-	e_msg = 'Missing "center" argument in thruster';
-	tb.assertErrorMsg(e_msg,msg,'Did not specify a thruster center');
+  msg = lasterror.message;
+  e_msg = 'Missing "center" argument in thruster';
+  tb.assertErrorMsg(e_msg,msg,'Did not specify a thruster center');
 end
 
 args = struct;
 args.center = rand(3,1);
 try
-	th = thruster(args);
-	tb.fail('An exception should have been thrown');
+  th = thruster(args);
+  tb.fail('An exception should have been thrown');
 catch
-	msg = lasterror.message;
-	e_msg = 'Missing "direction" argument in thruster';
-	tb.assertErrorMsg(e_msg,msg,'Did not specify a thruster direction');
+  msg = lasterror.message;
+  e_msg = 'Missing "direction" argument in thruster';
+  tb.assertErrorMsg(e_msg,msg,'Did not specify a thruster direction');
 end
 
 args.direction = rand(3,1);
@@ -37,10 +37,10 @@ tb.assertEquals('thispushesthings',th.plot_name,'Thruster was given a safe plot 
 % Check that the plot points make a circle around the thruster's center
 t_radius = -1;
 for i=1:size(th.pts,1)
-	if (t_radius ~= -1)
-		tb.assertMaxError(t_radius,norm(th.pts(i,:) - th.center'),0.5,sprintf('Consistent plotting radius between points %d and %d',i-1,i	));
-	end
-	t_radius = norm(th.pts(i,:) - th.center');
+  if (t_radius ~= -1)
+    tb.assertMaxError(t_radius,norm(th.pts(i,:) - th.center'),0.5,sprintf('Consistent plotting radius between points %d and %d',i-1,i  ));
+  end
+  t_radius = norm(th.pts(i,:) - th.center');
 end
 
 

@@ -24,10 +24,10 @@ data = struct; data.x = 0; data.y = 0; item.data = data;
 args = struct; args.action = 'addseries'; args.graph = 'sim_q_propagation'; args.item = item;
 graphManager(args);
 for i = 1:3
-	item = struct; item.name = sprintf('q_hat%d',i); item.type = 'plot';
-	data = struct; data.x = 0; data.y = 0; item.data = data;
-	args = struct; args.action = 'addseries'; args.graph = 'sim_q_propagation'; args.item = item;
-	graphManager(args);
+  item = struct; item.name = sprintf('q_hat%d',i); item.type = 'plot';
+  data = struct; data.x = 0; data.y = 0; item.data = data;
+  args = struct; args.action = 'addseries'; args.graph = 'sim_q_propagation'; args.item = item;
+  graphManager(args);
 end
 legend('q0','q1','q2','q3','Location','EastOutside');
 title 'Quaternion Dynamics Propagation'
@@ -43,31 +43,31 @@ h=hist();
 % Preallocate movie structure.
 nFrames = 80;
 if record_it
-	clear mov;
+  clear mov;
 end
 rate = 0.25;
 for increment=1:nFrames
-	pause(rate)
+  pause(rate)
 
-	qd.propagate(prop_args);
-	args = struct; args.var = 'q_hat'; args.value = qd.q;
-	h = h.log(args);
-	
-	item = struct; item.name = 'q_hat0'; item.type = 'plot';
-	data = struct; data.x = h.logs.q_hat(:,1); data.y = h.logs.q_hat(:,5); item.data = data;
-	args = struct; args.action = 'updateseries'; args.graph = 'sim_q_propagation'; args.item = item;
-	graphManager(args);
-	for i = 1:3
-		item = struct; item.name = sprintf('q_hat%d',i); item.type = 'plot';
-		data = struct; data.x = h.logs.q_hat(:,1); data.y = h.logs.q_hat(:,i+1); item.data = data;
-		args = struct; args.action = 'updateseries'; args.graph = 'sim_q_propagation'; args.item = item;
-		graphManager(args);
-	end
-	if record_it
-		mov(increment)=getframe(fh);
-	end
+  qd.propagate(prop_args);
+  args = struct; args.var = 'q_hat'; args.value = qd.q;
+  h = h.log(args);
+  
+  item = struct; item.name = 'q_hat0'; item.type = 'plot';
+  data = struct; data.x = h.logs.q_hat(:,1); data.y = h.logs.q_hat(:,5); item.data = data;
+  args = struct; args.action = 'updateseries'; args.graph = 'sim_q_propagation'; args.item = item;
+  graphManager(args);
+  for i = 1:3
+    item = struct; item.name = sprintf('q_hat%d',i); item.type = 'plot';
+    data = struct; data.x = h.logs.q_hat(:,1); data.y = h.logs.q_hat(:,i+1); item.data = data;
+    args = struct; args.action = 'updateseries'; args.graph = 'sim_q_propagation'; args.item = item;
+    graphManager(args);
+  end
+  if record_it
+    mov(increment)=getframe(fh);
+  end
 end
 
 if record_it
-	movie2avi(mov,'filename.avi', 'COMPRESSION', 'Cinepak','FPS',floor(1/rate));
+  movie2avi(mov,'filename.avi', 'COMPRESSION', 'Cinepak','FPS',floor(1/rate));
 end

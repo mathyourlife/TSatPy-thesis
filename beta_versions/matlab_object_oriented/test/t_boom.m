@@ -2,33 +2,33 @@ disp('Testing boom class')
 
 tb=testBase;
 try
-	b = boom();
-	tb.fail('An exception should have been thrown');
+  b = boom();
+  tb.fail('An exception should have been thrown');
 catch
-	msg = lasterror.message;
-	e_msg = 'Trying to create a boom without specifying mount (a mount point)';
-	tb.assertErrorMsg(e_msg,msg,'Did not specify a mount point');
+  msg = lasterror.message;
+  e_msg = 'Trying to create a boom without specifying mount (a mount point)';
+  tb.assertErrorMsg(e_msg,msg,'Did not specify a mount point');
 end
 
 args = struct;
 args.mount = rand(3,1);
 try
-	b = boom(args);
-	tb.fail('An exception should have been thrown');
+  b = boom(args);
+  tb.fail('An exception should have been thrown');
 catch
-	msg = lasterror.message;
-	e_msg = 'Trying to create a boom without specifying direction (the direction the boom extends from the mount point)';
-	tb.assertErrorMsg(e_msg,msg,'Did not specify a direction');
+  msg = lasterror.message;
+  e_msg = 'Trying to create a boom without specifying direction (the direction the boom extends from the mount point)';
+  tb.assertErrorMsg(e_msg,msg,'Did not specify a direction');
 end
 
 args.direction = rand(3,1);
 try
-	b = boom(args);
-	tb.fail('An exception should have been thrown');
+  b = boom(args);
+  tb.fail('An exception should have been thrown');
 catch
-	msg = lasterror.message;
-	e_msg = 'Trying to create a boom without specifying lengh (the direction the boom length)';
-	tb.assertErrorMsg(e_msg,msg,'Did not specify a length');
+  msg = lasterror.message;
+  e_msg = 'Trying to create a boom without specifying lengh (the direction the boom length)';
+  tb.assertErrorMsg(e_msg,msg,'Did not specify a length');
 end
 
 args.length = rand();
