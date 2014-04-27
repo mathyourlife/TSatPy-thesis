@@ -4,8 +4,8 @@
 
 The NASA MMS TableSat 1A is a limited 3-DOF experimental test platform for the NASA MMS satellite (Figure \ref{fig:TSatFullView}).  The experimental platform is designed and constructed with the aid of other UNH Advanced Control Lab researchers to mimic the actual MMS spacecraft.  All electronics, booms, and actuators are attached to a circular PVC bus.  The aluminum hub at its center has a hollow center which allow it to rest on a center post giving the main platform full rotation about its z-axis and limited rotation about its x and y-axes.  Five out of the six booms present on the MMS spacecraft are represented on TableSat 1A.  The four Spin-plane Double Probe (SDP) booms extend radially from the bus at 90 degree intervals.  One of the MMS's Axial Double Probe (ADP) booms is modeled with a boom attached to the center post of the TableSat.
 
-\begin{figure}[ht]
-  \centerline{\psfig{file=figures/tsat_full_view.eps,height=4in}}
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/tsat_full_view.eps,height=3in}}
   \caption{TableSat 1A Full View}
   \label{fig:TSatFullView}
 \end{figure}
@@ -13,11 +13,10 @@ The NASA MMS TableSat 1A is a limited 3-DOF experimental test platform for the N
 \section{Booms}
 \label{sec:Booms}
 
-The ADP booms are modeled with a selection of flexible antenna.  The physical model provides a basis for understanding the boom dynamics under rotation where the analytical tool in previous research \cite{mushawehthesis} were unable to.  Attaching weights to the tip and varying the stiffness of the selected antenna allows for some tuning to their fundamental frequency.  Since the SDP booms extend perpendicularly to gravity, two choices are made for their modeling.  For free motion, the cylindrical antenna for the ADP boom are also used for the SDP booms.  The disadvantage to these booms especially when adding weights to reduce their natural frequency is that they droop under the pull of gravity.  An alternative to the cylindrical antenna for the SPD booms is thin and flat strips of metal.  Attaching them to the TableSat's bus such that they are standing on edge removes the gravitational drooping, but still allows for the boom to bend back and forth in the spin plane.  This also restricts the boom's freedom of movement, so a combination of results is be needed to predict the MMS boom's behavior while in orbit.
+The ADP booms are modeled with a selection of flexible antenna.  The physical model provides a basis for understanding the boom dynamics under rotation where the analytical tools in previous research \cite{mushawehthesis} were unable to.  Attaching weights to the tip and varying the stiffness of the selected antenna allows for some tuning to their fundamental frequency.  Since the SDP booms extend perpendicularly to gravity, two choices are made for their modeling.  For free motion, the cylindrical antenna for the ADP boom are also used for the SDP booms.  The disadvantage to these booms especially when adding weights to reduce their natural frequency is that they droop under the pull of gravity (Figure \ref{fig:WeightedSDPBooms}).  An alternative to the cylindrical antenna for the SPD booms are thin and flat strips of metal.  Attaching them to the TableSat's bus such that they are standing on edge removes the gravitational drooping, but still allows for the boom to bend back and forth in the spin plane.  This also restricts the boom's freedom of movement, so a combination of results is needed to predict the MMS boom's behavior while in orbit.
 
-\TODO{From the results above it seems that the Ford Focus antenna could be used to model the ADP on TableSat as long as there is a mass adjustment on the antenna itself raising the frequency of the antenna. It would seem that the Ford Focus antenna would most likely be able to handle a wider range of frequencies because initially it has the lowest frequency. To model the 0.1 Hz ADP with the Ford antenna 3.646 Kg would have to be added to the antenna but for 0.3 Hz only 0.368 Kg would have to be added. Thus scaling TableSat up a factor of three while using the Ford antenna seems feasible. \cite{laakso}}
 
-\begin{figure}[ht]
+\begin{figure}[H]
   \centerline{\psfig{file=figures/sdp_boom_droop.eps,width=6in}}
   \caption{Weighted SDP Booms \cite{laakso}}
   \label{fig:WeightedSDPBooms}
@@ -33,9 +32,9 @@ The ADP booms are modeled with a selection of flexible antenna.  The physical mo
 \section{Flight Controller}
 \label{sec:FlightController}
 
-The onboard flight controller is an Athena PC from Diamond Systems powered by a Jupiter power supply and lithium-ion rechargeable battery.  The Athena processor and Jupiter power supply are mounted in a rapid prototyping housing with open sides for ventilation.  A custom printed circuit board designed by members of the UNH TableSat 1A team is mounted on top of the rapid prototyping housing.  User Datagram Protocol (UDP) based communication (Section \ref{subsec:MessageDefinitions}) to the base station is transmitted through a wireless access point.
+The onboard flight controller is an Athena PC from Diamond Systems powered by a Jupiter power supply and lithium-ion rechargeable battery.  The Athena processor and Jupiter power supply are mounted in a rapid prototyping housing with open sides for ventilation.  A custom printed circuit board (Figure \ref{fig:WiredPCB}), designed by members of the UNH TableSat 1A team, is mounted on top of the rapid prototyping housing.  User Datagram Protocol (UDP) based communication (Section \ref{subsec:MessageDefinitions}) to the base station is transmitted through a wireless access point.
 
-The UNH TableSat 1A team also created a C program based off of Vess' ``open-loop'' flight controller \cite{vessthesis} .  This program is responsible for listening on a UDP socket on the TableSat and performing a limited set of actions based on the message packets it receives from the base station.  The most common messages triggered are actions such as altering the voltage commands to the actuators, scanning the sensor ports, and sending back the voltage measurements to the base station through UDP.
+The UNH TableSat 1A team also created a C program based off of Vess' ``open-loop'' flight controller \cite{vessthesis} .  This program is responsible for listening on a UDP socket on the TableSat and performing a limited set of actions based on the message packets it receives from the base station.  The most common messages triggered are actions such as altering the voltage commands to the actuators, scanning the sensor ports, and sending back the sensor voltage measurements to the base station through the UDP socket.
 
 \begin{figure}[ht]
   \centerline{\psfig{file=figures/pcb_wired.eps,height=4in}}
@@ -47,27 +46,22 @@ The UNH TableSat 1A team also created a C program based off of Vess' ``open-loop
 \section{Actuators}
 \label{sec:Actuators}
 
-In addition to the booms extending from the TableSat's bus, four single direction analog input computer fans are mounted to provide a source of thrust (Figure \ref{fig:TSatComponents}).  Two fans are mounted standing upright to provide radial torque and provide control to the rotation rate.  One pointing clockwise and the other counter clockwise have their centers level with the pivot point inside the central hub.  Two other fans are mounted facing down to provide limited opportunities for nutation control.  At a minimum, four single directional fans are needed to provide full state control for both positive and negative moments about the $x$ and $y$ axes.  The fans on TableSat 1A provide limited thrust compared to the mass of the TableSat and friction in the mount point.  Through testing, the fans are found to provide insufficient thrust to differentiate between naturally damped out nutation from controlled nutation.
-
-Individual fans are actuated via specific voltage commands.  Voltages are set through an analog port and are allowed to vary between \TODO{find limits}.  Voltages below \TODO{Lower limit} either are not high enough to overcome static friction or risk damaging the fan by rotating far below the normal speed.
-
-\TODO{CO2 thrusters}
+In addition to the booms extending from the TableSat's bus, four single direction analog input computer fans are mounted to provide a source of thrust (Figure \ref{fig:TSatComponents}).  Two fans are mounted standing upright to provide radial torque and provide control to the rotation rate.  One pointing clockwise and the other counter clockwise have their centers level with the pivot point inside the central hub.  Two other fans are mounted facing down to provide limited opportunities for nutation control.  At a minimum, four single directional fans are needed to provide full state control for both positive and negative moments about the $x$ and $y$ axes.  The fans on TableSat 1A provide limited thrust compared to the mass of the TableSat and friction in the mount point.  Through testing, the fans are found to provide insufficient thrust to differentiate between naturally damped out nutation from controlled nutation.  CO2 thrusters prove to be too powerful, freeze the solenoid valve, and lack the capacity to sustain the long thrusts needed for adequately controlled maneuvers.
 
 \section{Sensors}
 \label{sec:Sensors}
 
-Four classes of analog sensors are implemented in NASA MMS TableSat 1A's design. Gyroscope (Section \ref{subsec:Gyroscope}) and accelerometer (Section \ref{subsec:Accelerometer}) for velocity measurements.  Coarse sun sensor (Section \ref{subsec:CoarseSunSensor}), and magnetometer (Section \ref{subsec:TripleAxisMagnetometer}) for position measurements.  These sensors and the four actuators filled all available analog ports on the onboard Athena flight computer.  As is described below, the gyroscopes and accelerometers are not used for the observer-based controllers in this thesis leaving just positional measurements from the coarse sun sensors and triple axis magnetometer.
+Four classes of analog sensors are implemented in NASA MMS TableSat 1A's design: a gyroscope and accelerometer for velocity measurements and a coarse sun sensor and magnetometer for angular attitude measurements.  These sensors and the four actuators fill all available analog ports in the onboard Athena flight computer.
+
+Figure \ref{fig:SensorVoltageReadings} shows the sensor reading as they are pulled into the base stations control system.  The top left plot contains the six voltage readings from the coarse sun sensors (CSS).  The CSS are easily saturated with ambient light as the sensor reading indicate in the plot.  A translucent film is added (Figure \ref{fig:CoarseSunSensorAssembly}) to address the saturated readings.  The top right portion of the graph contains the accelerometer readings.  AccelN1 and AccelN2 are 2g accelerometers and are oriented vertically at the edge of the bus to pick up accelerations due to nutation.  The AccelR1 and AccelR2 accelerometers are mounted at the edge of the bus as well but are oriented horizontally.  These sensors have a finer resolution at 0.5g since they do not need to compensate for the 1g of gravity.  The lower left plot shows the voltage produced by the single axis gyroscope, and the lower right contains the voltages for the three axes of the triple axis magnetometer.  With the gyroscope only available for validation and the AccelN1 and N2 with significantly high signal to noise ratios, that leaves the CSS, TAM, AccelR1, and R2 for attitude and angular velocity measurements.  After some additional testing it's found that the AccelR1 and R2 detect a mixture of changes to $\omega_z$ as well as a portion of the gravitational field as the sensor tilts slightly during a nutation.  This makes it difficult to differentiate a nutation from changes in angular velocity, so the TableSat's state measurement is left to the coarse sun sensor and magnetometer.
 
 \begin{figure}[H]
-\centerline{\psfig{file=figures/sensor_voltage_charts.eps,height=4in}}
-\caption{Sensor Voltage Readings}
-\label{fig:SensorVoltageReadings}
+  \centerline{\psfig{file=figures/sensor_voltage_charts.eps,height=4in}}
+  \caption{Sensor Voltage Readings}
+  \label{fig:SensorVoltageReadings}
 \end{figure}
 
-\subsection{Gyroscope}
-\label{subsec:Gyroscope}
-
-Gyroscopes remain one of the most accurate sensors for detecting changes to a structure's angular body rates.  The issue with their use is that to increasing the accuracy of a gyroscope means using a heavier sensor.  Since any additional weight is a serious launch concern for a satellite, this research for NASA's MMS mission uses the gyro scope solely as a verification method.  The gyroscope selected for TableSat 1A is a single axis gyroscope that is mounted on the printed circuit board at the top of the flight controller housing.  The gyroscope is oriented to detect changes in body rates about the TableSat's z-axis although is mounted slightly above the center hub's pivot point so will pick up small signals from any limited nutation encountered.
+Gyroscopes remain one of the most accurate sensors for detecting changes to a structure's angular body rates.  Unfortunately, they have significant weight and become unreliable at times.  Since any additional weight is a serious launch concern for a satellite, and because it has been shown that gyroless observer-based control of the MMS spacecraft is reliable \cite{mushawehthesis}, NASA has chosen to fly the MMS mission without gyroscopes.  As such, this research uses the gyroscope solely as a verification method.  The gyroscope selected for TableSat 1A is a single axis gyroscope that is mounted on a printed circuit board (Figure \ref{fig:WiredPCB}) at the top of the flight controller housing.  The gyroscope is oriented to detect changes in body rates about the TableSat's $z$ rotational axis.  It is mounted slightly above the center hub's pivot point and, therefore, unintentionally detects small signals from any limited nutation encountered.
 
 \subsection{Accelerometer}
 \label{subsec:Accelerometer}
