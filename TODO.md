@@ -1,13 +1,5 @@
 ### TODO
 
-* Finish Thein Edits
-* TableSat Attitude Software Implementation
-* 526
-* duplacate "rotating a point with a quaternion"
-* finish obc chapter
-* make sure message definition fits with chapter
-* revisit intro for chapters 1 is 2 is ...
-
 * pres
 * 10 sig pages
 
