@@ -2,7 +2,7 @@
 \chapter{TABLESAT ATTITUDE SOFTWARE IMPLEMENTATION}
 \label{chap:TableSatAttitudeDynamicsSoftware}
 
-\TODO{This chapter is just pulled out code snippets for now.  Will fill in text}
+This chapter covers the software implementation of the attitude dynamics and control systems.  Although multiple versions of the software are created as is discussed in Chapters \ref{chap:ProgressionOfControlSystemSoftware} and \ref{chap:UNHTableSat1A}, the samples shown here are use cases of the TSatPy implementation.
 
 \section{Implementation of Attitude Modeling}
 \label{sec:ImplementationofAttitudeModeling}
@@ -11,7 +11,7 @@
 \subsection{Quaternion Notation}
 \label{subsec:Implementation-QuaternionNotation}
 
-As is described more in Chapter \ref{chap:TSatPy}, the implementation in this thesis is done in an object oriented manner so it can handle either the scalar first or scalar last format.
+Defining a rotational quaternion using the TSatPy avoids a common issue with quaternion use where the scalar component can be placed at the leading or trailing end of the tensor depending on the author's discretion.  As is described more in Chapter \ref{chap:TSatPy}, the implementation in this thesis is done in an object oriented manner so it can handle either the scalar first or scalar last format.
 
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
@@ -31,8 +31,9 @@ print(q)
 \section{Rotational Quaternion}
 \label{sec:Implementation-RotationalQuaternion}
 
-Creating a rotational quaternion from the TSatPy (Chapter \ref{chap:TSatPy}) is done with
+The rotational quaternion is chosen as the attitude parametrization of the state vector.  As such, the two properties required to define a rotational quaternion are the Euler axis of rotation $\bs{\hat{e}}$ and the angle of rotation $\theta$.  Snippet \ref{code:make_quat_rot} demonstrates the creation of a rotational quaternion.  It also shows that proper normalization of the quaternion occurs to ensure accurate calculations.
 
+\begin{listing}[H]
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
 from TSatPy.State import Quaternion
@@ -51,11 +52,19 @@ print("Rotation: %g radians" % theta)
   \end{minted}
   \nocite{minted}
 \end{singlespace}
+\caption{Creating a rotational quaternion}
+\label{code:make_quat_rot}
+\nocite{minted}
+\end{singlespace}
+\end{listing}
 
 \subsection{Quaternion Multiplication}
 \label{subsec:Implementation-QuaternionMultiplication}
 
-The example below shows how this incremental changes holds true with the TSatPy library.
+Propagating a quaternion state accurately requires the use of the quaternion multiplication defined in \ref{eqn:QuaternionMultiplicationDerived}.  TSatPy achieves this by overriding the normal multiplication infix operator ``*''.  Snippet
+\ref{code:quat_mul} demonstrates how a quaternion created from a 2 radian rotation represents the same attitude as the product of four 0.5 radian quaternions.
+
+\begin{listing}[H]
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
 from TSatPy.State import Quaternion
@@ -72,9 +81,15 @@ print("b             = %s" % b)
   \end{minted}
   \nocite{minted}
 \end{singlespace}
+\caption{Quaternion multiplication}
+\label{code:quat_mul}
+\nocite{minted}
+\end{singlespace}
+\end{listing}
 
-The following snippet is the implementation of the quaternion multiplication which reads and is used similarly to how the quaternion algebra is written.
+Snippet \ref{code:quat_mul_source} shows the implementation of the quaternion multiplication which reads and is used similarly to how the quaternion algebra is written.
 
+\begin{listing}
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
 class Quaternion(object):
@@ -84,8 +99,12 @@ class Quaternion(object):
         s = self.scalar * q.scalar - (self.vector.T * q.vector)[0, 0]
         return Quaternion(v, s)
   \end{minted}
-  \nocite{minted}
 \end{singlespace}
+\caption{Quaternion multiplication method}
+\label{code:quat_mul_source}
+\nocite{minted}
+\end{singlespace}
+\end{listing}
 
 
 \subsection{Rotating a Point with Quaternions}
@@ -225,6 +244,43 @@ This implementation has both a significant theoretical and implementation issue.
 
 \subsection{Quaternion Decomposition}
 \label{subsec:TSatPyQuaternionDecomposition}
+
+The need for a quaternion decomposition is noted in Section \ref{subsec:QuaternionDecompositionForNutationControl} of the controls chapter and the method for performing the decomposition is derived in \ref{subsec:QuaternionDecomposition}.  Snippet \ref{code:sample_quaternion_decomposition} shows a this functionality as built in the TSatPy software through the decomposition of a quaternion representing a 1 radian rotation about the Euler axis $[0 \ 0.1 \ 1]^T$
+
+\begin{listing}[H]
+\begin{singlespace}
+  \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
+from TSatPy.State import State, Quaternion, BodyRate
+
+print("State Error")
+x_e = State(
+    Quaternion([0,0.1,1],radians=1),
+    BodyRate([0,-0.01,0.2]))
+print("x_e: %s" % (x_e))
+
+print("Decomposed Quaternion")
+q_r, q_n = x_e.q.decompose()
+print("q_r: %s" % q_r)
+print("q_n: %s" % q_n)
+
+print("Nutation Only State Error")
+x_e.q = q_n
+print("x_e: %s" % (x_e))
+
+# Prints Out
+# State Error
+# x_e: <Quaternion [-0 -0.0477046 -0.477046], 0.877583>, <BodyRate [0 -0.01 0.2]>
+# Decomposed Quaternion
+# q_r: <Quaternion [0 0 -0.47759], 0.878583>
+# q_n: <Quaternion [-0.0227833 -0.0419125 -0], -0.998861>
+# Nutation Only State Error
+# x_e: <Quaternion [-0.0227833 -0.0419125 -0], -0.998861>, <BodyRate [0 -0.01 0.2]>
+  \end{minted}
+\caption{Quaternion decomposition}
+\label{code:sample_quaternion_decomposition}
+\nocite{minted}
+\end{singlespace}
+\end{listing}
 
 
 
