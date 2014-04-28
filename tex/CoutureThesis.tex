@@ -1,8 +1,8 @@
 \documentclass[11pt,doublespace]{unhthesis}
 
 
-% \includeonly{
-% sections/Introduction,
+\includeonly{
+sections/Introduction,
 % sections/SatelliteAttitudeModeling,
 % sections/TableSat1A,
 % sections/TableSatAttitudeDynamicsSoftware,
@@ -15,7 +15,7 @@
 % sections/Conclusions,
 % sections/FutureWork,
 % sections/EquationSummary,
-% }
+}
 
 \usepackage{custom}
 \renewcommand\listingscaption{Snippet}
@@ -25,7 +25,7 @@
 
 \begin{document}
 
-\title{Development of a Modular Application for Observer-Based Control Systems for NASA's Spin-Stabilized MMS Mission Spacecraft}
+\title{Development of a Modular Application for Analyzing Observer-Based Control Systems for NASA's Spin-Stabilized MMS Mission Spacecraft}
 \author{Daniel R. Couture}
 \prevdegrees{B.S. Mechanical Engineering, University of New Hampshire, 2001}
 \major{Mechanical Engineering}
@@ -37,6 +37,10 @@
 \Documenttype{Thesis}
 \documenttype{thesis}
 \maketitle
+
+\abstractcontents{This thesis utilizes an experimental table top satellite prototype (NASA MMS TableSat IA) to span two main efforts.  The first is to create a physical model of a satellite for NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control systems (ADCS) techniques.  The ADCS maintains the TableSat constant 3 rpm rotation, prevents boom oscillations, and detects and corrects for unwanted nutation.  The second effort is a software system that can be used to implement theoretical and experimental models.  The system provides near ``real-time'' feedback of the system's states, and allows for ``on-the-fly'' modification to control parameters.  The system is specifically designed such that any control systems engineer is able to customize and extend its functionality without substantial programming expertise.}
+
+% \makeannouncement
 
 \copyrightyear{2014}
 \makecopyright
@@ -67,16 +71,20 @@
 \end{singlespace}
 
 \begin{abstractpage}
-This thesis utilizes an experimental table top satellite prototype (NASA MMS TableSat 1A) to span two main efforts.  The first is to create a physical model of a satellite for NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control systems (ADCS) techniques.  The ADCS maintains the TableSat constant 3 rpm rotation, prevents boom oscillations, and detects and corrects for unwanted nutation.  The second effort is a software system that can be used to implement theoretical and experimental models.  The system provides near ``real-time'' feedback of the system's states, and allows for ``on-the-fly'' modification to control parameters.  The system is specifically designed such that any control systems engineer is able to customize and extend its functionality without substantial programming expertise.
 \end{abstractpage}
 
 
 \include{sections/Introduction}
 \TODO{take out the '2'}
+\TODO{'2' okay in moments}
 \TODO{flow diagram}
 \TODO{code captions and labels}
 \TODO{equation refs need ()}
 \TODO{code line length}
+\TODO{Add more nocites}
+\TODO{switch S for $\phi$ in saturation}
+\TODO{switch 1A}
+\TODO{title}
 \include{sections/SatelliteAttitudeModeling}
 \include{sections/TableSat1A}
 \include{sections/TableSatAttitudeDynamicsSoftware}

@@ -88,7 +88,7 @@ The portable design dictates that with the defined interfaces between modules,
 the observer based control methods have no knowledge of what is producing
 the sensor readings and what is accepting moment commands.  This enforces
 consistency in the behavior of the system whether it's hooked up to an
-in-memory model of a satellite, TableSat 1A, or any future spin spin
+in-memory model of a satellite, TableSat IA, or any future spin spin
 stabilized platform.  The only code change that may be required (Sensor.py and
 Actuator.py) is in applying the system to a new platform that contains
 new types of sensors and actuators.
@@ -96,7 +96,7 @@ new types of sensors and actuators.
 **Python**
 
 Since control systems professionals regularly work in a Numerical Simulation
-Software environment (like Matlab Simulink or Octave) and when it comes to
+Software environment (like MATLAB Simulink or Octave) and when it comes to
 implementation the logic is generally converted to a more standard language
 by software engineers there becomes a disconnect between the planning and
 implementation of a controller.  By using a language like python, the code

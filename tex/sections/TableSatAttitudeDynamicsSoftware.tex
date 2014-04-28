@@ -91,13 +91,32 @@ class Quaternion(object):
   \nocite{minted}
 \end{singlespace}
 
-\subsection{Rotating a Point with Quaternions}
-\label{subsec:Implementation-RotatingaPointwithQuaternions}
 
-Section \ref{subsubsec:RotatingaPointwithQuaternions}
+\subsection{Rotating a Point with Quaternions}
+\label{subsubsec:RotatingaPointwithQuaternions}
+
+One of the main focal points of this thesis is to ensure that the tools developed in this research aide in the further development of observer-based attitude control.  To enable this goal, ``run-time'' analysis of the system is critical.  Waiting for the completion of a simulation or experimental test with TableSat IA before being able to access the information is not only an impedance to this end, but it also introduces complexity and higher ``run-time'' costs to collect and store all simulation/experimental data.  Watching representation of the system's state change as the experiment runs provides valuable insight.  In the case of an estimator, sensor voltages are converted to a measured state and the observer attempts to use it to estimate the true state of the system.  A valuable visualization is both the measured and estimated states displayed in wireframe so the effectiveness of the estimator can be readily observed.  The points in a wireframe model of TableSat can be rotated to show the estimated orientation through the use of a 3x3 rotation matrix $\bs{R}_q$ defined as
+\begin{equation}
+  \bs{R}_q = (q_0^2 - \bs{v}^T \bs{v}) \bs{I} + 2 \bs{v} \bs{v}^T - 2 q_0 (\bs{v} \times)
+  \label{eqn:RotationMatrix}
+\end{equation}
+
+For example, for a $\pi/2$ radian rotation about $\bs{\hat{e}} = 0\bs{i}+0\bs{j}+1\bs{k}$, the rotational quaternion as defined in Equation (\ref{eqn:RotationalQuaternionDefinition}) becomes $q = 0\bs{i}+0\bs{j}-1/\sqrt{2}\bs{k}+1/\sqrt{2}$.  With Equation (\ref{eqn:RotationMatrix}), the rotational matrix becomes
+
+\begin{equation}
+  \begin{aligned}
+    \bs{R_q} & = \left[ (1/\sqrt{2})^2 - (1/\sqrt{2})^2 \right] \bs{I} + 2 \begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 1/\sqrt{2} \end{bmatrix} - 2 \frac{1}{\sqrt{2}} \begin{bmatrix} 0 & 1/\sqrt{2} & 0 \\ -1/\sqrt{2} & 0 & 0 \\ 0 & 0 & 0 \\ \end{bmatrix} \\
+      & = \begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \\\end{bmatrix}
+  \end{aligned}
+\end{equation}
+
+For the visualization, a point $A (2, 4, -1)$ that is in the standard orientation of body axes aligned with the global reference frame can be drawn at the current estimated location.  That is,
+
+\begin{equation}
+  A' = \bs{R_q} A = \begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \\\end{bmatrix} \begin{bmatrix} 2 \\ 4 \\ -1 \end{bmatrix} = \begin{bmatrix} -4 \\ 2 \\ -1 \end{bmatrix}
+\end{equation}
 
 The equivalent TSatPy implementation of the point rotation equation (Equation \ref{eqn:RotationMatrix})
-
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
 from TSatPy.State import Quaternion
@@ -116,35 +135,6 @@ print(q.rmatrix * A)
   \nocite{minted}
 \end{singlespace}
 
-
-
-
-\subsection{Rotating a Point with Quaternions}
-\label{subsubsec:RotatingaPointwithQuaternions}
-
-One of the main focal points of this thesis is to ensure that the tools developed in this research aide in the further development of observer-based attitude control.  To enable this goal, ``run-time'' analysis of the system is critical.  Waiting for the completion of a simulation or experimental test with TableSat 1A before being able to access the information is not only an impedance to this end, but it also introduces complexity and higher ``run-time'' costs to collect and store all simulation/experimental data.  Watching representation of the system's state change as the experiment runs provides valuable insight.  In the case of an estimator, sensor voltages are converted to a measured state and the observer attempts to use it to estimate the true state of the system.  A valuable visualization is both the measured and estimated states displayed in wireframe so the efficiency of the estimator can be readily observed.
-
-To facilitate this, a wireframe model of the TableSat can be rotated with a rotation matrix based on the estimated state quaternion.  The 3x3 rotation matrix is defined as a function of a rotational quaternion by
-
-\begin{equation}
-  \bs{R_q} = (q_0^2 - \bs{v}^T \bs{v}) \bs{I} + 2 \bs{v} \bs{v}^T - 2 q_0 (\bs{v} \times)
-  \label{eqn:RotationMatrix}
-\end{equation}
-
-For example, for a $\pi/2$ radian rotation about $\bs{\hat{e}} = 0\bs{i}+0\bs{j}+1\bs{k}$, the rotational quaternion as defined in Equation (\ref{eqn:RotationalQuaternionDefinition}) becomes $q = 0\bs{i}+0\bs{j}-1/\sqrt{2}\bs{k}+1/\sqrt{2}$.  With Equation (\ref{eqn:RotationMatrix}), the rotational matrix becomes
-
-\begin{equation}
-  \begin{aligned}
-    \bs{R_q} & = \left[ (1/\sqrt{2})^2 - (1/\sqrt{2})^2 \right] \bs{I} + 2 \begin{bmatrix} 0 & 0 & 0 \\ 0 & 0 & 0 \\ 0 & 0 & 1/\sqrt{2} \end{bmatrix} - 2 \frac{1}{\sqrt{2}} \begin{bmatrix} 0 & 1/\sqrt{2} & 0 \\ -1/\sqrt{2} & 0 & 0 \\ 0 & 0 & 0 \\ \end{bmatrix} \\
-      & = \begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \\\end{bmatrix}
-  \end{aligned}
-\end{equation}
-
-For the visualization, a point $A (2, 4, -1)$ that is in the standard orientation of body axes aligned with the global reference frame can be drawn at the current estimated location.  That is,
-
-\begin{equation}
-  A' = \bs{R_q} A = \begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \\\end{bmatrix} \begin{bmatrix} 2 \\ 4 \\ -1 \end{bmatrix} = \begin{bmatrix} -4 \\ 2 \\ -1 \end{bmatrix}
-\end{equation}
 
 \subsection{Quaternion-based Attitude Visualization}
 \label{subsubsec:QuaternionbasedAttitudeVisualization}
@@ -434,7 +424,7 @@ The preset fixed time step is also not very fault tolerant.  When controlling th
 The ability to decrease the simulation speed to enable more detailed inspection of the initial transient behavior and to increase simulation speed to enable inspection of long term system stability hold significant benefits for this research.  The TSatPy system is designed to addresses the previous two issues as the system needs to be able to smoothly transition between variations in step sizes in a single experimental test such that
 
 \begin{equation}
-  t_k =& \sum\limits_{i=0}^{k-1} r_i (\tau_{i+1} - \tau_i)\\
+  t_k = \sum\limits_{i=0}^{k-1} r_i (\tau_{i+1} - \tau_i)\\
   \label{eqn:SystemTime}
 \end{equation}
 where $\tau$ represents true time and $t_k$ denotes the time at step $k$
@@ -553,4 +543,4 @@ for _ in range(4):
 \end{singlespace}
 \end{listing}
 
-In this study, quaternion and body rate propagation techniques will be incorporated into the TableSat 1A observer-based control system.
+In this study, quaternion and body rate propagation techniques will be incorporated into the TableSat IA observer-based control system.

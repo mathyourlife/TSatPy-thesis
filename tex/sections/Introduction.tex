@@ -36,7 +36,7 @@ Placing the instrumentation at the ends of the booms is an advantage to the scie
   \label{fig:booms}
 \end{figure}
 
-Figure \ref{fig:booms}, created by Neil Mushaweh \cite{mushawehthesis}, shows a scale model of one of the MMS satellites.  Mushaweh performed finite element analysis of the boom dynamics and simulation based comparisons of nonlinear observer-based controllers.  His research unveiled a major shortcoming in the current numerical simulation software needed for analyzing the dynamics of a NASA MMS satellite's rotating body with flexible booms.
+Figure \ref{fig:booms}, created by Mushaweh \cite{mushawehthesis}, shows a scale model of one of the MMS satellites.  Mushaweh performed finite element analysis of the boom dynamics and simulation based comparisons of nonlinear observer-based controllers.  His research unveiled a major shortcoming in the current numerical simulation software needed for analyzing the dynamics of a NASA MMS satellite's rotating body with flexible booms.
 
 \begin{quote}{``While attempting to rotate the satellite model at 3 rotations per minute about [the $z$-axis], the inability of the software to transform coordinates after 90 degrees of rotation caused the rotation to cease. When such constraints on coordinate transformations are removed, or when the coordinate system is changed to cylindrical coordinates, the model began to expand in the radial direction. These inaccurate simulation results indicate that there are numerical instabilities that occur in dynamic transient simulations in which rotational motion is experienced. This numerical instability was confirmed by MSC support engineers, and proven to be insurmountable in the scope of this research. Overcoming this numerical instability in dynamic transient analysis through future research could have implications on several design and analysis situations in which coordinate transformations can cause inaccurate results.''~\cite{mushawehthesis}}\end{quote}
 
@@ -130,34 +130,34 @@ Figure \ref{fig:booms}, created by Neil Mushaweh \cite{mushawehthesis}, shows a 
 \section{Research Objective}
 \label{sec:ResearchObjective}
 
-This thesis utilizes an experimental table top satellite prototype (NASA MMS TableSat 1A) to span two main efforts.  The first is to create a physical model of a satellite for NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control systems (ADCS) techniques.  The ADCS maintains the TableSat constant 3 rpm rotation, prevents boom oscillations, and detects and corrects for unwanted nutation.  The second effort is a software system that can be used to implement theoretical and experimental models.  The system provides near ``real-time'' feedback of the system's states, and allows for ``on-the-fly'' modification to control parameters.  The system is specifically designed such that any control systems engineer is able to customize and extend its functionality without substantial programming expertise.
+This thesis utilizes an experimental table top satellite prototype (NASA MMS TableSat IA) to span two main efforts.  The first is to create a physical model of a satellite for NASA's Magnetospheric MultiScale (MMS) Mission in order to validate and compare varied gyroless attitude determination and control systems (ADCS) techniques.  The ADCS maintains the TableSat constant 3 rpm rotation, prevents boom oscillations, and detects and corrects for unwanted nutation.  The second effort is a software system that can be used to implement theoretical and experimental models.  The system provides near ``real-time'' feedback of the system's states, and allows for ``on-the-fly'' modification to control parameters.  The system is specifically designed such that any control systems engineer is able to customize and extend its functionality without substantial programming expertise.
 
 \section{Past Work}
 \label{sec:PastWork}
 
-This work is a direct extension off of Vess' research \cite{vessthesis} of using TableSat through a Numerical Simulation Software (NSS like Matlab Simulink or Octave) and onboard flight controllers to demonstrate fundamentals of control theory.  The TableSat experimental design is modified to study the system dynamics of the instrument booms and nutation actuators in NASA's MMS mission satellites.  Previous experimental \cite{tsat1b} \cite{tsat1c} \cite{tsat2} and analytical \cite{mushawehthesis} ADCS work at University of New Hampshire's Advanced Control Lab (ACL) has been performed targeting the NASA MMS mission.  The TableSat platform or similar derivations have also been adapted in investigate other areas of research including embedded systems development \cite{tablesat_xuml} and fault tolerant control \cite{tablesat_object_bench} \cite{nanjing_university}.
+This work is a direct extension of Vess' research \cite{vessthesis} of using TableSat through a Numerical Simulation Software (NSS such as MATLAB Simulink or Octave) and on-board flight controllers to demonstrate fundamentals of control theory.  The TableSat experimental design is modified to study the system dynamics of the instrument booms and nutation actuators in NASA's MMS Mission satellites.  Previous experimental \cite{tsat1b} \cite{tsat1c} \cite{tsat2} and analytical \cite{mushawehthesis} ADCS work at University of New Hampshire's Advanced Control Lab (ACL) has been performed targeting the NASA MMS Mission.  The TableSat platform or similar derivations have also been adapted to investigate other areas of research including embedded systems development \cite{tablesat_xuml} and fault tolerant control \cite{tablesat_object_bench} \cite{nanjing_university}.
 
 
 \section{Analytical and Experimental Test Bed}
 \label{sec:AnalyticalandExperimentalTestbed}
 
-The test bed used for analytical simulations and experimental validation consists of a base station (laptop) which handles the observer-based controller along with any conversions to and from TableSat sensor and fan voltages, and NASA MMS TableSat 1A which is a wireless limited 3-DOF rotation (full spin and limited nutation) test bed.  Concurrent work has been accomplished in tandem with this research to make improvements to the capabilities of the TableSat system including UNH TableSat 1C \cite{tsat1c} which improves actuator design and reduces rotational friction, and UNH TableSat 2 \cite{tsat2} which adds translation in a plane.
+The test bed used for analytical simulations and experimental validation consists of a base station (laptop) which handles the observer-based controller along with any conversions to and from TableSat sensor and fan voltages.  NASA MMS TableSat IA is a wireless limited 3-DOF rotation (full spin and limited nutation) test bed.  Concurrent work has been accomplished in tandem with this research to make improvements in the capabilities of the TableSat system including UNH TableSat 1C \cite{tsat1c} which improves actuator design and reduces rotational friction, and UNH TableSat 2 \cite{tsat2} which adds translation in a plane.
 
 \section{Thesis Contributions}
 \label{sec:ThesisContributions}
 
-The research from Vess and Mushaweh illustrate the need for an observer-based controller software system that could be used to perform analytical simulations with spin-stabilized satellites as well as control of their experimental counterpart all while maintaining a high degree of numerical stability.
+The research from Vess and Mushaweh illustrate the need for an observer-based controller software system that can be used to perform analytical simulations with spin-stabilized satellites as well as control of their experimental counterpart, all while maintaining a high degree of numerical stability.
 
 \subsection{Numerical Stability for Rotational Motion}
 \label{subsec:NumericalStabilityforRotationalMotion}
 
-Mushaweh's research using MSC Marc Mentat 2005 r3 and MATLAB / \textit{Simulink}\textsuperscript{TM} R2006a concluded that they were insufficient for simulating the dynamics that exist in a rotating system such as the NASA MMS satellite.  This research contributes and/or incorporates the following attributes into its software to address this deficiency.
+Mushaweh's research using numerical FEA software and a numerical sumilation software package concluded that they were insufficient for simulating the dynamics that exist in a rotating system such as the NASA MMS satellite.  This research contributes and/or incorporates the following attributes into its software to address this deficiency.
 
 \begin{itemize}
   \item \textbf{Quaternion Multiplicative Corrections}: Ensures numerical stability in rotating systems
   \item \textbf{Adaptive Step Algorithms}: Corrects for inconsistent step sizes in simulations or experiments
   \item \textbf{Quaternion Decomposition}: Decouples rotation and nutation control
-  \item \textbf{Theta Multiplier with Quaternion Vector Balancing}: Linearly scales quaternion attitude measures used in state corrections without breaking the unit quaternion restriction
+  \item \textbf{Theta Multiplier with Quaternion Vector Balancing}: Linearly scales quaternion attitude measures used in state corrections without violating the unit quaternion restriction
   \item \textbf{Euler Axis Based Moments}: Utilizes the quaternion's Euler axis and angular displacement to calculate linearly scaled control moments
 \end{itemize}
 
@@ -167,23 +167,24 @@ Mushaweh's research using MSC Marc Mentat 2005 r3 and MATLAB / \textit{Simulink}
 Since this is an active field of research, future research teams will benefit from the ability to reuse the software created for this thesis in a wide variety of analytical simulations and experimental testing on rotating systems.  In order to make this software an attractive alternative to traditional Numerical Simulation Software, the following principles were incorporated into its design.
 
 \begin{itemize}
-  \item \textbf{Concurrent Estimation/Control Algorithms}: Evaluation of multiple estimation and control methods
-  \item \textbf{``Run-time'' interface}: Access and visualize the internal state of the control system while running
-  \item \textbf{Variable System Clock}: Alter the speed of simulations to compress long simulations or inspect state changes is slow motion
+  \item \textbf{Concurrent Estimation/Control Algorithms}: Evaluates  multiple estimation and control methods
+  \item \textbf{``Run-time'' interface}: Enables access and visualization of the internal state of the control system during a test or simulation
+  \item \textbf{Variable System Clock}: Alters the speed of simulations to compress long simulations or inspect state changes is slow motion
   \item \textbf{Python}: Written in a widely used and expressive language that is easy to learn, comes with ``batteries-included'', and is viable for high performance applications.
   \item \textbf{Modular Design}: Additional estimation or control algorithms or system models can be written and plugged into the existing system
   \item \textbf{Source Agnostic Control System}: Observer-based controller logic can be reused to control a variety of rotating system (simulated and physical)
-  \item \textbf{MIT License}: Software will be released publicly on acceptance of this thesis under a MIT License
+  \item \textbf{MIT License}: Software will be released publicly on acceptance of this thesis under as MIT License
 \end{itemize}
 
 \section{Thesis Outline}
 \label{sec:ThesisOutline}
 
-The following chapters are organized as follows:
+This thesis is organized as follows:
 
 \begin{itemize}
 \item Chapter \ref{chap:SatelliteAttitudeDynamicsAndKinematics}, \nameref{chap:SatelliteAttitudeDynamicsAndKinematics} - This chapter covers the quaternions and body-fixed angular velocities (body rates) parametrization chosen for the state representation of the spin-stabilized satellite, and the dynamics and kinematics involved in modeling it's motion.
-\item Chapter \ref{chap:UNHTableSat1A}, \nameref{chap:UNHTableSat1A} - This chapter is a walk through of the components in the UNH NASA MMS TableSat 1A including the how raw sensor voltages are transmitted to the base station for conversion by the controller into a state representation.
+\item Chapter \ref{chap:UNHTableSat1A}, \nameref{chap:UNHTableSat1A} - This chapter is a ``walk through'' of the components in the UNH NASA MMS TableSat IA.
+\item Chapter \ref{chap:SensorMeasurements}, \nameref{chap:SensorMeasurements} - This chapter details the attitude determination and control systems' process for converting the raw sensor voltages into a attitude state representation.
 \item Chapter \ref{chap:TableSatAttitudeDynamicsSoftware}, \nameref{chap:TableSatAttitudeDynamicsSoftware} - Chapters \ref{chap:SatelliteAttitudeDynamicsAndKinematics} and \ref{chap:UNHTableSat1A} establish the analytical and experimental state representations.  This chapter covers how the state representations with their associated equations of motion are implemented in this thesis' software.
 \item Chapter \ref{chap:StateError}, \nameref{chap:StateError} - This chapter details issues with current implementations of quaternion error calculations and covers the development and implementation of the ``Theta Multiplier with Quaternion Vector Balancing'' method for high integrity attitude adjustments.
 \item Chapter \ref{chap:Estimators}, \nameref{chap:Estimators} - This chapter focuses on the implementation and performance comparisons of the PID and Sliding Mode Observer (SMO) estimation methods using the chosen state parameterization along with the theta multiplier error correction technique established in Chapter \ref{chap:StateError}.

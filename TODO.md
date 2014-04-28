@@ -1,27 +1,39 @@
 ### TODO
 
-* Video in thesis?
-    * [Unforced Plant](https://vimeo.com/68018120)
-    * [Forced Plant](https://vimeo.com/42960673)
-* Remind Fussell of committee after Thein reach out
-* Add Hatcher as collaborator when repo is ready
+* Finish Thein Edits
+* TableSat Attitude Software Implementation
+* 526
+* duplacate "rotating a point with a quaternion"
+* finish obc chapter
+* make sure message definition fits with chapter
+* revisit intro for chapters 1 is 2 is ...
+
+* pres
+* 10 sig pages
+
+
 * Find a programming / robotics conference
     * Space flight conference?
     * PyCon
 * reference tablesat2 as future platforms
 * Clean up repo
     * README.md inside TSatPy Package, beta versions
-    * Matlab code
+    * MATLAB code
         * Check for lines that exceed print margins
         * Remove files with limited usefulness to cut down on length
 * Focus on ability to apply on future
-* May-Win reach out to Fussell then I reach out
 * After, Mike Chris Tom how to use TSatPy
 * Binding Checklist
 
 ***
 ### Items since last meeting
 
+* May-Win reach out to Fussell then I reach out
+* Video in thesis?
+    * [Unforced Plant](https://vimeo.com/68018120)
+    * [Forced Plant](https://vimeo.com/42960673)
+* Remind Fussell of committee after Thein reach out
+* Add Hatcher as collaborator when repo is ready
 * Writing
     * Satellite Attitude Modeling
     * Observer Based Controls
@@ -88,7 +100,7 @@
 
 * Abstract (draft completed)
 * Intro Chapter (draft completed)
-* TableSat 1A (draft completed)
+* TableSat IA (draft completed)
 * Satellite Attitude Modeling (almost draft complete)
 * Graduation
     * registered for commencement
@@ -104,7 +116,7 @@
 
 * Abstract **(draft completed)**
 * Intro Chapter **(draft completed)**
-* TableSat 1A **(draft completed)**
+* TableSat IA **(draft completed)**
 * Satellite Attitude Modeling **(draft complete)**
 * Observer Based Controls **(Error State, Estimators, Actuators complete)**
 * Standard Control Theory Tools

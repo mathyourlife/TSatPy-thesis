@@ -132,6 +132,8 @@
                                                 %
 \def\major#1{\gdef\@major{#1}}                  % Define \major{}
                                                 %
+\def\abstractcontents#1{\gdef\@abstractcontents{#1}}                  % Define \abstractcontents{}
+                                                %
 \def\degree#1{\setbox0\hbox{#1}                 % Define @degreeword depending
   \gdef\@degree{#1}}                            % upon how many degrees are
 \def\and{\gdef\@degreeword{degrees}             % being earned.  That way
@@ -233,6 +235,28 @@
    \vskip \baselineskip
 \end{titlepage}}
 
+\def\makeannouncement{\begin{titlepage}
+    \large
+                                \vspace*{0.375in}
+               {\def\baselinestretch{1.2}\Large\bf MASTER'S THESIS DEFENSE\\\@title \par}
+                                \vspace*{\fill}\par
+                                      BY
+                                \vspace*{\fill}\par
+                               {\Large \@author}
+                                     \par
+                                     Canditate\\
+                                 \@degree\\
+                                 in\\
+                                 \@major\\
+                                \vspace*{\fill}\par
+                                May 1, 2014 2-4PM\\
+                                Kingsbury Hall, W290\\
+                                \vspace*{\fill}\par
+                                \large ABSTRACT \par
+                                \par \@abstractcontents
+                                \vspace*{\fill}
+   \vskip \baselineskip
+\end{titlepage}}
 
 
 \def\copyrightyear#1                    % Define \copyrightyear{}
@@ -349,6 +373,7 @@
     \end{center}
     \par
     \begin{abstract}
+    \@abstractcontents
    }
 
 \def\endabstractpage

@@ -126,6 +126,19 @@ print("|q_adj|: %s" % (q_adj.mag))
 
 print('*' * 80)
 
+k = 2
+
+q_e = Quaternion([0,0,1],radians=0.01)
+a = np.sqrt((q_e.vector.T * q_e.vector)[0,0] + k**2 * q_e.scalar**2)
+q_adj = Quaternion(
+    q_e.vector / a,
+    k * q_e.scalar / a
+)
+print q_adj.to_rotation()
+exit()
+
+print('*' * 80)
+
 q_adj.normalize()
 print("q_adj:   %s" % (q_adj))
 print("|q_adj|: %s" % (q_adj.mag))

@@ -2,7 +2,7 @@
 \chapter{SATELLITE ATTITUDE DYNAMICS AND KINEMATICS}
 \label{chap:SatelliteAttitudeDynamicsAndKinematics}
 
-This chapter covers the analytical modeling used in this research starting with the choice of attitude and body rate representations in Section \ref{sec:StateRepresentation}.  Next is a review of some of the estimation-based control methods used, including variations to target their use on spin-stabilized satellites such as NASA's MMS mission spacecraft.
+This chapter covers the analytical modeling used in this research starting with the choice of attitude and body rate representations in Section \ref{sec:StateRepresentation}.  Next is a review of some of the estimation-based control methods used, including variations to target their use on spin-stabilized satellites such as NASA's MMS Mission spacecraft.
 
 \section{Attitude Representation}
 \label{sec:StateRepresentation}
@@ -23,7 +23,7 @@ NASA's MMS satellites as with all real systems are rarely linear.  When modeling
   \label{eqn:EulerMoment}
 \end{subequations}
 
-where M represents the applied moment about the given axis and h and $\omega$ represent the corresponding angular momentum and velocity respectively.  Here the equations of motion are described in terms of the body's frame of reference ($x$, $y$, $z$) which does not necessarily align with the body's principal axes.  NASA MMS TableSat 1A's construction can be simplified to an axisymmetric design.  To adjust TableSat's stability, the center screw can be raised or lowered bringing the center of mass and center of rotation closer or further apart.  As development of the observer-based controller improves the two centers can be brought closer together.  With these conditions, we can assume that the body's reference frame aligns with the body's principal axes, which simplifies Euler's equations further to.
+where M represents the applied moment about the given axis and h and $\omega$ represent the corresponding angular momentum and velocity respectively.  Here the equations of motion are described in terms of the body's frame of reference ($x$, $y$, $z$) which does not necessarily align with the body's principal axes.  NASA MMS TableSat IA's construction can be simplified to an axisymmetric design.  To adjust TableSat's stability, the center screw can be raised or lowered bringing the center of mass and center of rotation closer or further apart.  As development of the observer-based controller improves, the two centers can be brought closer together.  With these conditions, we can assume that the body's reference frame aligns with the body's principal axes, which simplifies Euler's equations further to
 
 \begin{subequations}
   \begin{align}
@@ -34,7 +34,7 @@ where M represents the applied moment about the given axis and h and $\omega$ re
   \label{eqn:EulerMomentPrincipleAxes}
 \end{subequations}
 
-For implementation into the TableSat's base station observer based controller, the continuous time Euler's Equations (\ref{eqn:EulerMomentPrincipleAxes}) are discretized with a variable time step and implemented (in Appendix \ref{code:TSatPy/State.py}) as
+For implementation into the TableSat's base station observer based controller, the continuous time Euler's Equations in (\ref{eqn:EulerMomentPrincipleAxes}) are discretized with a variable time step and implemented (in Appendix \ref{code:TSatPy/State.py}) as
 
 \begin{subequations}
   \begin{align}
@@ -45,11 +45,13 @@ For implementation into the TableSat's base station observer based controller, t
   \label{eqn:DiscreteEulerMomentEquations}
 \end{subequations}
 
-The moments $M_n(t_{k+1})$ are the applied moments at time $t_{k+1}$.  Since the update frequencies are allowed to vary for each section of the observer-based controller, the applied moment values may have multiple values between $t_{k}$ and $t_{k+1}$.  To avoid the complexity of calculating a more accurate moment for each time step that is a combination of changes in applied moments, the value of the most recent moments is taken and assumed constant for $t_{k} < t < t_{k+1}$.  If the moment update loop is running slower than the Euler equation model, the last known moment is assumed to still be valid.
+Since the observer-based controller update frequencies are allowed to vary, the applied moment values may also have multiple values between times $t_{k}$ and $t_{k+1}$.  To simplify calculations, the value of the ``most recent'' moment is taken and assumed constant for $t$ such that $t_{k-1} < t < t_{k}$.  If the moment update loop is running slower than that of the Euler equation model, the last known moment is assumed to still be valid.
 
-While the Euler equation model works well for propagating the state of the system's, Section \ref{sec:Sensors} found that the only sources of state measurement were in attitude leaving body rates unmeasured.  Body rates must then be calculated through both observing changes in current attitude and state predictions based on previous attitude changes.  Euler angles and quaternions were investigated for parameterizing TableSat's attitude.
+While the Euler equation model works well for propagating the system states only TableSat IA's attitude is measured leaving its body rates unmeasured.  A state observer/filter must then be used to estimate the unmeasured body rates.  In addition the observer/filter is also used to more accurately estimate attitude states. calculated through both observing changes in current attitude and state predictions based on previous attitude changes.  Euler angles and quaternions were investigated for parameterizing TableSat's attitude.
 
-Euler angles were first considered because of their wide use in control theory where the representation of a body's attitude can be reached through a series of no more than three roll, pitch, yaw rotations.   Out of the twelve possible sequences, the 3-1-3 sequence is commonly used in spacecraft ADCS.  With this sequence Kaplan \cite{kaplan}, shows that the conversion between Euler angle rates and body rates can be calculated with
+\subsubsection{Euler Angle Representation}
+
+Euler angles were first considered for the attitude parameterization in this research because of their wide use in control theory where a body's attitude can be represented by a series of no more than three pure rotations: roll, pitch, and yaw.   There are twelve possible sequences.  The following shows the relationship between Euler angle rates and fixed-body angular velocities given a 3-1-3 rotation sequence \cite{kaplan}:
 
 \begin{equation}
   \begin{bmatrix}
@@ -71,7 +73,7 @@ Euler angles were first considered because of their wide use in control theory w
   \label{eqn:EulerToBodyRate}
 \end{equation}
 
-Euler angles while widely used and for most people easier to visualize, they have two main deficiencies.  They are heavily reliant on trigonometric functions and under certain conditions can cause singularities as seen by transforming Equation \ref{eqn:EulerToBodyRate} to solve for the Euler rates where a $1/\sin \theta$ factors out (Equation \ref{eqn:BodyRateToEuler}.  This phenomenon is more generally known as gimbal lock.  The second deficiency occurs in implementation, where the efficiency and stability of the angles are tied to the accuracy of trigonometric approximations in the code's library.  These repeated approximations are more prone to numerical drift.
+Here, $\psi, \theta,$ and $\phi$ represent Euler angles corresponding to the 3-1-3 rotation sequence.  Euler angles, while widely used and (for most people) easier to visualize, they have two main deficiencies.  They are heavily reliant on trigonometric functions and under certain conditions can cause singularities as seen by transforming Equation (\ref{eqn:EulerToBodyRate}) to solve for the Euler rates as seen in Equation (\ref{eqn:BodyRateToEuler}).  This phenomenon often results in gimbal lock.  The second deficiency occurs in implementation, where the efficiency and stability of the angles are tied to the accuracy of on-board trigonometric interpolations.  Repeated use of these approximations are prone to numerical drift.
 
 \begin{equation}
   \begin{bmatrix}
@@ -94,11 +96,15 @@ Euler angles while widely used and for most people easier to visualize, they hav
   \label{eqn:BodyRateToEuler}
 \end{equation}
 
-The alternative attitude parameterization investigated was the quaternion attitude representation the conversion from body discrete body rates to quaternion attitude is calculated via the method from Trawny and Roumeliotis at the University of Minnesota \cite{marslab}.
+The alternative attitude parameterization investigated is the quaternion attitude representation.  The relationship between discrete body rates and quaternion attitude via the method of Trawny and Roumeliotis \cite{marslab} is given as
 
 \begin{equation}
+  \bs{q}(t_{k+1}) = ( \bs{A} + \bs{B} ) \bs{q}(t_{k}) \\
+  \label{eqn:DiscreteQuaternionPropagation}
+\end{equation}
+where
+\begin{equation}
   \begin{aligned}
-    \bs{q}(t_{k+1}) &= ( \bs{A} + \bs{B} ) \bs{q}(t_{k}) \\
     \text{where } \bs{A} &= \exp \left( \frac{\Delta t_{k+1}}{2} \bs{\Omega} \left[ \bs{\bar{\omega}}(t_{k+1}) \right] \right)\\
     \bs{B} &= \frac{1}{48} \Delta t_{k+1}^2 \Big(
     \bs{\Omega} \left[\bs{\omega}(t_{k+1}) \right]
@@ -107,16 +113,11 @@ The alternative attitude parameterization investigated was the quaternion attitu
     \bs{\Omega} \left[\bs{\omega}(t_{k+1}) \right]
       \Big)
   \end{aligned}
-  \label{eqn:DiscreteQuaternionPropagation}
 \end{equation}
-
-where
-
 \begin{equation}
     \bs{\Omega} \left[ \bs{\bar{\omega}}(t_{k+1}) \right] = \frac{\bs{\Omega} \left[\bs{\omega}(t_{k+1}) \right] + \bs{\Omega} \left[\bs{\omega}(t_{k}) \right]}{2}
     \label{eqn:DiscreteQuaternionToBodyRate}
 \end{equation}
-
 \begin{equation}
   \bs{\Omega} \left[ \bs{\omega} \right] =
   \begin{bmatrix}
@@ -125,7 +126,7 @@ where
   \end{bmatrix}
   \label{eqn:OmegaMatrix}
 \end{equation}
-
+and where $\bs{\omega} \times$ is a skew-symmetric matrix defined as
 \begin{equation}
   \bs{\omega} \times =
   \begin{bmatrix}
@@ -136,10 +137,10 @@ where
 \end{equation}
 
 
-\subsection{Quaternion Attitude}
+\subsection{Quaternion Attitude Representation}
 \label{subsec:QuaternionAttitude}
 
-The concept of a quaternion is a combination of geometry and algebra based focus from Rodrigues and Hamilton respectively \cite{shuster}.  Rodrigues' work in the early 1800's focused the Gibbs vector as a way of creating a an attitude matrix from the Rodrigues parameters.  Hamilton's work focused on hyper-complex numbers with three hyper-imaginary values and a constant.  Hamilton first coined the term quaternion in 1843 to describe the four dimensional vector.  The four orthogonal unit quaternions are
+The concept of a quaternion is a combination of geometry and algebra from Rodrigues and Hamilton, respectively \cite{shuster}.  Rodrigues' work in the early 1800's focused the Gibbs vector as a way of creating a an attitude matrix from Rodrigues parameters.  Hamilton's work focused on hyper-complex numbers with three hyper-imaginary values and a constant.  Hamilton first coined the term quaternion in 1843 to describe the four dimensional vector.  The four orthogonal unit quaternions are
 
 \begin{subequations}
   \begin{align}
@@ -150,9 +151,7 @@ The concept of a quaternion is a combination of geometry and algebra based focus
   \end{align}
   \label{eqn:UnitQuaternions}
 \end{subequations}
-
 where the unit quaternions obey Hamilton's rules \cite{wolfram_quaternion}
-
 \begin{subequations}
   \begin{align}
     \bs{i}^2 = \bs{j}^2 = \bs{k}^2 = \bs{ijk} & = - \bs{1} \\
@@ -163,87 +162,56 @@ where the unit quaternions obey Hamilton's rules \cite{wolfram_quaternion}
   \label{eqn:HamiltonRules}
 \end{subequations}
 
-As discussed in Section \ref{subsec:StateMeasurement}, between TableSat sensor and MMS mission restrictions, the body rate for this research is not measured.  This meant that the choice in attitude parameterization and how it is implemented play a major factor in the entire system's performance.  Because of their numerical stability and that over time I found working with quaternions more intuitive than Euler angles, the quaternion was chosen as the method for representing state attitude parameters.  From sections \TODO{label these later} to \TODO{XXX}, quaternion properties will be discussed along with how they were represented in the controller's implementation.
-
-\subsubsection{Quaternion Notation}
-\label{subsubsec:QuaternionNotation}
-
-One point of confusion when working with quaternions is the placement of the scalar term.  As shown in Equation \ref{eqn:UnitQuaternions} the scalar term is followed by the three complex terms.  To stay consistent with related research, the quaternion notation to be used in this thesis follows the structure of 4 dimensional vector where the scalar term follows the vector.
-
+As discussed in Section \ref{subsec:StateMeasurement}, between TableSat sensor and MMS Mission restrictions, the body rate for this research is not measured.  This means that the choice in attitude parameterization and how it is implemented significantly affects the system's overall performance.  Because of their numerical stability and the eventual intuitiveness of quaternions, the quaternion representation is chosen as the method for representing state attitude parameters in this research.  The quaternion notation to be used in this thesis follows the tensor structure where the scalar term follows the vector such that
 \begin{equation}
   \bs{q} = \bs{v} + q_0 = q_1 \bs{i} + q_2 \bs{j} + q_3 \bs{k} + q_0
 \end{equation}
+where $\bs{v}$ is the vector portion of the quaternion and $q_0$ is the scalar term.
 
-In academic literature, the difference is not terribly significant as the notation is generally defined by the author or the reader can recognize the variation in structure.  For example in Equation \ref{eqn:OmegaMatrix}, written in a scalar last format, is composed from a 3x3, 3x1, 1x3, and 1x1.  During implementation, mixing of scalar first matrices with scalar last matrices can be a troublesome source of error.
-
-\subsubsection{Rotational Quaternion}
-\label{subsubsec:RotationalQuaternion}
-
-Euler's rotation theorem states:
+The ability to use a quaternion to represent a body's attitude is summarized by Euler's rotation theorem which states:
 
 \begin{quote}{``\textsl{If $\bs{R}$ is a 3x3 orthogonal matrix $( \bs{R}^T \bs{R} = \bs{R}\bs{R}^T = \bs{I} )$ and $\bs{R}$ is proper $( det \bs{R} = +1 )$, then there is a nonzero vector $\bs{v}$ satisfying $\bs{Rv} = \bs{v}$}''~\cite{euler_theorem}}\end{quote}
 
-With a 3x3 rotational matrix, this means there is a line of points that do not change position and create an axis of rotation.  Incorporating this idea into any spin-stabilized satellite like NASA's MMS mission yields that any arbitrary attitude can be represented as a single rotation from a common starting orientation.  The axis $\hat{e}$ and the angle of rotation $\theta$ can express the satellite's attitude with a rotational quaternion as
-
+With a 3x3 rotational matrix, this means there is a line of points that do not change position and create an axis of rotation.  Incorporating this idea into any spin-stabilized satellite like those in NASA's MMS Mission yields that any arbitrary attitude can be represented as a single rotation from a common starting orientation.  The Euler axis $\bs{\hat{e}}$ and the angle of rotation $\theta$ can express the satellite's attitude with a rotational quaternion as
 \begin{equation}
   \bs{q} = \bs{v} + q_0 = \hat{\bs{e}} \sin \left( \frac{-\theta}{2} \right) + \cos \left( \frac{-\theta}{2} \right)
   \label{eqn:RotationalQuaternionDefinition}
 \end{equation}
-
-A $-\theta$ is used rather than a the positive value to represents points on the body frame rotating around fixed axes rather than an axes transformation.  This representation also reduces the degrees of freedom for a quaternion from four to three as a rotational quaternion is restricted to always having a unit norm.
-
+The negative $-\theta$ term is used instead of the standard positive value to allow visualizations to rotate points in the appropriate direction when viewed from the fixed inertial reference frame as some of the visualizations from Section \ref{sec:ObjectOrientedNSSControlSystem}.  Besides the quaternion definition in Equation (\ref{eqn:RotationalQuaternionDefinition}), the other key aspect of a rotational quaternion is that it maintains a unit norm as shown by calculating the norm of Equation (\ref{eqn:RotationalQuaternionDefinition})
 \begin{equation}
   \left| \hat{\bs{e}} \sin \left( \frac{-\theta}{2} \right) + \cos \left( \frac{-\theta}{2} \right) \right| = \left| \hat{\bs{e}} \right|  \sin^2 \left( \frac{-\theta}{2} \right) + \cos^2 \left( \frac{-\theta}{2} \right) = 1
 \end{equation}
+This unit norm is a key property of rotational quaternions and is used in this research to assess the integrity of operations on quaternion states.
 
-\subsubsection{Quaternion Multiplication}
-\label{subsubsec:QuaternionMultiplication}
+The quaternion multiplication, denoted with the infix operator $\otimes$, is the only method available to combine rotational quaternions and maintain the unit norm.  This quaternion multiplication is used to produce incremental changes in the satellite's attitude.  If $\bs{a}$ represents an $n$ degree rotation about axis $\hat{e}$, then a $4n$ degree rotation about axis $\bs{\hat{e}}$ can be represented as $\bs{a} \otimes \bs{a} \otimes \bs{a} \otimes \bs{a}$.
 
-The quaternion multiplication noted with the infix operator $\otimes$, is the keystone to the attitude state manipulation and is used to produce incremental changes in the satellite's attitude.  If $\bs{a}$ represents a $n$ degree rotation about axis $\hat{e}$, then a $4n$ degree rotation about axis $\hat{e}$ can be represented as $\bs{a} \otimes \bs{a} \otimes \bs{a} \otimes \bs{a}$.
-
-Let two quaternions $\bs{a}$ and $\bs{b}$ be represented as
-
+For example, let two quaternions $\bs{a}$ and $\bs{b}$ be represented as
 \begin{subequations}
 \begin{align}
   \bs{a} = \bs{a}_v + a_0 = & a_1 \bs{i} + a_2 \bs{j} + a_3 \bs{k} + a_0\\
   \bs{b} = \bs{b}_v + b_0 = & b_1 \bs{i} + b_2 \bs{j} + b_3 \bs{k} + b_0
 \end{align}
 \end{subequations}
-
 The quaternion multiplication is defined as
-
 \begin{equation}
   \bs{q} = \bs{a} \otimes \bs{b} = \bs{a}_v b_0 + \bs{b}_v a_0 + \bs{a}_v \times \bs{b}_v + a_0 b_0 - \bs{a}_v \cdot \bs{b}_v
   \label{eqn:QuaternionMultiplication}
 \end{equation}
-
-Expanding Equation \ref{eqn:QuaternionMultiplication} yields
-
+where $\bs{a}_v$, $a_0$, $\bs{b}_v$, and $b_0$ represent the vector and scalar components of the $\bs{a}$ and $\bs{b}$ quaternions respectively.  Expanding Equation (\ref{eqn:QuaternionMultiplication}) yields
 \begin{subequations}
 \begin{align}
   \bs{v} & = \begin{bmatrix} a_1 \\ a_2 \\ a_3 \end{bmatrix} b_0 +\begin{bmatrix} b_1 \\ b_2 \\ b_3 \end{bmatrix} a_0 + \begin{bmatrix} a_1 \\ a_2 \\ a_3 \end{bmatrix} \times \begin{bmatrix} b_1 \\ b_2 \\ b_3 \end{bmatrix} \\
   q_0 & = a_0 b_0 - \bs{a}_v \cdot \bs{b}_v
 \end{align}
 \end{subequations}
-
-Evaluating the cross and dot products
-
+which in turn yields
 \begin{subequations}
 \begin{align}
   \bs{v} & = \begin{bmatrix} a_1 \\ a_2 \\ a_3 \end{bmatrix} b_0 +\begin{bmatrix} b_1 \\ b_2 \\ b_3 \end{bmatrix} a_0 + \begin{bmatrix} a_2b_3 - a_3b_2 \\ a_3b_1 - a_1b_3 \\ a_1b_2 - a_2b_1 \\ \end{bmatrix} \\
   q_0 & = a_0 b_0 - (a_1b_1 + a_2b_2 + a_3b_3)
 \end{align}
 \end{subequations}
-
-\begin{subequations}
-\begin{align}
-  \bs{v} & = \begin{bmatrix} a_1b_0 + b_1a_0 + a_2b_3 - a_3b_2 \\ a_2b_0 + b_2a_0 + a_3b_1 - a_1b_3 \\ a_3b_0 + b_3a_0 + a_1b_2 - a_2b_1 \\ \end{bmatrix} \\
-  q_0 & = a_0 b_0 - a_1b_1 - a_2b_2 - a_3b_3
-\end{align}
-\end{subequations}
-
-Combining equations and factoring out the $b$ terms yields
-
+and simplifies to
 \begin{equation}
   \begin{bmatrix} \bs{v} \\ q_0 \end{bmatrix} =
   \begin{bmatrix}
@@ -255,10 +223,9 @@ Combining equations and factoring out the $b$ terms yields
   \begin{bmatrix}
   b_1 \\ b_2 \\ b_3 \\ b_0
   \end{bmatrix}
+  \label{eqn:quat_mul_square_matrix}
 \end{equation}
-
-From here, the square matrix can be decomposed into sections based on if they get combined with quaternion $b$'s vector or scalar components.  Once segmented, the components of the square matrix can be expressed more compactly and in a way that conveys a better sense of how the quaternions interact on multiplication.
-
+The resulting square matrix in Equation (\ref{eqn:quat_mul_square_matrix}) can be partitioned appropriately so that it can be expressed more compactly and in a way that conveys a better sense of how the quaternions interact during multiplication operations:
 \begin{equation}
   \begin{bmatrix} \bs{v} \\ q_0 \end{bmatrix} =
   \begin{bmatrix}
@@ -273,6 +240,6 @@ From here, the square matrix can be decomposed into sections based on if they ge
 
 This quaternion class for TSatPy as will be covered in Chapter \ref{chap:TSatPy} allows for the a very close representation of Equation \ref{eqn:QuaternionMultiplicationDerived}.
 
-% The advantage to this notation is that is much easier to run in a Numerical Simulation Software (NSS like Matlab or Octave) or other scripting language, but its layout is specific to our definition of the matrix where the scalar value follows the vector.  There is not clear consensus from the broader community on whether the vector or scalar should come first.  This can cause large issues when implementing a system using a externally provided library since both implementations expect a 4x4 matrix, and combining the logic from the two systems would require either rewriting of systems or spending extra cycles on the interface between the two systems converting the matrices from a scalar first to a scalar last layout and vice versa.
+% The advantage to this notation is that is much easier to run in a Numerical Simulation Software (NSS like MATLAB or Octave) or other scripting language, but its layout is specific to our definition of the matrix where the scalar value follows the vector.  There is not clear consensus from the broader community on whether the vector or scalar should come first.  This can cause large issues when implementing a system using a externally provided library since both implementations expect a 4x4 matrix, and combining the logic from the two systems would require either rewriting of systems or spending extra cycles on the interface between the two systems converting the matrices from a scalar first to a scalar last layout and vice versa.
 
 % The object oriented nature of the code written for this thesis reduces or eliminates the confusion.  When an instance of a quaternion class is created, the vector and scalar values are set as separate parameters on the object regardless of order.  So when used in computation the $\Re^3$ and $\Re^1$ values can be referenced directly through the vector and scalar properties respectively.  Chapter \ref{ch:object_oriented} will cover the structure of the code developed for the thesis in greater detail.  The specific code that governs interactions between quaternions in the model is in section \ref{code:lib/@quaternion/quaternion.m}.
