@@ -51,7 +51,6 @@ print("Rotation: %g radians" % theta)
 # Rotation: 4 radians
   \end{minted}
   \nocite{minted}
-\end{singlespace}
 \caption{Creating a rotational quaternion}
 \label{code:make_quat_rot}
 \nocite{minted}
@@ -80,7 +79,6 @@ print("b             = %s" % b)
 # b             = <Quaternion [-0.224893 -0.449785 -0.674678], 0.540302>
   \end{minted}
   \nocite{minted}
-\end{singlespace}
 \caption{Quaternion multiplication}
 \label{code:quat_mul}
 \nocite{minted}
@@ -99,7 +97,6 @@ class Quaternion(object):
         s = self.scalar * q.scalar - (self.vector.T * q.vector)[0, 0]
         return Quaternion(v, s)
   \end{minted}
-\end{singlespace}
 \caption{Quaternion multiplication method}
 \label{code:quat_mul_source}
 \nocite{minted}
@@ -167,7 +164,7 @@ The method for calculating the new position of a point from an initial position 
   \label{fig:TSatWireframe}
 \end{figure}
 
-Once new locations for all points in the wireframe are determined, it can be redrawn visualizing the estimated current orientation of the TableSat (Figure \ref{fig:TSatWireframeEstimatedAttitude}).  ``Run-time'' visualizations are discussed in greater detail in \TODO{Where did this end up??} to show how as the estimator is running, updates to the state estimate, $\bs{\hat{x}}$, can be used to update the wireframe's orientation.
+Once new locations for all points in the wireframe are determined, it can be redrawn visualizing the estimated current orientation of the TableSat (Figure \ref{fig:TSatWireframeEstimatedAttitude}).  ``Run-time'' visualizations update these representations as the simulation or experiment is occuring and shows how well the estimator runs dynamically. (discussed in greater detail in Section \ref{sec:ObjectOrientedNSSControlSystem})
 
 \begin{figure}[H]
   \centerline{\psfig{file=figures/q_rotation_end.eps,height=3in}}
@@ -369,7 +366,7 @@ for k in range(5):
 \nocite{minted}
 \end{singlespace}
 
-The quaternion propagation operates in the same way as the body rate propagation, and Equation (\ref{eqn:DiscreteQuaternionPropagation}) is implemented in the QuaternionDynamics \TODO{where is this?} class.  Snippet \ref{code:quaternion_prop_clock} describes a basic quaternion propagation where the TableSat model is tracking a 0.1 rad/sec rotation about the $+z$ axis.  The system clock initially tracks in real time (e.g. a second of real elapsed time roughly equates to the equivalent system time change).  After each update the angle increases by about 0.1 rad.  After a four second transient response period, the speed of the system clock is increased by a factor of five (line 19).  After that each step simulates a 0.5 rad increase from when the clock speed changed.
+The quaternion propagation operates in the same way as the body rate propagation, and Equation (\ref{eqn:DiscreteQuaternionPropagation}) is implemented in the QuaternionDynamics (Chapter \ref{chap:tsatpy_source}).  Snippet \ref{code:quaternion_prop_clock} describes a basic quaternion propagation where the TableSat model is tracking a 0.1 rad/sec rotation about the $+z$ axis.  The system clock initially tracks in real time (e.g. a second of real elapsed time roughly equates to the equivalent system time change).  After each update the angle increases by about 0.1 rad.  After a four second transient response period, the speed of the system clock is increased by a factor of five (line 19).  After that each step simulates a 0.5 rad increase from when the clock speed changed.
 
 \begin{listing}[H]
 \begin{singlespace}
