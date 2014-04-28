@@ -34,7 +34,7 @@ where M represents the applied moment about the given axis and h and $\omega$ re
   \label{eqn:EulerMomentPrincipleAxes}
 \end{subequations}
 
-For implementation into the TableSat's base station observer based controller, the continuous time Euler's Equations in (\ref{eqn:EulerMomentPrincipleAxes}) are discretized with a variable time step and implemented (in Appendix \ref{code:TSatPy/State.py}) as
+For implementation into the TableSat's base station observer-based controller, the continuous time Euler's Equations in (\ref{eqn:EulerMomentPrincipleAxes}) are discretized with a variable time step and implemented (in Appendix \ref{code:TSatPy/State.py}) as
 
 \begin{subequations}
   \begin{align}
@@ -49,7 +49,7 @@ Since the observer-based controller update frequencies are allowed to vary, the 
 
 While the Euler equation model works well for propagating the system states only TableSat IA's attitude is measured leaving its body rates unmeasured.  A state observer/filter must then be used to estimate the unmeasured body rates.  In addition the observer/filter is also used to more accurately estimate attitude states. calculated through both observing changes in current attitude and state predictions based on previous attitude changes.  Euler angles and quaternions were investigated for parameterizing TableSat's attitude.
 
-\subsubsection{Euler Angle Representation}
+\subsection{Euler Angle Representation}
 
 Euler angles were first considered for the attitude parameterization in this research because of their wide use in control theory where a body's attitude can be represented by a series of no more than three pure rotations: roll, pitch, and yaw.   There are twelve possible sequences.  The following shows the relationship between Euler angle rates and fixed-body angular velocities given a 3-1-3 rotation sequence \cite{kaplan}:
 
@@ -238,8 +238,191 @@ The resulting square matrix in Equation (\ref{eqn:quat_mul_square_matrix}) can b
   \label{eqn:QuaternionMultiplicationDerived}
 \end{equation}
 
-This quaternion class for TSatPy as will be covered in Chapter \ref{chap:TSatPy} allows for the a very close representation of Equation \ref{eqn:QuaternionMultiplicationDerived}.
+This quaternion class for TSatPy as will be covered in Chapter \ref{chap:TSatPy} allows for the a very close representation of Equation (\ref{eqn:QuaternionMultiplicationDerived}).
 
 % The advantage to this notation is that is much easier to run in a Numerical Simulation Software (NSS like MATLAB or Octave) or other scripting language, but its layout is specific to our definition of the matrix where the scalar value follows the vector.  There is not clear consensus from the broader community on whether the vector or scalar should come first.  This can cause large issues when implementing a system using a externally provided library since both implementations expect a 4x4 matrix, and combining the logic from the two systems would require either rewriting of systems or spending extra cycles on the interface between the two systems converting the matrices from a scalar first to a scalar last layout and vice versa.
 
 % The object oriented nature of the code written for this thesis reduces or eliminates the confusion.  When an instance of a quaternion class is created, the vector and scalar values are set as separate parameters on the object regardless of order.  So when used in computation the $\Re^3$ and $\Re^1$ values can be referenced directly through the vector and scalar properties respectively.  Chapter \ref{ch:object_oriented} will cover the structure of the code developed for the thesis in greater detail.  The specific code that governs interactions between quaternions in the model is in section \ref{code:lib/@quaternion/quaternion.m}.
+
+
+
+\subsection{Quaternion Decomposition}
+\label{subsec:QuaternionDecomposition}
+
+For use in control systems, Section \ref{subsec:QuaternionDecompositionForNutationControl} cites the need for separating a quaternion into two quaternions.  One representing the rotational motion about the $z$-axis and the second describing the nutation about an axis in the $xy$ plane.  The attitude of TSat is represented by a single quaternion.  The change in attitude between two states can be modeled by the a rotation about a single axis.  Figure \ref{fig:PreDecomposedQuaternion} show the attitude of a system described by the quaternion $\bs{q} = [\alpha, \beta, \phi], 0.16953$ which is a rotation of 2.8 radians about the axis $[\alpha, \beta, \phi]^T$.  For control purposes, decomposing the single quaternion into one representing a rotation about the z-axis and a second rotation about an axis in the x-y plane as shown in Figure \ref{fig:PostDecomposedQuaternion}.
+
+\begin{figure}[H]
+  \begin{subfigure}[h!]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{figures/quaternion_decompose_pre.eps}
+    \caption{Quaternion State}
+    \label{fig:PreDecomposedQuaternion}
+  \end{subfigure}
+  ~
+  \begin{subfigure}[h!]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{figures/quaternion_decompose_post.eps}
+    \caption{Decomposed State}
+    \label{fig:PostDecomposedQuaternion}
+  \end{subfigure}
+  \caption{Decomposing a Quaternion into Rotation and Nutation}
+  \label{fig:QuaternionDecomposition}
+\end{figure}
+
+The quaternion that describes TSat's attitude $\bs{q}$ can be written as a sequence of two rotations.  A quaternion rotation about the z-axis $\bs{q_r}$ followed by the quaternion rotation about an axis in the x-y plane that creates a nutation $\bs{q_n}$.  Resultant rotations are performed through a left quaternion multiplication.
+\begin{equation}
+  \bs{q} = \bs{q_n} \otimes \bs{q_r} = \begin{bmatrix} \bs{v}_n \\ q_{0n} \end{bmatrix} \otimes \begin{bmatrix} \bs{v}_r \\ q_{0r} \end{bmatrix}
+\end{equation}
+\begin{equation}
+  \begin{bmatrix}\bs{v} \\ q_{0} \end{bmatrix} =
+  \begin{bmatrix} \bs{v}_n q_{0r} + \bs{v}_r q_{0n} + \bs{v}_n \times \bs{v}_r \\  q_{0n} q_{0r} - \bs{v}_n \cdot \bs{v}_r \end{bmatrix}
+  \label{eqn:rot_nut_product}
+\end{equation}
+Expanding the vector components out creates the equation.
+\begin{equation}
+  \begin{bmatrix}
+    q_{1} \\
+    q_{2} \\
+    q_{3} \\
+    q_{0}
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    \begin{bmatrix}
+      q_{1n} \\
+      q_{2n} \\
+      q_{3n} \\
+    \end{bmatrix} q_{0r} + \begin{bmatrix}
+      q_{1r} \\
+      q_{2r} \\
+      q_{3r} \\
+    \end{bmatrix} q_{0n} + \begin{bmatrix}
+      q_{1n} \\
+      q_{2n} \\
+      q_{3n} \\
+    \end{bmatrix} \times \begin{bmatrix}
+      q_{1r} \\
+      q_{2r} \\
+      q_{3r} \\
+    \end{bmatrix}
+    \\
+    q_{0n} q_{0r} - \begin{bmatrix}
+      q_{1n} \\
+      q_{2n} \\
+      q_{3n} \\
+    \end{bmatrix} \cdot \begin{bmatrix}
+      q_{1r} \\
+      q_{2r} \\
+      q_{3r} \\
+    \end{bmatrix} \\
+  \end{bmatrix}
+\end{equation}
+and through simplification becomes
+\begin{equation}
+  \begin{bmatrix}
+    q_{1} \\
+    q_{2} \\
+    q_{3} \\
+    q_{0}
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    q_{1n} q_{0r} + q_{1r} q_{0n} + q_{2n} q_{3r} - q_{3n} q_{2r} \\
+    q_{2n} q_{0r} + q_{2r} q_{0n} + q_{3n} q_{1r} - q_{1n} q_{3r} \\
+    q_{3n} q_{0r} + q_{3r} q_{0n} + q_{1n} q_{2r} - q_{2n} q_{1r} \\
+  q_{0n} q_{0r} - (q_{1n} q_{1r} + q_{2n} q_{2r} + q_{3n} q_{3r} ) \\
+  \end{bmatrix}
+  \label{eqn:rot_nut_product_simplified}
+\end{equation}
+Now that we have an expanded representation of the resultant quaternion, we can use the restriction from the desired spin-stabilized state for TableSat.  The rotational quaternion is allowed to move freely about the $z$-axis but should not have any displacement about the $x$ and $y$ axes.  From Equation (\ref{eqn:RotationalQuaternionDefinition}), $q_{1r} = q_{2r} = 0$.
+\begin{equation}
+  \bs{q_{r}}
+  = q_{1r} \bs{i} + q_{2r} \bs{j} + q_{3r} \bs{k} + q_{0r}
+  = 0 \bs{i} + 0 \bs{j} + q_{3r} \bs{k} + q_{0r}
+  \label{eqn:rotation_quaternion_defined}
+\end{equation}
+The nutation quaternion has the opposite restrictions where rotation is allowed about the $x$ and $y$ axes but not about the $z$ axis.  From Equation (\ref{eqn:RotationalQuaternionDefinition}), $q_{3n} = 0$.
+\begin{equation}
+  \bs{q_{n}}
+  = q_{1n} \bs{i} + q_{2n} \bs{j} + q_{3n} \bs{k} + q_{0n}
+  = q_{1n} \bs{i} + q_{2n} \bs{j} + 0 \bs{k} + q_{0n}
+  \label{eqn:nutation_quaternion_defined}
+\end{equation}
+Substituting equations \eqref{eqn:rotation_quaternion_defined} and \eqref{eqn:nutation_quaternion_defined} into \eqref{eqn:rot_nut_product_simplified} yields.
+\begin{equation}
+  \begin{bmatrix}
+    q_{1} \\
+    q_{2} \\
+    q_{3} \\
+    q_{0}
+  \end{bmatrix}
+  =
+  \begin{bmatrix}
+    q_{1n} q_{0r} + 0             + q_{2n} q_{3r} - 0 \\
+    q_{2n} q_{0r} + 0             + 0             - q_{1n} q_{3r} \\
+    0             + q_{3r} q_{0n} + 0             - 0 \\
+  q_{0n} q_{0r} - (q_{1n} 0 + q_{2n} 0 + 0 q_{3r} ) \\
+  \end{bmatrix}
+\end{equation}
+\begin{subequations}
+  \begin{align}
+    q_{1} &= q_{1n} q_{0r} + q_{2n} q_{3r} \label{eqn:rot_nut_1_1} \\
+    q_{2} &= q_{2n} q_{0r} - q_{1n} q_{3r} \label{eqn:rot_nut_1_2} \\
+    q_{3} &= q_{3r} q_{0n} \label{eqn:rot_nut_1_3} \\
+    q_{0} &= q_{0n} q_{0r} \label{eqn:rot_nut_1_0}
+  \end{align}
+\end{subequations}
+Solving \ref{eqn:rot_nut_1_3} and \ref{eqn:rot_nut_1_0} for $q_{3r}$ and $q_{0r}$ and substituting into \ref{eqn:rot_nut_1_1} and \ref{eqn:rot_nut_1_2}
+\begin{subequations}
+  \begin{align}
+    q_{0n} q_{1} &= q_{1n} q_{0} + q_{2n} q_{3} \label{eqn:rot_nut_2_1} \\
+    q_{0n} q_{2} &= q_{2n} q_{0} - q_{1n} q_{3} \label{eqn:rot_nut_2_2}
+  \end{align}
+\end{subequations}
+combining \ref{eqn:rot_nut_2_1} and \ref{eqn:rot_nut_2_2}
+\begin{equation}
+  0 = (q_{0}q_{2} + q_{1}q_{3}) q_{1n} + (q_{2}q_{3} - q_{0}q_{1}) q_{2n}
+\end{equation}
+\begin{subequations}
+  \begin{align}
+    q_{1n} &= Q \cdot q_{2n} \\
+    \text{where } Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
+  \end{align}
+  \label{eqn:nutation_parameter_ratio}
+\end{subequations}
+The additional restriction than rotational quaternions have a unit norm can be leveraged in finding solutions
+\begin{equation}
+  \left\| \bs{q} \right\| = \sqrt{\bs{v} \cdot \bs{v} + q_0^2} = \sqrt{q_1^2+q_2^2+q_3^2+q_0^2}
+  \label{eqn:quaternion_norm}
+\end{equation}
+Taking the norm of the rotational quaternion in Equation (\ref{eqn:rotation_quaternion_defined}) and substituting $q_{3r}$ and $q_{0r}$ from Equations \ref{eqn:rot_nut_1_3} and \ref{eqn:rot_nut_1_0} becomes
+\begin{equation}
+  (0)^2 + (0)^2 + \left( \frac{q_3}{q_{0n}} \right)^2 + \left( \frac{q_0}{q_{0n}} \right)^2 = 1
+\end{equation}
+solving for $q_{n0}$
+\begin{equation}
+  q_{n0} = \pm \sqrt{q_3^2 + q_0^2}
+  \label{eqn:nutation_scalar}
+\end{equation}
+substituting \ref{eqn:nutation_parameter_ratio} and \ref{eqn:nutation_scalar} into \ref{eqn:nutation_quaternion_defined}
+\begin{equation}
+  \bs{q_{n}}
+  = Q \cdot q_{2n} \bs{i} + q_{2n} \bs{j} + 0 \bs{k} \pm \sqrt{q_3^2 + q_0^2}
+\end{equation}
+and as this is a rotational quaternion, its norm should always equal one
+\begin{equation}
+  (Q \cdot q_{2n})^2 + (q_{2n})^2 + (q_3^2 + q_0^2) = 1
+\end{equation}
+which can be solved for the nutation quaternion's $q_{2n}$ term
+\begin{equation}
+  q_{2n} = \pm \sqrt{ \frac{1  - q_3^2 - q_0^2}{Q^2 + 1} }
+  \label{eqn:qn2_solution}
+\end{equation}
+
+We now have a mapping of the original state quaternion $\bs{q}$ to its decomposed rotation $\bs{q}_r$ and nutation $\bs{q}_n$ quaternions (Equation (\ref{eqn:quaternion_decomposition_derivation})).  The ability to break the attitude parameters into these two quantities is particularly useful for spin-stabilized satellites as it decouples the rate and attitude controllers.  Normally the attitude controller would need to propagate the desired quaternion attitude with input from the body rates. In this approach, the controller can ignore continuously changing rotational component $\bs{q}_r$, and limit its focus on driving the nutation error $\bs{q}_n$ to zero (Figure \ref{fig:PostDecomposedQuaternion}).
+\begin{equation}
+  \begin{aligned}
+    \bs{q} &= \bs{q_n} \otimes \bs{q_r} \\
+    \text{where } \bs{q}_n &= \begin{bmatrix} q_{1n} = Q \cdot q_{2n} \\ q_{2n} = \sqrt{ \frac{1  - q_3^2 - q_0^2}{Q^2 + 1} } \\ 0 \\ q_{0n} = \sqrt{q_3^2 + q_0^2} \end{bmatrix} , \bs{q}_r = \begin{bmatrix} 0 \\ 0 \\ q_{3r} = \frac{q_3}{q_{0n}} \\ q_{0r} = \frac{q_0}{q_{0n}} \end{bmatrix} \\
+    Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
+  \end{aligned}
+  \label{eqn:quaternion_decomposition_derivation}
+\end{equation}

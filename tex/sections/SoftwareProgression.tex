@@ -29,7 +29,7 @@ Following deficiencies in the NSS model design, the ``TSat Message Center'' prov
 
 The issue arises when multiple portions of the controller require sensor data, such as during the polling of the sensors while a PID controller is running.  This desired functionality allows for some basic insight into the operation of the TableSat without waiting for the completion of a test.  However, in this case only one feature receives the updates, thus, either leaving TableSat uncontrolled or removing user visibility.  Other issues include having difficulty maintaining the active state of the system in memory since data is not easily shared between functions and having a ballooning code base that requires a dedicated m-file for each new algorithm or function.
 
-At the bottom of Figure \ref{fig:TSatMessageCenter} is a section labeled ``Realtime Sensor Plot''.  This feature is a product of the end of this first version's development cycle but provides the basis for dynamic plotting in later versions.  Persistent variables inside the function remember data submitted which allows it to give a time series view into sensor data or yaw calculations as the experiment runs.  Figure \ref{fig:SimpleRealtime} shows a time lapse of the code in Snippet \ref{code:samplerealtimeplot}.  The plot refreshes in real-time by updating the data behind the sinusoidal plot instead of needing to close and redraw the entire plot which is time intensive especially when the data provided is used to create complex renderings such as is possible in later revisions (Figure \label{fig:RuntimeSatelliteVisualization}).
+At the bottom of Figure \ref{fig:TSatMessageCenter} is a section labeled ``Realtime Sensor Plot''.  This feature is a product of the end of this first version's development cycle but provides the basis for dynamic plotting in later versions.  Persistent variables inside the function remember data submitted which allows it to give a time series view into sensor data or yaw calculations as the experiment runs.  Figure \ref{fig:SimpleRealtime} shows a time lapse of the code in Snippet \ref{code:samplerealtimeplot}.  The plot refreshes in real-time by updating the data behind the sinusoidal plot instead of needing to close and redraw the entire plot which is time intensive especially when the data provided is used to create complex renderings such as is possible in later revisions (Figure \ref{fig:RuntimeSatelliteVisualization}).
 
 \begin{listing}[H]
 \begin{singlespace}
@@ -181,7 +181,7 @@ although most references use the matrix notation
 Using a quaternion class with vector and scalar properties keeps the values separate and distinct.  As such, the class gets augmented to operate with the multiplication infix operator, the user does not need to be concerned with the scalar term placement.
 
 Snippet \ref{code:matlab_quaternion_class} uses a simplified version of the quaternion class where the properties keep the vector and scalar quantities
-separated allowing Equation \ref{eqn:QuaternionMultiplication} to be used.
+separated allowing Equation (\ref{eqn:QuaternionMultiplication}) to be used.
 \begin{listing}[H]
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{matlab}

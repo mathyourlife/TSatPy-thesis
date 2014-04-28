@@ -10,7 +10,6 @@
 
 \subsection{Quaternion Notation}
 \label{subsec:Implementation-QuaternionNotation}
-Section \ref{subsubsec:QuaternionNotation}
 
 As is described more in Chapter \ref{chap:TSatPy}, the implementation in this thesis is done in an object oriented manner so it can handle either the scalar first or scalar last format.
 
@@ -31,7 +30,6 @@ print(q)
 
 \section{Rotational Quaternion}
 \label{sec:Implementation-RotationalQuaternion}
-Section \ref{subsubsec:RotationalQuaternion}
 
 Creating a rotational quaternion from the TSatPy (Chapter \ref{chap:TSatPy}) is done with
 
@@ -57,8 +55,6 @@ print("Rotation: %g radians" % theta)
 \subsection{Quaternion Multiplication}
 \label{subsec:Implementation-QuaternionMultiplication}
 
-Section \ref{subsubsec:QuaternionMultiplication}
-
 The example below shows how this incremental changes holds true with the TSatPy library.
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
@@ -77,7 +73,7 @@ print("b             = %s" % b)
   \nocite{minted}
 \end{singlespace}
 
-Section \ref{subsubsec:QuaternionMultiplication} includes a small example of quaternion multiplication and the following snippet is the implementation of the quaternion multiplication which reads and is used similarly to how the quaternion algebra is written.
+The following snippet is the implementation of the quaternion multiplication which reads and is used similarly to how the quaternion algebra is written.
 
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
@@ -116,7 +112,7 @@ For the visualization, a point $A (2, 4, -1)$ that is in the standard orientatio
   A' = \bs{R_q} A = \begin{bmatrix} 0 & -1 & 0 \\ 1 & 0 & 0 \\ 0 & 0 & 1 \\\end{bmatrix} \begin{bmatrix} 2 \\ 4 \\ -1 \end{bmatrix} = \begin{bmatrix} -4 \\ 2 \\ -1 \end{bmatrix}
 \end{equation}
 
-The equivalent TSatPy implementation of the point rotation equation (Equation \ref{eqn:RotationMatrix})
+The equivalent TSatPy implementation of the point rotation equation (Equation (\ref{eqn:RotationMatrix}))
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
 from TSatPy.State import Quaternion
@@ -228,185 +224,9 @@ This implementation has both a significant theoretical and implementation issue.
 
 
 \subsection{Quaternion Decomposition}
-\label{subsubsec:QuaternionDecomposition}
+\label{subsec:TSatPyQuaternionDecomposition}
 
-The attitude of TSat is represented by a single quaternion.  The change in attitude between two states can be modeled by the a rotation about a single axis.  Figure \ref{fig:PreDecomposedQuaternion} show the attitude of a system described by the quaternion $\bs{q} = [\alpha, \beta, \phi], 0.16953$ which is a rotation of 2.8 radians about the axis $[\alpha, \beta, \phi]^T$.  For control purposes, decomposing the single quaternion into one representing a rotation about the z-axis and a second rotation about an axis in the x-y plane as shown in Figure \ref{fig:PostDecomposedQuaternion}.
 
-\begin{figure}[H]
-  \begin{subfigure}[h!]{0.5\textwidth}
-    \includegraphics[width=\textwidth]{figures/quaternion_decompose_pre.eps}
-    \caption{Quaternion State}
-    \label{fig:PreDecomposedQuaternion}
-  \end{subfigure}
-  ~
-  \begin{subfigure}[h!]{0.5\textwidth}
-    \includegraphics[width=\textwidth]{figures/quaternion_decompose_post.eps}
-    \caption{Decomposed State}
-    \label{fig:PostDecomposedQuaternion}
-  \end{subfigure}
-  \caption{Decomposing a Quaternion into Rotation and Nutation}
-  \label{fig:QuaternionDecomposition}
-\end{figure}
-
-The quaternion that describes TSat's attitude $\bs{q}$ can be written as a sequence of two rotations.  A quaternion rotation about the z-axis $\bs{q_r}$ followed by the quaternion rotation about an axis in the x-y plane that creates a nutation $\bs{q_n}$.  Resultant rotations are performed through a left quaternion multiplication.
-\begin{equation}
-  \bs{q} = \bs{q_n} \otimes \bs{q_r} = \begin{bmatrix} \bs{v}_n \\ q_{0n} \end{bmatrix} \otimes \begin{bmatrix} \bs{v}_r \\ q_{0r} \end{bmatrix}
-\end{equation}
-\begin{equation}
-  \begin{bmatrix}\bs{v} \\ q_{0} \end{bmatrix} =
-  \begin{bmatrix} \bs{v}_n q_{0r} + \bs{v}_r q_{0n} + \bs{v}_n \times \bs{v}_r \\  q_{0n} q_{0r} - \bs{v}_n \cdot \bs{v}_r \end{bmatrix}
-  \label{eqn:rot_nut_product}
-\end{equation}
-Expanding the vector components out creates the equation.
-\begin{equation}
-  \begin{bmatrix}
-    q_{1} \\
-    q_{2} \\
-    q_{3} \\
-    q_{0}
-  \end{bmatrix}
-  =
-  \begin{bmatrix}
-    \begin{bmatrix}
-      q_{1n} \\
-      q_{2n} \\
-      q_{3n} \\
-    \end{bmatrix} q_{0r} + \begin{bmatrix}
-      q_{1r} \\
-      q_{2r} \\
-      q_{3r} \\
-    \end{bmatrix} q_{0n} + \begin{bmatrix}
-      q_{1n} \\
-      q_{2n} \\
-      q_{3n} \\
-    \end{bmatrix} \times \begin{bmatrix}
-      q_{1r} \\
-      q_{2r} \\
-      q_{3r} \\
-    \end{bmatrix}
-    \\
-    q_{0n} q_{0r} - \begin{bmatrix}
-      q_{1n} \\
-      q_{2n} \\
-      q_{3n} \\
-    \end{bmatrix} \cdot \begin{bmatrix}
-      q_{1r} \\
-      q_{2r} \\
-      q_{3r} \\
-    \end{bmatrix} \\
-  \end{bmatrix}
-\end{equation}
-and through simplification becomes
-\begin{equation}
-  \begin{bmatrix}
-    q_{1} \\
-    q_{2} \\
-    q_{3} \\
-    q_{0}
-  \end{bmatrix}
-  =
-  \begin{bmatrix}
-    q_{1n} q_{0r} + q_{1r} q_{0n} + q_{2n} q_{3r} - q_{3n} q_{2r} \\
-    q_{2n} q_{0r} + q_{2r} q_{0n} + q_{3n} q_{1r} - q_{1n} q_{3r} \\
-    q_{3n} q_{0r} + q_{3r} q_{0n} + q_{1n} q_{2r} - q_{2n} q_{1r} \\
-  q_{0n} q_{0r} - (q_{1n} q_{1r} + q_{2n} q_{2r} + q_{3n} q_{3r} ) \\
-  \end{bmatrix}
-  \label{eqn:rot_nut_product_simplified}
-\end{equation}
-Now that we have an expanded representation of the resultant quaternion, we can use the restriction from the desired spin-stabilized state for TableSat.  The rotational quaternion is allowed to move freely about the $z$-axis but should not have any displacement about the $x$ and $y$ axes.  From Equation \ref{eqn:RotationalQuaternionDefinition}, $q_{1r} = q_{2r} = 0$.
-\begin{equation}
-  \bs{q_{r}}
-  = q_{1r} \bs{i} + q_{2r} \bs{j} + q_{3r} \bs{k} + q_{0r}
-  = 0 \bs{i} + 0 \bs{j} + q_{3r} \bs{k} + q_{0r}
-  \label{eqn:rotation_quaternion_defined}
-\end{equation}
-The nutation quaternion has the opposite restrictions where rotation is allowed about the $x$ and $y$ axes but not about the $z$ axis.  From Equation \ref{eqn:RotationalQuaternionDefinition}, $q_{3n} = 0$.
-\begin{equation}
-  \bs{q_{n}}
-  = q_{1n} \bs{i} + q_{2n} \bs{j} + q_{3n} \bs{k} + q_{0n}
-  = q_{1n} \bs{i} + q_{2n} \bs{j} + 0 \bs{k} + q_{0n}
-  \label{eqn:nutation_quaternion_defined}
-\end{equation}
-Substituting equations \eqref{eqn:rotation_quaternion_defined} and \eqref{eqn:nutation_quaternion_defined} into \eqref{eqn:rot_nut_product_simplified} yields.
-\begin{equation}
-  \begin{bmatrix}
-    q_{1} \\
-    q_{2} \\
-    q_{3} \\
-    q_{0}
-  \end{bmatrix}
-  =
-  \begin{bmatrix}
-    q_{1n} q_{0r} + 0             + q_{2n} q_{3r} - 0 \\
-    q_{2n} q_{0r} + 0             + 0             - q_{1n} q_{3r} \\
-    0             + q_{3r} q_{0n} + 0             - 0 \\
-  q_{0n} q_{0r} - (q_{1n} 0 + q_{2n} 0 + 0 q_{3r} ) \\
-  \end{bmatrix}
-\end{equation}
-\begin{subequations}
-  \begin{align}
-    q_{1} &= q_{1n} q_{0r} + q_{2n} q_{3r} \label{eqn:rot_nut_1_1} \\
-    q_{2} &= q_{2n} q_{0r} - q_{1n} q_{3r} \label{eqn:rot_nut_1_2} \\
-    q_{3} &= q_{3r} q_{0n} \label{eqn:rot_nut_1_3} \\
-    q_{0} &= q_{0n} q_{0r} \label{eqn:rot_nut_1_0}
-  \end{align}
-\end{subequations}
-Solving \ref{eqn:rot_nut_1_3} and \ref{eqn:rot_nut_1_0} for $q_{3r}$ and $q_{0r}$ and substituting into \ref{eqn:rot_nut_1_1} and \ref{eqn:rot_nut_1_2}
-\begin{subequations}
-  \begin{align}
-    q_{0n} q_{1} &= q_{1n} q_{0} + q_{2n} q_{3} \label{eqn:rot_nut_2_1} \\
-    q_{0n} q_{2} &= q_{2n} q_{0} - q_{1n} q_{3} \label{eqn:rot_nut_2_2}
-  \end{align}
-\end{subequations}
-combining \ref{eqn:rot_nut_2_1} and \ref{eqn:rot_nut_2_2}
-\begin{equation}
-  0 = (q_{0}q_{2} + q_{1}q_{3}) q_{1n} + (q_{2}q_{3} - q_{0}q_{1}) q_{2n}
-\end{equation}
-\begin{subequations}
-  \begin{align}
-    q_{1n} &= Q \cdot q_{2n} \\
-    \text{where } Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
-  \end{align}
-  \label{eqn:nutation_parameter_ratio}
-\end{subequations}
-The additional restriction than rotational quaternions have a unit norm can be leveraged in finding solutions
-\begin{equation}
-  \left\| \bs{q} \right\| = \sqrt{\bs{v} \cdot \bs{v} + q_0^2} = \sqrt{q_1^2+q_2^2+q_3^2+q_0^2}
-  \label{eqn:quaternion_norm}
-\end{equation}
-Taking the norm of the rotational quaternion in Equation \ref{eqn:rotation_quaternion_defined} and substituting $q_{3r}$ and $q_{0r}$ from Equations \ref{eqn:rot_nut_1_3} and \ref{eqn:rot_nut_1_0} becomes
-\begin{equation}
-  (0)^2 + (0)^2 + \left( \frac{q_3}{q_{0n}} \right)^2 + \left( \frac{q_0}{q_{0n}} \right)^2 = 1
-\end{equation}
-solving for $q_{n0}$
-\begin{equation}
-  q_{n0} = \pm \sqrt{q_3^2 + q_0^2}
-  \label{eqn:nutation_scalar}
-\end{equation}
-substituting \ref{eqn:nutation_parameter_ratio} and \ref{eqn:nutation_scalar} into \ref{eqn:nutation_quaternion_defined}
-\begin{equation}
-  \bs{q_{n}}
-  = Q \cdot q_{2n} \bs{i} + q_{2n} \bs{j} + 0 \bs{k} \pm \sqrt{q_3^2 + q_0^2}
-\end{equation}
-and as this is a rotational quaternion, its norm should always equal one
-\begin{equation}
-  (Q \cdot q_{2n})^2 + (q_{2n})^2 + (q_3^2 + q_0^2) = 1
-\end{equation}
-which can be solved for the nutation quaternion's $q_{2n}$ term
-\begin{equation}
-  q_{2n} = \pm \sqrt{ \frac{1  - q_3^2 - q_0^2}{Q^2 + 1} }
-  \label{eqn:qn2_solution}
-\end{equation}
-
-We now have a mapping of the original state quaternion $\bs{q}$ to its decomposed rotation $\bs{q}_r$ and nutation $\bs{q}_n$ quaternions (Equation \ref{eqn:quaternion_decomposition_derivation}).  The ability to break the attitude parameters into these two quantities is particularly useful for spin-stabilized satellites as it decouples the rate and attitude controllers.  Normally the attitude controller would need to propagate the desired quaternion attitude with input from the body rates. In this approach, the controller can ignore continuously changing rotational component $\bs{q}_r$, and limit its focus on driving the nutation error $\bs{q}_n$ to zero (Figure \ref{fig:PostDecomposedQuaternion}).
-\begin{equation}
-  \begin{aligned}
-    \bs{q} &= \bs{q_n} \otimes \bs{q_r} \\
-    \text{where } \bs{q}_n &= \begin{bmatrix} q_{1n} = Q \cdot q_{2n} \\ q_{2n} = \sqrt{ \frac{1  - q_3^2 - q_0^2}{Q^2 + 1} } \\ 0 \\ q_{0n} = \sqrt{q_3^2 + q_0^2} \end{bmatrix} , \bs{q}_r = \begin{bmatrix} 0 \\ 0 \\ q_{3r} = \frac{q_3}{q_{0n}} \\ q_{0r} = \frac{q_0}{q_{0n}} \end{bmatrix} \\
-    Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
-  \end{aligned}
-  \label{eqn:quaternion_decomposition_derivation}
-\end{equation}
 
 
 \section{Satellite Dynamics}
@@ -544,3 +364,220 @@ for _ in range(4):
 \end{listing}
 
 In this study, quaternion and body rate propagation techniques will be incorporated into the TableSat IA observer-based control system.
+
+\section{Messages Between TableSat and the Base Station}
+
+\subsection{Message Protocol}
+\label{subsec:UDPTCP}
+
+Communication between the controller and the experimental TableSat is negotiated over a User Datagram Protocol (UDP) socket.  Both the controller and TableSat read and write over port 9877.  UDP is used for a stateless connection more generally used for pushing data over a large number of connections.  The other common communication protocol is Transmission Control Protocol (TCP) where a session is established between server and client and successful transferral of data is acknowledged by the recipient.
+
+Advantages and disadvantages exist between the TCP and UDP protocols and became a critical factor in influencing the design of TableSat IA base station controller. Section \ref{sec:NSSModel} goes into further detail in how this difference in protocols cropped up early in the development of the base station controller where the combination of a Numerical Simulation Software (like MATLAB Simulink or Octave) with a UDP communication protocol produced a very fragile system.
+
+A UDP message transmission is done in a ``fire and forget'' fashion.  The message header can generally include the originating hosts ip address and port so that the server knows where to send the response.  The session-less nature of UDP means that the originating server sends the message, but does not receive confirmation that the message transmitted successfully as with TCP where ever interaction is followed up with an acknowledgment from the other host.
+
+The advantage to using UDP for the UNH TableSat 1 is that the satellite side code could be largely based off of Melissa Vess' work on her TableSat thesis where the control loop was implemented on-board, and the UDP connection was used to infrequently poll for data or modify sensor calibration values.  The UDP connection has the slight advantage of being able to transmit and receive packets without needing to wait for acknowledgments.  This could save a small fraction of time, but on modern hardware and with the small bandwidth usage this advantage is negligible.
+
+Disadvantages to a UDP implementing the control interface through UDP include the possibility of packet loss where the sender submits a packet, but it gets corrupted or dropped.  Since UDP is a stateless connection, the sender doesn't wait for an acknowledgment which in this case would not come. This issue is handled by the communications module.  If the control loop rate on both updating the actuator voltages and polling sensor data is fast enough, a dropped packet would not matter much since a new updated set of values would be soon to follow.  Issues could be caused if the completion of a code loop was dependent on a packet coming in.  If dropped, the control loop could block until the next packet is received.  This was one issue encountered in the project version [sec:ControlLoopinSimulink].
+
+
+\subsection{Message Definitions}
+\label{subsec:MessageDefinitions}
+
+
+The packet structure used for this project is the same as used by Melissa Vess \cite{vessthesis}. Each UDP packet is comprised of a packet header and data payload.  The packet header format remains constant for all messages containing five octets of data.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{| l | l |}
+    \hline
+    Header Octet & Description \\ \hline
+    h1 & Message Number (0 to 255) \\ \hline
+    h2 & Flags (0 - 255) \\ \hline
+    h3 & Message Size (0 - 255) \\ \hline
+    h4 & Message Size (0 - 255) \\ \hline
+    h5 & 0 \\ \hline
+  \end{tabular}
+  \caption{UDP message headers}
+  \label{tbl:UDPMessageHeaders}
+\end{table}
+
+The first octet (h1) contains the message number that matches to a predefined list of messages known by both the sender and recipient.  This is used to specify how the data in the payload is to be used.
+
+The second octet (h2) is reserved for flags.  For some messages, flags can be set for additional data.  These are not used in the final implementation of NASA MMS TableSat IA.
+
+The third (h3) and fourth (h4) header octets define the size of the data's payload, so when reading data in from a buffer, the header can inform the recipient how many bytes need to get read in from the buffer in order to get to the end of the packet.  For payloads less than 256 bytes only the fourth header byte is needed.  For payloads larger than 255 bytes the following formula is used to specify the message size headers.
+
+\begin{subequations}
+  \begin{align}
+    h4 &= mod(size, 256) \\
+    h3 &= floor(size / 256)
+  \end{align}
+  \label{eqn:UDPSizeHeader}
+\end{subequations}
+
+The only meta data provided along with the payload beyond the data's size is an 8 bit message number.  Both UNH TableSat IA and the control station have identical message list definitions.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{|l|l|l|l|}
+    \hline
+    Message Id & Payload Size & Data Type & Message Description \\ \hline
+    2 & 1 octet & unsigned int & Set run mode \\ \hline
+    4 & 1 octet & unsigned int & Set run mode \\ \hline
+    18 & 4 x (8 octets) & float & Set fan voltages \\ \hline
+    19 & 1 octet & unsigned int & Set log record mode \\ \hline
+    20 & 1 octet & unsigned int & Request sensor reading \\ \hline
+    22 & 1 octet & unsigned int & End of sensor log \\ \hline
+    23 & 8 octets & float & Request sensor log data \\ \hline
+    33 & 8 octets & float & Set log sample rate \\ \hline
+    63 & 15 x (8 octets) & float & Sensor readings \\ \hline
+    64 & 16 x (8 octets) & float & Sensor log entry \\ \hline
+    65 & 8 octets & float & Sensor log size \\ \hline
+    104 & 1 octet & unsigned int & Ack run mode \\ \hline
+    118 & 1 octet & unsigned int & Ack fan volt \\ \hline
+    119 & 1 octet & unsigned int & Ack sensor log run mode \\ \hline
+    133 & 1 octet & unsigned int & Ack log sample rate \\ \hline
+  \end{tabular}
+  \caption{TableSat message definitions}
+  \label{tbl:UDPMessageDefinitions}
+\end{table}
+
+
+\section{Calculating Nutation From Three-Axis Magnetometer}
+
+The following example shows a sample calculation of nutation based on a single set of coarse sun sensor and TAM voltage measurements.
+
+The base station submits a request for sensor data (message id \#20) to TableSat which responds with a packet contianing the sensor output voltages (message id \#63) with a payload containing 15 floats (timestamp, 6 photodiodes, 4 accelerometrs, gyroscope, and 3 three-axis magnetometer).
+
+\subsection{Calculate Yaw From Coarse Sun Sensor}
+
+Using sample CSS output voltages from the photodiodes (0.37247, 0.30899, 1.18370, 2.40020, 1.80500, and 0.44052), the TSatPy python package (whose development is detailed in Chapter \ref{chap:TSatPy}) uses Equation (\ref{eqn:CSSResultantForce}) to convert the sensor voltages into a meaningful state as shown in Snippet \ref{code:css_to_yaw}.
+
+\begin{listing}[H]
+\begin{singlespace}
+  \begin{minted}[mathescape,
+               linenos,
+               numbersep=10pt,
+               frame=lines,
+               framesep=2mm]{python}
+import TSatPy
+import numpy as np
+
+css_v = [0.37247, 0.30899, 1.18370, 2.40020, 1.80500, 0.44052]
+
+pda = TSatPy.Sensor.PhotoDiodeArray()
+pda.update_state(css_v)
+vector, radians = pda.x.q.to_rotation()
+
+print "A %g radian (%d degree) rotation about <%g, %g, %g>" % (
+    radians, radians / np.pi * 180,
+    vector[0,0], vector[1,0], vector[2,0])
+
+# Prints out
+# A 3.34585 radian (191 degree) rotation about <-0, -0, -1>
+  \end{minted}
+\caption{Converting CSS voltage outputs to a Yaw measurement}
+\label{code:css_to_yaw}
+\nocite{minted}
+\end{singlespace}
+\end{listing}
+
+\subsection{Calculate TAM Nutation Reference Data}
+\label{subsec:CalculateTAMNutationReferenceData}
+
+Figure \ref{fig:TAMNutationVoltages} shows that while the TAM readings vary enough to be noticeable for large nutations, the signal contain a significant level of noise.  In order to use the TAM to quantify nutation for the observer-based controller, the data in Table \ref{tbl:TAMCalibration} is reduced to five data points for a yaw angle of 191 degrees.  When updating the estimator, TAM sensor values can be compared to the five reference nutation points of level, $+x$ down, $+y$ down, $-x$ down, and $-y$ down.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{c|ccc|ccc}
+    \hline
+    Yaw   & & Steady & & & $+X \ 14^o$ & \\ \hline
+    (deg) & $TAM_x$ (V) & $TAM_y$ (V) & $TAM_x$ (V) & $TAM_x$ (V) & $TAM_y$ (V) & $TAM_x$ (V)  \\ \hline
+    0 & $S_{x0}$ & $S_{y0}$ & $S_{z0}$ & $+X_{x0}$ & $+X_{y0}$ & $+X_{z0}$ \\ \hline
+    1 & $S_{x1}$ & $S_{y1}$ & $S_{z1}$ & $+X_{x1}$ & $+X_{y1}$ & $+X_{z1}$ \\ \hline
+    ... & & & & & &  \\ \hline
+    Yaw   & & $+Y \ 14^o$ & & & $-X \ 14^o$ & \\ \hline
+    (deg) & $TAM_x$ (V) & $TAM_y$ (V) & $TAM_x$ (V) & $TAM_x$ (V) & $TAM_y$ (V) & $TAM_x$ (V)  \\ \hline
+    0 & $+Y_{x0}$ & $+Y_{y0}$ & $+Y_{z0}$ & $-X_{x0}$ & $-X_{y0}$ & $-X_{z0}$ \\ \hline
+    1 & $+Y_{x1}$ & $+Y_{y1}$ & $+Y_{z1}$ & $-X_{x1}$ & $-X_{y1}$ & $-X_{z1}$ \\ \hline
+    ... & & & & & &  \\ \hline
+    Yaw   & & $-Y \ 14^o$ & &  \\ \hline
+    (deg) & $TAM_x$ (V) & $TAM_y$ (V) & $TAM_x$ (V)  \\ \hline
+    0 & $-Y_{x0}$ & $-Y_{y0}$ & $-Y_{z0}$  \\ \hline
+    1 & $-Y_{x1}$ & $-Y_{y1}$ & $-Y_{z1}$  \\ \hline
+    ... & & & & & &  \\ \hline
+  \end{tabular}
+  \caption{TAM calibration reference table}
+  \label{tbl:TAMCalibration}
+\end{table}
+
+The method chosen for creating the five reference points starts with collecting approximately 2400 data points with corresponding TAM and coarse sun sensor voltage readings.  The voltages for each nutation setting are grouped into 1 degree increments.  Multiple rotations create some overlap in measurements.  The final reference value for each degree is calculated through a weighted average of a specified smoothing window.
+
+Figure \ref{fig:TAMNutationReference} shows the result of the nutation reference values for 5, 15 and 25 degree smoothing windows.  At $\pm 15$ degrees, an adequate level of noise is filtered without causing over smoothing.  At this level, each of the 191 degree reference values are a weighted average of about 200 of the original calibration points.
+
+\begin{figure}[H]
+  \begin{subfigure}[h!]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{figures/tam_calibration_ref_5deg_smoothing.eps}
+    \caption{$\pm 5^o$ smoothing}
+    \label{fig:TAM5degCalibration}
+  \end{subfigure}
+  ~
+  \begin{subfigure}[h!]{0.5\textwidth}
+    \includegraphics[width=\textwidth]{figures/tam_calibration_ref_25deg_smoothing.eps}
+    \caption{$\pm 25^o$ smoothing}
+    \label{fig:TAM25degCalibration}
+  \end{subfigure}
+
+  \begin{subfigure}[h!]{0.8\textwidth}
+    \includegraphics[width=\textwidth]{figures/tam_calibration_ref_15deg_smoothing.eps}
+    \caption{$\pm 15^o$ smoothing}
+    \label{fig:TAM15degCalibration}
+  \end{subfigure}
+  \caption{TAM Nutation Reference Values}
+  \label{fig:TAMNutationReference}
+\end{figure}
+
+The cross shown in Figure \ref{fig:TAMRef191} illustrates the difference in the four nutation reference points compared to the stable point for a 191 degree yaw.  Figure \ref{fig:TAMPoints191} shows the level of noise reduction by the calibration process as the original data points are plotted against the reference nutation voltages.
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/tam_calibration_ref_for_yaw_191.eps,height=3in}}
+  \caption{TAM reference voltages for 191 degree yaw}
+  \label{fig:TAMRef191}
+\end{figure}
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/tam_calibration_191_degree_pts.eps,height=3in}}
+  \caption{Closer view of TAM reference voltages for 191 degree yaw}
+  \label{fig:TAMPoints191}
+\end{figure}
+
+\subsection{Estimating Nutation}
+
+Taking one of the points from $-y$ calibration data to complete the example, Table \ref{tbl:TAMSamplePoints} lists the test point, along with the reference values, obtained from the calibration algorithm above.  The test point plotted in Figure \ref{fig:TAMPoint191} is nearest to the reference $-y$ value, but there is a large gap between the measured value and its associated reference, and other test points as in \ref{fig:TAMPoints191} are far closer to another reference point than its own.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lc}
+    \hline
+    Test Point       & $(2.63, 2.37, 2.32)$ \\ \hline
+    Steady Reference & $(2.63, 2.40, 2.32)$ \\ \hline
+    xpos Reference   & $(2.63, 2.42, 2.31)$ \\ \hline
+    ypos Reference   & $(2.64, 2.42, 2.32)$ \\ \hline
+    xneg Reference   & $(2.64, 2.39, 2.32)$ \\ \hline
+    yneg Reference   & $(2.63, 2.39, 2.32)$ \\ \hline
+  \end{tabular}
+  \caption{TAM sample reference points}
+  \label{tbl:TAMSamplePoints}
+\end{table}
+
+
+\begin{figure}[H]
+  \centerline{\psfig{file=figures/tam_calibration_191_degree_pt.eps,height=3in}}
+  \caption{TAM sample data point for nutation calculation}
+  \label{fig:TAMPoint191}
+\end{figure}
+
+In order to determine the best approximation for the measured nutations, a number of combinations of approaches are attempted including using the proportion between two estimates, normalizing the reference vectors, projecting the point to the plane consisting of the two nearest vectors, and creating a conversion of the x and y vectors to an orthogonal space.  Some cases provided slightly lower classification error rates when compared to the original calibration test set, but any improvements are not significant.  For simplicity and speed, the measurement estimate for nutation is reduced to a ``nearest neighbor'' classification \cite{nearestneighbor} where the closest reference point is chosen as the best approximation.
+
+Despite the improved speed and simplicity, this classification method has some large faults, the biggest of which is the resulting chattered signal that is relayed to the estimator state.  This is because there are no continuum of values, the nutation state jumps between the five calibration states of level, and each of the $14^o$ nutations.  Further work is needed to refine this technique.

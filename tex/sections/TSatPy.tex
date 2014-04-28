@@ -2,36 +2,42 @@
 \chapter{TSatPy}
 \label{chap:TSatPy}
 
-Chapter \ref{chap:ProgressionOfControlSystemSoftware} detailed the progression through the initial four versions of the attitude determination and control system (ADCS) that are written in or for a Numerical Simulation Software (NSS) implementation.  While these versions provide a level of insight and control into a control system, the NSS environment is not a natural fit for that level of programming and presents issues that take a significant effort to work around.  On top of some of the issues with diagnosing problems, the NSS controller code targets a fairly narrow swath of professions that are comfortable with using and editing it.  Because of this, the final version was written in Python, a common cross-platform and open source programming language.
+While the NSS versions discussed in the previous chapter provide a level of insight and control into a control system, the NSS environment is not a natural fit for that level of programming and presents issues that take a significant effort to work around.  In addition to issues with diagnosing problems, the NSS controller code targets a fairly narrow swath of users that are comfortable with using and editing it.  Because of this, the final version is written in Python, a common cross-platform and open source programming language.
 
-Python is quoted as coming ``batteries included'' which is a statement to the number of common libraries that come standard with the language including a \verb|socket| library for sending and receiving User Datagram Protocol (UDP) packets used by TableSat.  Python is also known as an expressive language where what a section of code does is generally easily discernible from a quick read.
+Python is quoted as coming ``batteries included'' which is a statement to the number of common libraries that come standard with the language including a \verb|socket| library for sending and receiving User Datagram Protocol (UDP) packets used by TableSat.  Python is also known as an expressive language where what a section of code does is generally easily discernible from a ``quick read''.
 
-To support the control system written for this thesis being easily available for others to use and edit, python includes a variety of unit test frameworks for ensuring consistency, and gives the ability to write self-documenting code.  Self-documenting code means that if have an instance of a class stored in a variable \verb|v| but are unsure what can be done with the class, typing \verb|help(v)| will print out documentation about the various methods available and how they are used.
+To support the control system developed for this thesis to easily available for others to use and edit, python includes a variety of unit test frameworks for ensuring consistency and gives the ability to write self-documenting code.  Self-documenting code is such that if the user has an instance of a class stored in a variable \verb|v| but is unsure what can be done with the class, typing ``\verb|help(v)|'' provides documentation of the various methods available and how they are used.
 
-Section (\ref{sec:KeyCharacteristics}) covers some of the notable characteristics about the TSatPy implementation of the ADCS, and Section (\ref{sec:Module Design}) describes the different types of classes that are written for the program and what their role is.
+Section \ref{sec:KeyCharacteristics} covers some of the notable characteristics about the TSatPy implementation of the ADCS, and Section \ref{sec:Module Design} describes the different types of classes that are written for the program and what their role is.
 
 \section{Key Characteristics}
 \label{sec:KeyCharacteristics}
 
 \subsection{Adaptive Step Algorithms}
 
-All time dependent calculations vary their parameters at run-time dependent on the time since the last time it ran. For example, the integral component of a PID controller with an error measure of $+0.2$ will accumulate an error of $+0.02$ for the first $\Delta t_k = 0.1$ sec, but will only accumulate an additional $+0.016$ for the next time step of $\Delta t_{k+1} = 0.08$ sec.  This functionality avoids the errors encountered when a system is linearized about an assumed time step, but the actual time step varies which causes the controller gain values to be over or under aggressive.
+All time dependent calculations vary parameters at run-time depending on the last time it was executed. For example, the integral component of a PID controller with an error measure of $+0.2$ accumulates an error of $+0.02$ for the first $\Delta t_k = 0.1$ sec but only accumulates an additional $+0.016$ for the next time step of $\Delta t_{k+1} = 0.08$ sec.  This functionality avoids errors encountered when a system is linearized about an assumed time step.  However, the actual time step varies which causes the controller gains to be overly aggressive or conservative.
 
 \subsection{Variable System Clock}
 
-The system clock is the official time keeper for the entire ADCS. Advantages to using a central clock instead of the computer time is that the rate of elapsed time can be modified at run-time during simulations to either compress the time to complete the simulation or slow down the simulation to inspect a transient event. (See Section \ref{subsec:IntegralEstimator})
+The system clock is the official time keeper for the entire ADCS. Advantages to using a central clock instead of that from the computer is that the rate of elapsed time can be modified at run-time during simulations to either compress the time to complete the simulation or slow the simulation to inspect a transient event. (See Section \ref{subsec:IntegralEstimator})
 
 \subsection{Quaternion Multiplicative Corrections}
 
-Quaternions that quantify a system's position contain 4 values that through common control systems implementations are tracked and controlled separately. This approach ignores the restriction that rotational quaternions maintain a unit norm while the adjustments are made then scale the resulting quaternion back to a unit norm compromising the predictability and stability of the control system.  Using the object oriented programming to track the scalar and vector components ensures that controllers can be built that make use of the quaternion multiplicative correction technique which maintains the integrity of the values and their relation to the physical attitude of the system. (See Section \ref{subsec:QuaternionAttitude})
+Quaternions that quantify a system's position contain 4 values that through common control systems implementations are tracked and controlled separately. This approach ignores the restriction that rotational quaternions maintain a unit norm while the adjustments are made and then scales the resulting quaternion back to a unit norm compromising the predictability and stability of the control system.  Using object oriented programming to track scalar and vector components ensures that controllers can be designed that make use of the quaternion multiplicative correction technique which maintains the integrity of the values and their relation to the physical attitude of the system. (See Section \ref{subsec:QuaternionAttitude})
 
 \subsection{Theta Multiplier with Quaternion Vector Balancing}
 
-Unlike body rates that can be linearly scaled, the 4 quaternion values are sinusoidal values where multiple values can represent the same attitude (i.e. 0, 360 degrees). Scaling the sinusoidal values directly produces inconsistent adjustment rates. All quaternion scaling in the TSatPy software is performed against angle that the quaternion represents. With this method, we can maintain the linear scaling affect that is desired while maintaining the integrity of the quaternion representation. (See Section \ref{subsec:ThetaMultiplierWithQuaternionVectorBalancing})
+Unlike body rates that can be linearly scaled, the 4 quaternion values are sinusoidal values.  Here, various sets of values can represent the same attitude (i.e. 0, 360 degrees). Scaling the sinusoidal values directly produces inconsistent adjustment rates. All quaternion scaling in the TSatPy software adheres to the following principles
+\begin{enumerate}
+  \item Adhere to the unit rotational quaternion restriction
+  \item Do not modify the direction of the Euler axis $\bs{\hat{e}}$
+  \item Scale $\theta$ (not $q_0$) so a $4^o$ error can be intuitively scaled to down to a $1^o$ adjustment with a selected gain value of 0.25.
+\end{enumerate}
+With this method, the desired linear scaling effect is achieved maintaining the integrity of the rotational quaternion representation. (See Section \ref{subsec:ThetaMultiplierWithQuaternionVectorBalancing})
 
-\subsection{Run-time interface}
+\subsection{Run-time Interface}
 
-Through the use of a python twisted daemon process an restful API interface is available to query the state of the system in the middle of a run. This creates the ability to display meaningful representations of the system and increase insight into the system's dynamic behavior instead of relying on batch post processing.  This functionality is built into the last NSS version of the software, but has not yet been ported over to the python code base. (See Section \ref{sec:ObjectOrientedNSSControlSystem})
+The fourth version of the NSS application included the development of the tPlot library for dynamic and real-time 3D modeling of a system's state.  That same functionality is desired in the TSatPy implementation and initial work is completed on a Python ``twisted'' daemon with a RESTful API interface that coordinates running of the ADCS, communication with TableSat, and user access to ``live'' data.  (See Section \ref{sec:ObjectOrientedNSSControlSystem})
 
 \subsection{Concurrent Estimation/Control Algorithms}
 
@@ -39,19 +45,19 @@ When running a comparative analysis between different types of estimators or dif
 
 \subsection{Quaternion Decomposition}
 
-With spin-stabilized satellites, five degrees of freedom are available to compare against a fixed desired value.  The quaternion decomposition method allows the separation of the yaw motion from the remained of the attitude representation enabling the 5-DOF control of constant body rates and removing nutation. (See Section \ref{subsec:SpinStabilizedControl})
+With spin-stabilized satellites, five degrees of freedom are available to compare with a fixed desired value.  The quaternion decomposition method allows the separation of the yaw motion from the remaining states, enabling the 5-DOF control of constant body rates and removing nutation. (See Section \ref{subsec:SpinStabilizedControl})
 
 \subsection{Modular Design}
 
-This library is designed to have interchangeable components with predefined and consistent interfaces and roles by allowing for the inclusion of additional estimation and control techniques. In the case of estimation, an Extended Kalman Filter (EKF) class can be added by creating a new class in Estimator.py that has contains the common properties ($\bs{\hat{x}}$, $\bs{x}_e$..) and common methods ($\bs{\hat{x}}$ = update($\bs{x}$)).
+This library is designed to have interchangeable components with predefined and consistent interfaces and roles by allowing for the inclusion of additional estimation and control techniques. In the case of estimation, an Extended Kalman Filter (EKF) class can be added by creating a new class in Estimator.py that contains the common properties ($\bs{\hat{x}}$, $\bs{x}_e$..) and common methods ($\bs{\hat{x}}$ = update($\bs{x}$)).
 
 \subsection{Portable Design}
 
-The portable design dictates that with the defined interfaces between modules, the observer based control methods have no knowledge of what is producing the sensor readings and what is accepting moment commands. This enforces consistency in the behavior of the system whether it's hooked up to an in-memory model of a satellite, NASA MMS TableSat IA, or any future spin spin-stabilized platform.
+Portable design dictates that with the defined interfaces between modules, the observer-based control methods have no knowledge of what is producing the sensor readings and what is accepting moment commands. This enforces consistency in the behavior of the system whether it is linked to an ``in-memory'' model of a satellite, NASA MMS TableSat IA, or any future spin spin-stabilized platform.
 
 \subsection{Python}
 
-There can be a disconnect between the control systems engineer that regularly complete their design and analytical work in a Numerical Simulation Software environment (like MATLAB Simulink or Octave) and the software engineer who implementation the control method in a more standard language. By using a language like python, the code can be written in an expressive manner so that a control systems professional only needs a little programming experience to modify the code. It also keeps the controller in a language than could be reviewed for optimization by a software engineer and applied directly to the experimental platform without requiring a conversion to an entirely different system or language.
+There can be a disconnect between the control design developed using a Numerical Simulation Software environment (such as MATLAB/Simulink or Octave) and that programmed using a more standard language. By using a language like python, the code can be written in an expressive manner so that a control systems professional needs little programming experience to modify the code appropriately. It also keeps the controller in a language that could be reviewed for optimization by a software engineer and applied directly to the experimental platform without requiring a conversion to an entirely different system or language.
 
 
 \section{Module Design}
@@ -65,7 +71,7 @@ Below is an outline of the separate modules contained in the TSatPy library and 
 input: Desired moment\\
 output: Actual moment\\
 
-This module defines the output of the controller. The actuator instance on initialization, is supplied with the physical arrangement of the actuators. During run-time the actuator module first accept a $\Re^3$ moment from the controller.  It then compares what it's being asked to do with what can actually be supplied.  That true moment is then available for use with estimator state propagation, and for conversion to actuator voltages. (See Section \ref{sec:ActuatorConfiguration})
+This module defines the output of the controller. The actuator instance on initialization is supplied with the physical arrangement of the actuators. During run-time the actuator module first accepts a $\Re^3$ moment command from the controller.  It then compares what it is being asked to do with what it can actually be provide.  That true moment is then available for use with estimator state propagation and for conversion to actuator voltage commands. (See Section \ref{sec:ActuatorConfiguration})
 
 \subsection{ADCS}
 \label{subsec:ADCS}
@@ -73,7 +79,7 @@ This module defines the output of the controller. The actuator instance on initi
 input: Configuration file\\
 output: ADCS model\\
 
-This module is intended as the main parent object.  As an input it will read a json configuration file that defines all the components and parameters required for a specific observer-based controller.
+This module is intended as the main parent object.  As an input it reads a json configuration file that defines all the components and parameters required for a specific observer-based controller.
 
 
 \subsection{Clock}
@@ -82,7 +88,7 @@ This module is intended as the main parent object.  As an input it will read a j
 input: None\\
 output: Elapsed time\\
 
-This module establishes the authoritative source for elapsed time and is continually referenced by any time-dependent logic such as integral or derivative based parameters. The metronome class by default track seconds since the initialization of the clock, but when running simulations can have it's speed dynamically altered to either run faster for long term simulations or run slower to get better inspection of an event.
+This module establishes the authoritative source for elapsed time and is continually referenced by any time-dependent logic such as integral or derivative based parameters. The metronome class by default tracks time after its initialization.  When running simulations, its speed can be dynamically altered to either run faster for long-term simulations or slower to enable more detailed inspection of an event.
 
 
 \subsection{Comm}
@@ -95,7 +101,7 @@ From Satellite to Controller\\
 input: Sensor voltages from the system or in-memory model\\
 output: Sensor data to submit to sensor class for conversion to a state\\
 
-This module handles the interface between the the control system and either the physical system or the theoretical model. With the physical system, a UDP socket is opened and either listens for packets transmitted from the sensors or submits voltage packets to set actuator voltages. When running in simulations, the module submits and receives the voltage messages to an in-memory model of the system that contains the system dynamics and can return mocked sensor voltages based on the behavior.
+This module handles the interface between the control system and either the physical system or an analytical model. With the physical system, a UDP socket is opened and either listens relieved packets from the sensors or submits voltage command packets to set actuator voltages. During a simulation, the module submits and receives the voltage command messages to an ``in-memory model'' of the system that contains the system dynamics and can return simulated sensor voltages based on the behavior.
 
 
 \subsection{Controller}
@@ -104,9 +110,9 @@ This module handles the interface between the the control system and either the 
 input: Estimated state ($\bs{\hat{x}}$)\\
 output: Moment couples ($\bs{M}$)\\
 
-This module contains the algorithms that compare the estimated system behavior with the desired behavior and determine what moments required to make the system behave as desired.
+This module contains the algorithms that compare the estimated system behavior with desired behavior and determines what appropriate moment commands are required for the desired operation.
 
-The master controller instance governs the interface between the incoming estimator state and the outgoing actuator moments. The master controller can run multiple control algorithms simultaneously which can be individually tuned to different types of system behaviors like one that can handle large errors and one for the soft corrections at steady state.
+The master controller instance governs the interface between the incoming estimator state and the outgoing actuator moments. The master controller can run multiple control algorithms simultaneously which can be individually tuned to different types of system behaviors such as one that can accommodate for large errors and one for soft corrections (steady state).
 
 
 \subsection{Estimator}
@@ -115,7 +121,7 @@ The master controller instance governs the interface between the incoming estima
 input: Measured state ($\bs{x}$)\\
 output: Estimated state ($\bs{\hat{x}}$)\\
 
-This module contains the algorithm that take the measured state from the sensor model which is likely based on noisy sensor data and attempts to attenuate the effects of the noise to create an accurate representation of the true state of the system.
+This module contains the algorithm that uses the measured state from the sensor model, which is likely based on noisy sensor data, to attenuate the effects of noise to create an accurate representation of the true state of the system.
 
 \subsection{Sensor}
 \label{subsec:Sensor}
@@ -123,7 +129,7 @@ This module contains the algorithm that take the measured state from the sensor 
 input: Voltages ($\bs{V}$)\\
 output: Measured state ($\bs{x}$)\\
 
-This module receives raw voltage measurements from either a simulated truth model of the system or from the Comm module polling sensor voltage data off the experimental TableSat.  Each class represents a different sensor type (coarse sun sensor, magnetometer, gyroscope, ...) and contain the logic to convert sensor readings from that sensor into a state representation $x$ with quaternion and body rates.
+This module receives raw voltage measurements from either a simulated ``truth model'' or from the Comm module polling sensor voltage data from the experimental TableSat.  Each class represents a different sensor type (coarse sun sensor, magnetometer, gyroscope, ...) and contains the logic to convert sensor readings to state measurement (i.e. quaternion and body rates).
 
 
 \subsection{Service}
@@ -141,7 +147,7 @@ Coupled with the ADCS module the Service module is intended to create the daemon
 input: An instance from the State module\\
 output: A modified State instance or the conversion to a new State instance\\
 
-This module contains classes that are designed to modify instances from the State module such as \verb|BodyRate| or \verb|Quaternion| or convert between them. For example an error quaternion can be scaled up or down by the QuaternionGain class.
+This module contains classes that are designed to modify instances from the State module such as \verb|BodyRate| or \verb|Quaternion| or convert between them. For example an error quaternion can be scaled larger or smaller by the QuaternionGain class.
 
 \begin{table}[H]
   \centering
@@ -166,7 +172,7 @@ This module contains classes that are designed to modify instances from the Stat
 \subsection{State}
 \label{subsec:State}
 
-This module contains classes that are used to quantify the state of the system.
+This module contains classes that are used to quantify the states of the system.
 
 \begin{table}[H]
   \centering

@@ -81,7 +81,7 @@ The traditional method for calculating state estimation and control errors is to
   \end{aligned}
   \label{eqn:StateDifference}
 \end{equation}
-Calculating the difference between the example estimated and measured states in Equation \ref{eqn:StateDifferenceQuaternionSamples} yields a state difference of
+Calculating the difference between the example estimated and measured states in Equation (\ref{eqn:StateDifferenceQuaternionSamples}) yields a state difference of
 \begin{equation}
   \begin{aligned}
     \bs{\hat{x}}_e(t_{k})
@@ -294,7 +294,7 @@ Continuing with the some example, given the measured and estimated states from E
   \end{aligned}
   \label{eqn:QuaternionErrorSample}
 \end{equation}
-The sample error measurement in Equation (\ref{eqn:QuaternionErrorSample}) relates well to the deviations in the estimated and measured attitudes, as it represents a 146 degree rotation about the Euler axis $-0.0388067 \bs{i} -0.00339514 \bs{j} -0.999241\bs{k}$ which rotates the estimated quaternion to match up identically to the measured state.  The multiplicative error correction quaternion also solves the issue encountered in Section \ref{sec:QuaternionDifference} where the magnitude of the error quaternion does not remain fixed at the unit quaternion.
+The sample error measurement in Equation (\ref{eqn:QuaternionErrorSample}) relates well to the deviations in the estimated and measured attitudes, as it represents a 146 degree rotation about the Euler axis $-0.0388067 \bs{i} -0.00339514 \bs{j} -0.999241\bs{k}$ which rotates the estimated quaternion to match up identically to the measured state.  The multiplicative error correction quaternion also solves the issue encountered previously where the magnitude of the error quaternion does not remain fixed at the unit quaternion.
 
 \begin{listing}
 \begin{singlespace}
@@ -347,7 +347,7 @@ Combining \ref{eqn:QuaternionVectorCorrection} with \ref{eqn:ParameterMultiplier
   \bs{q}_{adj} = \begin{bmatrix} \lambda \bs{v}_e \\ K_{0p} \cdot q_{e0} \end{bmatrix}
   \label{eqn:QuaternionScalarMultiplier}
 \end{equation}
-thus, Reducing the tunable parameters for the proportional quaternion estimator to $\lambda$ and $K_{0p}$.  This configuration, shares the same flaws as the state difference approach described in Section \ref{sec:QuaternionDifference} where the magnitude of the adjusted quaternion can vary from the unit quaternion causing dilation or compression of rotated points.  Continuing from Snippet \ref{code:quat_to_rot} the $\bs{q}_e$ is a unit norm quaternion representing the error between two attitudes.  In Snippet \ref{code:parameter_multiplier_no_good}, Equation (\ref{eqn:QuaternionScalarMultiplier}) is applied with a choice of $\lambda = 0.7, K_{0p} = 0.4$.  The resulting quaternion is shown to have broken the unit norm restriction invalidating the ``parameter multiplier'' approach as a method for scaling rotational quaternion errors.
+thus, Reducing the tunable parameters for the proportional quaternion estimator to $\lambda$ and $K_{0p}$.  This configuration, shares the same flaws as the state difference approach described previously where the magnitude of the adjusted quaternion can vary from the unit quaternion causing dilation or compression of rotated points.  Continuing from Snippet \ref{code:quat_to_rot} the $\bs{q}_e$ is a unit norm quaternion representing the error between two attitudes.  In Snippet \ref{code:parameter_multiplier_no_good}, Equation (\ref{eqn:QuaternionScalarMultiplier}) is applied with a choice of $\lambda = 0.7, K_{0p} = 0.4$.  The resulting quaternion is shown to have broken the unit norm restriction invalidating the ``parameter multiplier'' approach as a method for scaling rotational quaternion errors.
 \begin{listing}
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}
@@ -372,7 +372,7 @@ print("|q_adj|: %s" % (q_adj.mag))
 \subsection{Parameter Multiplier with Normalization}
 \label{subsec:ParameterMultiplierwithNormalization}
 
-Normalizing the parameter multiplier's adjustment quaternion resolves the issues of dilating and contracting points caused by non unit norms as it did in Section \ref{sec:ScaledQuaternionDifference}.  A normalized parameter multiplier quaternion does not suffer from an invalid Euler axis of rotation as in Section \ref{sec:ScaledQuaternionDifference} as only the magnitude of the quaternion's vector is modified.  The scalar quantity, however, changes due to the coupling effect between $\lambda$ and $K_{0p}$ during normalization.  As a result, a constant angular error and $K_{0p}$ can create varied adjustment values based on the selection of the $\lambda$ gain making this method undesirable for a quaternion error scaling function.
+Normalizing the parameter multiplier's adjustment quaternion resolves the issues of dilating and contracting points caused by non unit norms as before.  A normalized parameter multiplier quaternion does not suffer from an invalid Euler axis of rotation as only the magnitude of the quaternion's vector is modified.  The scalar quantity, however, changes due to the coupling effect between $\lambda$ and $K_{0p}$ during normalization.  As a result, a constant angular error and $K_{0p}$ can create varied adjustment values based on the selection of the $\lambda$ gain making this method undesirable for a quaternion error scaling function.
 
 \subsection{$q_0$ Multiplier with Normalization}
 \label{subsec:q0MultiplierWithNormalization}
@@ -425,7 +425,7 @@ where $\bs{v}_{adj}$ is some scalar multiple of $\bs{v}_e$ such that $\bs{v}_{ad
 \end{equation}
 The scalar quantity is now defined such that the gain $k$ is a linear scaling factor for the attitude error $\theta_e$, and the vector component is consistent with the original error quaternion's Euler axis.  The remaining condition is that the quaternion adhere to the rotational quaternion's unit norm.
 
-The vector normalization of Equation \ref{eqn:almost_there} produces
+The vector normalization of Equation (\ref{eqn:almost_there}) produces
 \begin{subequations}
   \begin{align}
     \| \bs{q}_{adj} \| &= 1 \\
