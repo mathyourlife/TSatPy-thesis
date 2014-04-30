@@ -3,11 +3,16 @@
 #notebook-container.container {
     width: 80% !important;
 }
-li, a, .latex, blockquote, p, td, th, .input_area, .output_area
+li, a, .latex, blockquote, p, td, th, .input_area, .output_area, h3
 {
     font-size: 20px;
 }
-
+h1 {
+    font-size: 35px;
+}
+h2 {
+    font-size: 30px;
+}
 
 h1, h2 {
     text-align: center;
