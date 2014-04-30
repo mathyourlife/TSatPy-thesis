@@ -20,9 +20,6 @@ doc:
 toc:
 	python $(DIR)/bin/update_readme_toc.py
 
-ipython:
-	make -C "$(DIR)/notebooks" ipython
-
 clean:
 	rm -r $(DIR)/docs/*
 	rm -r $(DIR)/coverage_report/*
