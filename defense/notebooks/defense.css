@@ -1,67 +1,16 @@
+
+
 #notebook-container.container {
     width: 80% !important;
 }
-
-#box-table-a{
-    font-family:"Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-    width:80%;
-    text-align:left;
-    border-collapse:collapse;
-    margin:20px;
-}
-#box-table-a th{
-    font-weight:bold;
-    background:#b9c9fe;
-    border-top:4px solid #aabcfe;
-    border-bottom:1px solid #fff;
-    color:#039;
-    padding:8px;
-}
-#box-table-a td{
-    background:#e8edff;
-    border-bottom:1px solid #fff;
-    color:#000;
-    border-top:1px solid transparent;
-    padding:8px;
-}
-#box-table-a tr:hover td{
-    background:#d0dafd;
-    color:#339;
+li, a, .latex, blockquote, p, td, th, .input_area, .output_area
+{
+    font-size: 20px;
 }
 
-.box-table-a{
-    font-family:"Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
-    width:80%;
-    text-align:left;
-    border-collapse:collapse;
-    margin:20px;
-}
-.box-table-a th{
-    font-weight:bold;
-    background:#b9c9fe;
-    border-top:4px solid #aabcfe;
-    border-bottom:1px solid #fff;
-    color:#039;
-    padding:8px;
-}
-.box-table-a td{
-    background:#e8edff;
-    border-bottom:1px solid #fff;
-    color:#000;
-    border-top:1px solid transparent;
-    padding:8px;
-}
-.box-table-a tr:hover td{
-    background:#d0dafd;
-    color:#339;
-}
 
 h1, h2 {
     text-align: center;
-}
-li, a, .latex, blockquote, p, td, th
-{
-    font-size: 20px;
 }
 li, .latex {
    margin: 6px;
@@ -102,4 +51,31 @@ li, .latex {
   width: 1000px ;
   margin-left: auto ;
   margin-right: auto ;
+}
+
+.box-table-a{
+    font-family:"Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    width:80%;
+    text-align:left;
+    border-collapse:collapse;
+    margin:20px;
+}
+.box-table-a th{
+    font-weight:bold;
+    background:#b9c9fe;
+    border-top:4px solid #aabcfe;
+    border-bottom:1px solid #fff;
+    color:#039;
+    padding:8px;
+}
+.box-table-a td{
+    background:#e8edff;
+    border-bottom:1px solid #fff;
+    color:#000;
+    border-top:1px solid transparent;
+    padding:8px;
+}
+.box-table-a tr:hover td{
+    background:#d0dafd;
+    color:#339;
 }
