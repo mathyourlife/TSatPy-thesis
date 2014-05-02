@@ -1,0 +1,86 @@
+
+
+#notebook-container.container {
+    width: 80% !important;
+}
+li, a, .latex, blockquote, p, td, th, .input_area, .output_area, h3
+{
+    font-size: 20px;
+}
+h1 {
+    font-size: 35px;
+}
+h2 {
+    font-size: 30px;
+}
+
+h1, h2 {
+    text-align: center;
+}
+li, .latex {
+   margin: 6px;
+}
+.grade {
+    font-size: 40px;
+    font-weight: bold;
+    display: inline-block;
+}
+.grade-A {
+    color: green;
+}
+.grade-B {
+    color: blue;
+}
+.grade-C {
+    color: yellow;
+}
+.grade-D {
+    color: orange;
+}
+.grade-F {
+    color: red;
+}
+.crop {
+    width: 400px;
+    height: 300px;
+    overflow: hidden;
+    padding: 5px;
+}
+
+.crop img {
+    width: 400px;
+    height: 300px;
+    margin: 0px 0 0 0px;
+}
+.centering {
+  width: 1000px ;
+  margin-left: auto ;
+  margin-right: auto ;
+}
+
+.box-table-a{
+    font-family:"Lucida Sans Unicode", "Lucida Grande", Sans-Serif;
+    width:80%;
+    text-align:left;
+    border-collapse:collapse;
+    margin:20px;
+}
+.box-table-a th{
+    font-weight:bold;
+    background:#b9c9fe;
+    border-top:4px solid #aabcfe;
+    border-bottom:1px solid #fff;
+    color:#039;
+    padding:8px;
+}
+.box-table-a td{
+    background:#e8edff;
+    border-bottom:1px solid #fff;
+    color:#000;
+    border-top:1px solid transparent;
+    padding:8px;
+}
+.box-table-a tr:hover td{
+    background:#d0dafd;
+    color:#339;
+}
