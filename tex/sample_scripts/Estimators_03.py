@@ -46,17 +46,19 @@ fig = plt.figure(dpi=80, facecolor='w', edgecolor='k')
 
 ts, degs = integrate_error(0.4)
 ax = fig.add_subplot(1,1,1)
-ax.scatter(ts, degs, c='b')
+ax.scatter(ts, degs, c='b', label='$\Delta t=0.4s$')
 
 ts, degs = integrate_error(0.1)
-ax.scatter(ts, degs, c='r')
+ax.scatter(ts, degs, c='r', label='$\Delta t=0.1s$')
 
 ts, degs = integrate_error(0, True)
-ax.scatter(ts, degs, c='g')
+ax.scatter(ts, degs, c='g', label='$\Delta t=0.05,0.4s$')
 
 ax.grid(color='0.75', linestyle='--', linewidth=1)
 ax.set_ylabel(r'$\hat{\theta}$ radians')
 ax.set_xlabel('$t(k)$ seconds')
+
+plt.legend()
 
 plt.tight_layout()
 plt.show()

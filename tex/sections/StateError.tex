@@ -16,7 +16,7 @@ Proceeding through the observer-based controller, $\bs{x}$ represents the measur
   \bs{x} \to \bs{\hat{x}}_e \to \bs{\hat{x}} \to \bs{x}_e \to \bs{x}_d
 \end{equation}
 
-Sections \ref{sec:StateDifference} through \ref{subsec:ThetaMultiplierWithQuaternionVectorBalancing} outline the series of improvement made to the accuracy of the state error representation.  For comparison and to demonstrate their use with TSatPy, these sections will base their comparison on a single update to a proportional estimator.
+Sections \ref{sec:StateDifference} through \ref{subsec:ThetaMultiplierWithQuaternionVectorBalancing} outline the series of improvement made to the accuracy of the state error representation.  These sections focus on the accuracy of the state error calculation along with the ability to scale the error by a proportional gain.  The accuracy of the estimators as a whole is covered in Chapter \ref{chap:Estimators}.
 
 \begin{equation}
   \bs{\hat{x}(t_{k+1})} = \bs{\hat{x}}(t_{k}) + \bs{K_p} ( \bs{\hat{x}}(t_{k}) - \bs{x}(t_{k}) )
@@ -64,7 +64,7 @@ print("x_m:    %s" % (x_m))
 \end{singlespace}
 \end{listing}
 
-Section \ref{sec:StateDifference} inspects a singe update to a quaternion based P-estimator.  The procedure follows the common process of taking the difference in values to establish an error and correcting the estimate by a fraction of the error.  This method is well established and accepted for many system's state representation, but applying the same procedure to a quaternion based attitude creates a lot of error.
+Section \ref{sec:StateDifference} inspects a single update to a quaternion based P-estimator.  The procedure follows the common process of taking the difference in values to establish an error and correcting the estimate by a fraction of the error.  This method is well established and accepted for many system's state representation, but applying the same procedure to a quaternion based attitude creates a lot of error.
 
 Section \ref{sec:QuaternionMultiplicativeError} introduces the quaternion multiplicative error as a method for combining quaternions while preserving rotational representation.
 
@@ -206,7 +206,7 @@ The newly estimated state is equivalent to a $69$ degree rotation about the Eule
 \begin{equation}
   \hat{\bs{e}} = \begin{bmatrix} 0 & -0.0598395 & -0.998208 \end{bmatrix}^T
 \end{equation}
-While this state estimate conforms to the unit quaternion requirement and will no longer corrupt rotations, it has little in common with the desired $0.8$ proportional gain used the estimator's design.
+While this state estimate conforms to the unit quaternion requirement and will no longer corrupt rotations, it has little in common with the desired $0.8$ proportional gain used in the estimator's design.
 
 
 
@@ -347,7 +347,7 @@ Combining \ref{eqn:QuaternionVectorCorrection} with \ref{eqn:ParameterMultiplier
   \bs{q}_{adj} = \begin{bmatrix} \lambda \bs{v}_e \\ K_{0p} \cdot q_{e0} \end{bmatrix}
   \label{eqn:QuaternionScalarMultiplier}
 \end{equation}
-thus, Reducing the tunable parameters for the proportional quaternion estimator to $\lambda$ and $K_{0p}$.  This configuration, shares the same flaws as the state difference approach described previously where the magnitude of the adjusted quaternion can vary from the unit quaternion causing dilation or compression of rotated points.  Continuing from Snippet \ref{code:quat_to_rot} the $\bs{q}_e$ is a unit norm quaternion representing the error between two attitudes.  In Snippet \ref{code:parameter_multiplier_no_good}, Equation (\ref{eqn:QuaternionScalarMultiplier}) is applied with a choice of $\lambda = 0.7, K_{0p} = 0.4$.  The resulting quaternion is shown to have broken the unit norm restriction invalidating the ``parameter multiplier'' approach as a method for scaling rotational quaternion errors.
+thus, reducing the tunable parameters for the proportional quaternion estimator to $\lambda$ and $K_{0p}$.  This configuration, shares the same flaws as the state difference approach described previously where the magnitude of the adjusted quaternion can vary from the unit quaternion causing dilation or compression of rotated points.  Continuing from Snippet \ref{code:quat_to_rot} the $\bs{q}_e$ is a unit norm quaternion representing the error between two attitudes.  In Snippet \ref{code:parameter_multiplier_no_good}, Equation (\ref{eqn:QuaternionScalarMultiplier}) is applied with a choice of $\lambda = 0.7, K_{0p} = 0.4$.  The resulting quaternion is shown to have broken the unit norm restriction invalidating the ``parameter multiplier'' approach as a method for scaling rotational quaternion errors.
 \begin{listing}
 \begin{singlespace}
   \begin{minted}[mathescape,linenos,numbersep=10pt,frame=lines,framesep=2mm]{python}

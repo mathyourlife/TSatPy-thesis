@@ -164,7 +164,7 @@ The method for calculating the new position of a point from an initial position 
   \label{fig:TSatWireframe}
 \end{figure}
 
-Once new locations for all points in the wireframe are determined, it can be redrawn visualizing the estimated current orientation of the TableSat (Figure \ref{fig:TSatWireframeEstimatedAttitude}).  ``Run-time'' visualizations update these representations as the simulation or experiment is occuring and shows how well the estimator runs dynamically. (discussed in greater detail in Section \ref{sec:ObjectOrientedNSSControlSystem})
+Once new locations for all points in the wireframe are determined, it can be redrawn visualizing the estimated current orientation of the TableSat.  Figure \ref{fig:TSatWireframeEstimatedAttitude} shows the rotated wireframe along with the path of the body-fixed $+x$-axis traced in green.  ``Run-time'' visualizations update these representations as the simulation or experiment is occuring and shows how well the estimator runs dynamically. (discussed in greater detail in Section \ref{sec:ObjectOrientedNSSControlSystem})
 
 \begin{figure}[H]
   \centerline{\psfig{file=figures/q_rotation_end.eps,height=3in}}
@@ -236,7 +236,7 @@ for k in range(1,11):
   \nocite{minted}
 \end{singlespace}
 
-This implementation has both a significant theoretical and implementation issue.  The theoretical concern is the estimate is that running in an open loop fashion without receiving correction updates.  Therefore, the myriad of additional factors in a real system would quickly invalidate the accuracy of this approach.  The implementation issue deals with the time step.  Even if TableSat spins perfectly at 3 rpm, the state is not updated exactly on each second.  A busy processor, numerical drift, and execution time would prevent the desired fixed step size of 1 sec.  In some of the earlier implementations of the base station controller (discussed in Chapter \ref{chap:ProgressionOfControlSystemSoftware}), dropped UDP messages cause the control loop to execute on an inconsistent interval and prevent accurate state estimates.  (Handling of the variability in time steps is discussed in Section \ref{sec:SatelliteDynamics})
+This method has a significant issue.  The theoretical concern is the estimate is that running in an open loop fashion without receiving correction updates.  Therefore, the myriad of additional factors in a real system would quickly invalidate the accuracy of this approach.  The implementation issue deals with the time step.  Even if TableSat spins perfectly at 3 rpm, the state is not updated exactly on each second.  A busy processor, numerical drift, and execution time would prevent the desired fixed step size of 1 sec.  In some of the earlier implementations of the base station controller (discussed in Chapter \ref{chap:ProgressionOfControlSystemSoftware}), dropped UDP messages cause the control loop to execute on an inconsistent interval and prevent accurate state estimates.  (Handling of the variability in time steps is discussed in Section \ref{sec:SatelliteDynamics})
 
 
 \subsection{Quaternion Decomposition}
@@ -266,12 +266,14 @@ print("x_e: %s" % (x_e))
 
 # Prints Out
 # State Error
-# x_e: <Quaternion [-0 -0.0477046 -0.477046], 0.877583>, <BodyRate [0 -0.01 0.2]>
+# x_e: <Quaternion [-0 -0.0477046 -0.477046], 0.877583>,
+#      <BodyRate [0 -0.01 0.2]>
 # Decomposed Quaternion
 # q_r: <Quaternion [0 0 -0.47759], 0.878583>
 # q_n: <Quaternion [-0.0227833 -0.0419125 -0], -0.998861>
 # Nutation Only State Error
-# x_e: <Quaternion [-0.0227833 -0.0419125 -0], -0.998861>, <BodyRate [0 -0.01 0.2]>
+# x_e: <Quaternion [-0.0227833 -0.0419125 -0], -0.998861>,
+#      <BodyRate [0 -0.01 0.2]>
   \end{minted}
 \caption{Quaternion decomposition}
 \label{code:sample_quaternion_decomposition}
@@ -294,7 +296,7 @@ As mentioned previously, the chance of having perfectly timed updates is highly 
 
 The preset fixed time step is also not very fault tolerant.  When controlling the state of a stable, slow moving system the state, the tracking rate can be decreased to conserve system resources.  In this circumstance a missed or series of missed updates due to faults can cause the predicted state to lag by be several time steps.  A variable step sized based solution can improve the robustness against these errors.
 
-The ability to decrease the simulation speed to enable more detailed inspection of the initial transient behavior and to increase simulation speed to enable inspection of long term system stability hold significant benefits for this research.  The TSatPy system is designed to addresses the previous two issues as the system needs to be able to smoothly transition between variations in step sizes in a single experimental test such that
+The ability to decrease the simulation speed to enable more detailed inspection of the initial transient behavior and to increase simulation speed to enable inspection of long term system stability hold significant benefits for this research.  The TSatPy system is designed to address the previous two issues as the system needs to be able to smoothly transition between variations in step sizes in a single experimental test such that
 
 \begin{equation}
   t_k = \sum\limits_{i=0}^{k-1} r_i (\tau_{i+1} - \tau_i)\\
@@ -349,7 +351,8 @@ clock = Metronome()
 
 M = [0, 0, 0.5]
 w = State.BodyRate([0, 0, 0])
-eme = State.EulerMomentEquations([[10, 0, 0], [0, 10, 0], [0, 0, 10]], w, clock)
+eme = State.EulerMomentEquations(
+    [[10, 0, 0], [0, 10, 0], [0, 0, 10]], w, clock)
 
 for k in range(5):
     w = eme.propagate(M)
@@ -501,7 +504,7 @@ The only meta data provided along with the payload beyond the data's size is an 
 
 The following example shows a sample calculation of nutation based on a single set of coarse sun sensor and TAM voltage measurements.
 
-The base station submits a request for sensor data (message id \#20) to TableSat which responds with a packet contianing the sensor output voltages (message id \#63) with a payload containing 15 floats (timestamp, 6 photodiodes, 4 accelerometrs, gyroscope, and 3 three-axis magnetometer).
+The base station submits a request for sensor data (message id \#20) to TableSat which responds with a packet containing the sensor output voltages (message id \#63) with a payload containing 15 floats (timestamp, 6 photodiodes, 4 accelerometrs, gyroscope, and 3 three-axis magnetometer).
 
 \subsection{Calculate Yaw From Coarse Sun Sensor}
 
@@ -543,25 +546,23 @@ Figure \ref{fig:TAMNutationVoltages} shows that while the TAM readings vary enou
 
 \begin{table}[H]
   \centering
-  \begin{tabular}{c|ccc|ccc}
+  \begin{tabular}{c|c|c|c}
     \hline
-    Yaw   & & Steady & & & $+X \ 14^o$ & \\ \hline
-    (deg) & $TAM_x$ (V) & $TAM_y$ (V) & $TAM_x$ (V) & $TAM_x$ (V) & $TAM_y$ (V) & $TAM_x$ (V)  \\ \hline
-    0 & $S_{x0}$ & $S_{y0}$ & $S_{z0}$ & $+X_{x0}$ & $+X_{y0}$ & $+X_{z0}$ \\ \hline
-    1 & $S_{x1}$ & $S_{y1}$ & $S_{z1}$ & $+X_{x1}$ & $+X_{y1}$ & $+X_{z1}$ \\ \hline
-    ... & & & & & &  \\ \hline
-    Yaw   & & $+Y \ 14^o$ & & & $-X \ 14^o$ & \\ \hline
-    (deg) & $TAM_x$ (V) & $TAM_y$ (V) & $TAM_x$ (V) & $TAM_x$ (V) & $TAM_y$ (V) & $TAM_x$ (V)  \\ \hline
-    0 & $+Y_{x0}$ & $+Y_{y0}$ & $+Y_{z0}$ & $-X_{x0}$ & $-X_{y0}$ & $-X_{z0}$ \\ \hline
-    1 & $+Y_{x1}$ & $+Y_{y1}$ & $+Y_{z1}$ & $-X_{x1}$ & $-X_{y1}$ & $-X_{z1}$ \\ \hline
-    ... & & & & & &  \\ \hline
-    Yaw   & & $-Y \ 14^o$ & &  \\ \hline
-    (deg) & $TAM_x$ (V) & $TAM_y$ (V) & $TAM_x$ (V)  \\ \hline
-    0 & $-Y_{x0}$ & $-Y_{y0}$ & $-Y_{z0}$  \\ \hline
-    1 & $-Y_{x1}$ & $-Y_{y1}$ & $-Y_{z1}$  \\ \hline
-    ... & & & & & &  \\ \hline
+    Yaw   & Steady & $+X \ 14^o$ & $+Y \ 14^o$ \\ \hline
+    (deg) & TAM (V) & TAM (V) & TAM (V) \\ \hline
+    0 & $(S_{x0},S_{y0},S_{z0})$ & $(+X_{x0},+X_{y0},+X_{z0})$ & $(+Y_{x0},+Y_{y0},+Y_{z0})$\\
+    1 & $(S_{x1},S_{y1},S_{z1})$ & $(+X_{x1},+X_{y1},+X_{z1})$ & $(+Y_{x1},+Y_{y1},+Y_{z1})$\\
+    2 & $(S_{x2},S_{y2},S_{z2})$ & $(+X_{x2},+X_{y2},+X_{z2})$ & $(+Y_{x2},+Y_{y2},+Y_{z2})$\\
+    ... & & &  \\ \hline
+    \hline
+    Yaw   & $-X \ 14^o$ & $-Y \ 14^o$ \\ \hline
+    (deg) & TAM (V) & TAM (V) \\ \hline
+    0 & $(-X_{x0},-X_{y0},-X_{z0})$ & $(-Y_{x0},-Y_{y0},-Y_{z0})$\\
+    1 & $(-X_{x1},-X_{y1},-X_{z1})$ & $(-Y_{x1},-Y_{y1},-Y_{z1})$\\
+    2 & $(-X_{x2},-X_{y2},-X_{z2})$ & $(-Y_{x2},-Y_{y2},-Y_{z2})$\\
+    ... & & &  \\ \hline
   \end{tabular}
-  \caption{TAM calibration reference table}
+  \caption{TAM calibration reference table structure}
   \label{tbl:TAMCalibration}
 \end{table}
 
@@ -570,13 +571,13 @@ The method chosen for creating the five reference points starts with collecting 
 Figure \ref{fig:TAMNutationReference} shows the result of the nutation reference values for 5, 15 and 25 degree smoothing windows.  At $\pm 15$ degrees, an adequate level of noise is filtered without causing over smoothing.  At this level, each of the 191 degree reference values are a weighted average of about 200 of the original calibration points.
 
 \begin{figure}[H]
-  \begin{subfigure}[h!]{0.5\textwidth}
+  \begin{subfigure}[h!]{0.8\textwidth}
     \includegraphics[width=\textwidth]{figures/tam_calibration_ref_5deg_smoothing.eps}
     \caption{$\pm 5^o$ smoothing}
     \label{fig:TAM5degCalibration}
   \end{subfigure}
-  ~
-  \begin{subfigure}[h!]{0.5\textwidth}
+
+  \begin{subfigure}[h!]{0.8\textwidth}
     \includegraphics[width=\textwidth]{figures/tam_calibration_ref_25deg_smoothing.eps}
     \caption{$\pm 25^o$ smoothing}
     \label{fig:TAM25degCalibration}
