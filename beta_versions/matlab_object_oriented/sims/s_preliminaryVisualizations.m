@@ -66,8 +66,8 @@ function r = preliminary_visualizations()
     args = struct; args.vector = nutation_axis*sin(-theta/2); args.scalar = cos(-theta/2);
     qn = quaternion(args);
 
-    nutation_pts = [nutation_axis'; -nutation_axis']; 
-    
+    nutation_pts = [nutation_axis'; -nutation_axis'];
+
     for i=1:size(disk,1)
       pt = disk(i,:)';
       q = qz*qn;
@@ -79,26 +79,28 @@ function r = preliminary_visualizations()
     surf(.15*x+1.2,.15*y,.15*z)  % sphere centered at (3,-2,0)
     hold on
     daspect([1 1 1]')
-    
+
     % Plot the TSAT model initial position
-    L=plot3(disk(:,1),disk(:,2),disk(:,3),['b' '-']); 
+    L=plot3(disk(:,1),disk(:,2),disk(:,3),['b' '-']);
     set(L,'Markersize',0.3*get(L,'Markersize')) % Making the circle markers larger
     set(L,'Markerfacecolor','r') % Filling in the markers
 
     % Plot axes points to keep the scale/view constant
-    L=plot3(plot_axes(:,1),plot_axes(:,2),plot_axes(:,3),['b' 'o']); % Plot the original data points
+    % Plot the original data points
+    L=plot3(plot_axes(:,1),plot_axes(:,2),plot_axes(:,3),['b' 'o']);
     set(L,'Markersize',0.7*get(L,'Markersize')) % Making the circle markers larger
     set(L,'Markerfacecolor','r') % Filling in the markers
-    
+
     % Plot estimator state
     L=plot3(newDisk(:,1),newDisk(:,2),newDisk(:,3),['r' '-o']); % Plot the original data points
     set(L,'Markersize',0.7*get(L,'Markersize')) % Making the circle markers larger
     set(L,'Markerfacecolor','r') % Filling in the markers
-    
+
     % Plot nutation axis
-    L=plot3(nutation_pts(:,1),nutation_pts(:,2),nutation_pts(:,3), ['k' ':']); % Plot the original data points
+    % Plot the original data points
+    L=plot3(nutation_pts(:,1),nutation_pts(:,2),nutation_pts(:,3), ['k' ':']);
     grid on;
-    
+
     hold off;
 
     pause(0.05);
