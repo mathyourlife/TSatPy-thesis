@@ -22,6 +22,7 @@ def run_test(p,i,d,plot=False):
     if plot:
         fig = plt.figure(dpi=80, facecolor='w', edgecolor='k')
         ax1 = fig.add_subplot(4,1,1)
+        plt.title('Quaternion Angle')
         ax1.scatter(ts, q_tracking['measured'], c='b', label='measured')
         ax1.scatter(ts, q_tracking['estimated'], c='r', label='estimated')
         grid_me(ax1)
@@ -29,11 +30,13 @@ def run_test(p,i,d,plot=False):
         plt.legend()
 
         ax = fig.add_subplot(4,1,2,sharex=ax1)
+        plt.title('Quaternion Angle Error')
         ax.scatter(ts, q_tracking['err'], c='g', label=r'$\theta_{e}$')
         grid_me(ax)
         ax.set_ylabel(r'$\theta_{e}$ (rad)')
 
         ax = fig.add_subplot(4,1,3,sharex=ax1)
+        plt.title('Body Rate $\omega_z$')
         ax.scatter(ts, w_tracking['measured'], c='b', label='measured')
         ax.scatter(ts, w_tracking['estimated'], c='r', label='estimated')
         grid_me(ax)
@@ -41,6 +44,7 @@ def run_test(p,i,d,plot=False):
         plt.legend()
 
         ax = fig.add_subplot(4,1,4,sharex=ax1)
+        plt.title('Body Rate Error $\omega_{ze}$')
         ax.scatter(ts, w_tracking['err'], c='g', label=r'$\omega_{ze}$')
         grid_me(ax)
         ax.set_ylabel(r'$\omega_{ze}$ (rad/s)')

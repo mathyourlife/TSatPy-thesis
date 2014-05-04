@@ -2,14 +2,14 @@
 \chapter{STATE ESTIMATORS}
 \label{chap:Estimators}
 
-Section \ref{chap:StateError} explained the rationale for the state representations and how adjustments can made to them in a manner that preserves the integrity of it's connection to the TableSat's physical orientation.  Use of the gains are also investigated in order to make of gain tuning more intuitive.
+Section \ref{chap:StateError} explained the rationale for the state representations and how adjustments can made to them in a manner that preserves the integrity of its connection to the TableSat's physical orientation.  Use of the gains are also investigated with the goal of making gain tuning more intuitive.
 
 \section{State Prediction}
 \label{sec:StatePrediction}
 
-Section \ref{sec:BodyRatePIDEstimation} shows that accurate tracking of a spin-stabilized satellite like TableSat or MMS, requires that the body rate dynamics and attitude kinematics/dynamics be coupled.  This is especially important for the NASA MMS TableSat IA implementation since only the magnetometer and coarse sun sensors provide system state feedback.  Furthermore, only have a partial measurement of the attitude quaternion is available; there are no direct body rates measurements.
+Section \ref{sec:BodyRatePIDEstimation} shows that accurate tracking of a spin-stabilized satellite like TableSat or MMS, requires that the body rate dynamics and attitude kinematics/dynamics be coupled.  This is especially important for the NASA MMS TableSat IA implementation since only the magnetometer and coarse sun sensors provide system state feedback.  Furthermore, only a partial measurement of the attitude quaternion is available; there are no direct body rates measurements.
 
-The approach taken in the TSatPy code to create state predictions based upon previous state estimates is to start with a discretized Euler's Moment Equations (\ref{eqn:DiscreteEulerMomentEquations}) to predict $\bs{\dot{\omega}}(t_{k+1})$.  The the current estimated body rate is adjusted based on the variable time step size.
+The approach taken in the TSatPy code to create state predictions based upon previous state estimates is to start with a discretized Euler's Moment Equations (\ref{eqn:DiscreteEulerMomentEquations}) to predict $\bs{\dot{\omega}}(t_{k+1})$.  The current estimated body rate is adjusted based on the variable time step size.
 
 \begin{equation}
   \bs{\omega}(t_{k+1}) = \bs{\omega}(t_{k}) + \bs{\dot{\omega}}(t_{k+1})\cdot (t_{k+1} - t_k)
@@ -37,7 +37,7 @@ where
 \section{PID State Estimation}
 \label{sec:BodyRatePIDEstimation}
 
-This section covers the use of PID adjustments to track state estimation.  The some method discussed in Section \ref{chap:StateError} where states and especially the quaternion portion can be scaled can be applied to the proportional term of the PID estimator.
+This section covers the use of PID adjustments to track state estimation.  The method discussed in Section \ref{chap:StateError} where states and especially the quaternion portion can be scaled can be applied to the proportional term of the PID estimator.
 
 \subsection{Proportional State Estimation}
 \label{subsec:ProportionalEstimator}
@@ -111,17 +111,17 @@ This example demonstrates a proportional estimator initialized to a state of a $
 
 \begin{figure}[H]
   \centerline{\psfig{file=figures/p_estimator_static_target.eps,width=6in}}
-  \caption{P-Estimator with static target}
+  \caption{P-Estimator state $[\bs{q}\ \bs{\omega}]^T$ with static target}
   \label{fig:PEstimatorwithstatictarget}
 \end{figure}
 
 The work covered so far in this chapter assumes the system to be in a static state.  In Figure \ref{fig:PEstimatorwithstatictarget}, a P-Estimator converges its estimated state (blue) to the static measured state (red).  While the estimated state converges to the measured state after about 40 iterations, this type of conversion is effective only for non-rotating systems.  The non-zero $\omega_z$ means that the quaternion attitude representation is in constant motion.
 
-The $3.1$ rad/sec rotation about $0\bs{i} + 0.1\bs{j} + 1\bs{k}$ condition from the previous p-estimator is now then allowed to propagate the quaternion state through 10 seconds of rotation with state estimate updates every 0.1 sec.  The resulting measured state (red) and estimated state (blue) is shown in Figure \ref{fig:PEstimatorwithrotatingtarget}.  The body rates track identically to those in Figure \ref{fig:PEstimatorwithstatictarget} where $t(k) = 2$ corresponds to $k = 20$.  Due to having only proportional compensation and no predictive methods, after the initial transient the state estimates exhibit, at best, convergence with steady state error.
+The $3.1$ rad/sec rotation about $0\bs{i} + 0.1\bs{j} + 1\bs{k}$ condition from the previous p-estimator is now allowed to propagate the quaternion state through 10 seconds of rotation with state estimate updates every 0.1 sec.  The resulting measured state (red) and estimated state (blue) is shown in Figure \ref{fig:PEstimatorwithrotatingtarget}.  The body rates track identically to those in Figure \ref{fig:PEstimatorwithstatictarget} where $t(k) = 2$ corresponds to $k = 20$.  Due to having only proportional compensation and no predictive methods, after the initial transient the state estimates exhibit, at best, convergence with steady state error.
 
 \begin{figure}[H]
   \centerline{\psfig{file=figures/p_estimator_3radps.eps,width=6in}}
-  \caption{P-Estimator with rotating target}
+  \caption{P-Estimator state $[\bs{q}\ \bs{\omega}]^T$  with rotating target}
   \label{fig:PEstimatorwithrotatingtarget}
 \end{figure}
 
@@ -154,7 +154,7 @@ Propagating the state estimator without compensating for variations in time step
 
 Each calculated estimate for $\hat{\theta}$ in the $k$ domain is identical for each of the three test simulations, but varies greatly in the time domain.  Most notably, the third simulation (alternating between update frequencies) results in an estimation dynamic that could result in a less robust controller.
 
-In comparison, the PID state estimator is modified to incorporate the time step size into it's integral term.  The same three tests are run as above with a 0.1 (red), 0.4 (blue), and variable 0.05/0.4 (green) time steps.  The adjustment quaternion method from Section \ref{sec:HighIntegrityStateAdjustments} is first used to compensate for measured time step size of $\Delta t_{k}$ creating a consistent error quaternion.  Then as used as before, the error quaternion is scaled by a the selected gain.  The results of this work can be seen in Figure \ref{fig:IEstimatorwithtimevariationcompensation} where the three tests are still not identical, but their dynamics are more similar than in the previous example.  More notably, the variable step test (green) shows less variability in the estimate being produced.  In a real application, this would reduce any noise being ``transferred'' to the control algorithm.  The resulting state estimate dynamics and error quaternion is
+In comparison, the PID state estimator is modified to incorporate the time step size into its integral term.  The same three tests are run as above with a 0.1 (red), 0.4 (blue), and variable 0.05/0.4 (green) time steps.  The adjustment quaternion method from Section \ref{sec:HighIntegrityStateAdjustments} is first used to compensate for measured time step size of $\Delta t_{k}$ creating a consistent error quaternion.  Then, as used as before, the error quaternion is scaled by a selected gain.  The results of this work can be seen in Figure \ref{fig:IEstimatorwithtimevariationcompensation} where the three tests are still not identical, but their dynamics are more similar than in the previous example.  More notably, the variable step test (green) shows less variability in the estimate being produced.  In a real application, this would reduce any noise being ``transferred'' to the control algorithm.  The resulting state estimate dynamics and error quaternion is
 \begin{equation}
   \begin{aligned}
     \bs{\hat{x}}(t_{k+1}) &= \begin{bmatrix} \bs{\hat{q}}(t_{k+1}) \\ \bs{\hat{\omega}}(t_{k+1}) \end{bmatrix} =
@@ -331,7 +331,7 @@ Both SMO and PID state estimators have similar performance profiles which makes 
 
 One of the advantages of developing the TSatPy code base for the TableSat spin-stabilized is the ability to run a comparative analysis of multiple estimators at the same time.  The estimators run agnostic to the source of the measurements.  In the sample shown below, the state measurements are generated by a model, but can also be switched to use actual TableSat measurement data.
 
-Figure \ref{fig:PIDSMOEstimatorConcurrentComparison} is generated by running a single simulation and providing the truth model's measured state to both a PID and SMO estimator.  This allows for a clear ``side-by-side'' comparison of performance.  Multiple simulations show similar characteristics.  In the initial transient response both estimators are able to converge to a steady state after merely a couple time steps, where but the SMO is able to converge slightly faster.  The PID estimator consistently maintains a lower average steady state error but with a slightly higher standard deviation.  As with the initial response, the SMO estimation values generally update slightly just before the PID state estimator.
+Figure \ref{fig:PIDSMOEstimatorConcurrentComparison} is generated by running a single simulation and providing the truth model's measured state to both a PID and SMO estimator.  This allows for a clear ``side-by-side'' comparison of performance.  Multiple simulations show similar characteristics.  In the initial transient response both estimators are able to converge to a steady state after merely a couple time steps, but the SMO is able to converge slightly faster.  The PID estimator consistently maintains a lower average steady state error but with a slightly higher standard deviation.  As with the initial response, the SMO estimation values generally update slightly just before the PID state estimator.
 
 \begin{figure}[H]
   \centerline{\psfig{file=figures/estimator_comparison.eps,width=6in}}

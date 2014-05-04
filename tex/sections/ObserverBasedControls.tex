@@ -47,11 +47,11 @@ The results from the simulated TableSat motion are shown in Figure \ref{fig:Obse
   \label{fig:ObserverBasedControllerTruth}
 \end{figure}
 
-The body rates stabilize to the desired levels after approximately 125 seconds.  The ``Satellited Quaternion Angle'' quantifies the angular displacement between TableSat's current orientation and if it's body-fixed axes were aligned with the inertial reference frame.
+The body rates stabilize to the desired levels after approximately 125 seconds.  The ``Satellited Quaternion Angle'' quantifies the angular displacement between TableSat's current orientation and if its body-fixed axes were aligned with the inertial reference frame.
 
 For a nutation and boom oscillation free spin-stabilized system, this method of measurement will provide a saw tooth pattern starting at 0 and climbing to $2\pi$ in the first rotation.  Although the satellite continues to rotate in the same direction through the second rotation, quaternion multiplication represents the angles as a decrease angle from $2\pi$ to 0 with the vector component inverted (not shown).
 
-The attitude control for this simulation as seen in Figure \ref{fig:ObserverBasedControllerTruth} follows the expected pattern after the initial transient response although further inspection of the nutation angle as represented in the ``Attitude Error'' plot in Figure \ref{fig:ObserverBasedControllerSMC} shows an small but unstable growth which is not present in the attitude error of the estimator in Figure \ref{fig:ObserverBasedControllerSMO}.
+The attitude control for this simulation as seen in Figure \ref{fig:ObserverBasedControllerTruth} follows the expected pattern after the initial transient response although further inspection of the nutation angle as represented in the ``Attitude Error'' plot in Figure \ref{fig:ObserverBasedControllerSMC} shows a small but unstable growth which is not present in the attitude error of the estimator in Figure \ref{fig:ObserverBasedControllerSMO}.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/obc_01_smc.eps,width=6in}}
   \caption{Observer-Based Controller (SMC)}

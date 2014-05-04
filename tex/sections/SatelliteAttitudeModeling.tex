@@ -47,7 +47,7 @@ For implementation into the TableSat's base station observer-based controller, t
 
 Since the observer-based controller update frequencies are allowed to vary, the applied moment values may also have multiple values between times $t_{k}$ and $t_{k+1}$.  To simplify calculations, the value of the ``most recent'' moment is taken and assumed constant for $t$ such that $t_{k-1} < t < t_{k}$.  If the moment update loop is running slower than that of the Euler equation model, the last known moment is assumed to still be valid.
 
-While the Euler equation model works well for propagating the system states only TableSat IA's attitude is measured leaving its body rates unmeasured.  A state observer/filter must then be used to estimate the unmeasured body rates.  In addition the observer/filter is also used to more accurately estimate attitude states. calculated through both observing changes in current attitude and state predictions based on previous attitude changes.  Euler angles and quaternions were investigated for parameterizing TableSat's attitude.
+While the Euler equation model works well for propagating the system states only TableSat IA's attitude is measured leaving its body rates unmeasured.  A state observer/filter must then be used to estimate the unmeasured body rates.  In addition, the observer/filter is also used to more accurately estimate attitude states calculated through both observing changes in current attitude and state predictions based on previous attitude changes.  Euler angles and quaternions were investigated for parameterizing TableSat's attitude.
 
 \subsection{Euler Angle Representation}
 
@@ -238,7 +238,7 @@ The resulting square matrix in Equation (\ref{eqn:quat_mul_square_matrix}) can b
   \label{eqn:QuaternionMultiplicationDerived}
 \end{equation}
 
-This quaternion class for TSatPy as will be covered in Chapter \ref{chap:TSatPy} allows for the a very close representation of Equation (\ref{eqn:QuaternionMultiplicationDerived}).
+This quaternion class for TSatPy (Chapter \ref{chap:TSatPy}) provides the implementation of Equation (\ref{eqn:QuaternionMultiplicationDerived}).
 
 % The advantage to this notation is that is much easier to run in a Numerical Simulation Software (NSS like MATLAB or Octave) or other scripting language, but its layout is specific to our definition of the matrix where the scalar value follows the vector.  There is not clear consensus from the broader community on whether the vector or scalar should come first.  This can cause large issues when implementing a system using a externally provided library since both implementations expect a 4x4 matrix, and combining the logic from the two systems would require either rewriting of systems or spending extra cycles on the interface between the two systems converting the matrices from a scalar first to a scalar last layout and vice versa.
 
@@ -249,7 +249,7 @@ This quaternion class for TSatPy as will be covered in Chapter \ref{chap:TSatPy}
 \subsection{Quaternion Decomposition}
 \label{subsec:QuaternionDecomposition}
 
-For use in control systems, Section \ref{subsec:QuaternionDecompositionForNutationControl} cites the need for separating a quaternion into two quaternions.  One representing the rotational motion about the $z$-axis and the second describing the nutation about an axis in the $xy$ plane.  The attitude of TSat is represented by a single quaternion.  The change in attitude between two states can be modeled by the a rotation about a single axis.  Figure \ref{fig:PreDecomposedQuaternion} show the attitude of a system described by the quaternion $\bs{q} = [\alpha, \beta, \phi], 0.16953$ which is a rotation of 2.8 radians about the axis $[\alpha, \beta, \phi]^T$.  For control purposes, decomposing the single quaternion into one representing a rotation about the z-axis and a second rotation about an axis in the x-y plane as shown in Figure \ref{fig:PostDecomposedQuaternion}.
+For use in control systems, Section \ref{subsec:QuaternionDecompositionForNutationControl} cites the need for separating a quaternion into two quaternions.  One representing the rotational motion about the $z$-axis and the second describing the nutation about an axis in the $xy$ plane.  The attitude of TSat is represented by a single quaternion.  The change in attitude between two states can be modeled by the rotation about a single axis.  Figure \ref{fig:PreDecomposedQuaternion} show the attitude of a system described by the quaternion $\bs{q} = [\alpha, \beta, \phi], 0.16953$ which is a rotation of 2.8 radians about the axis $[\alpha, \beta, \phi]^T$.  For control purposes, decomposing the single quaternion into one representing a rotation about the z-axis and a second rotation about an axis in the x-y plane as shown in Figure \ref{fig:PostDecomposedQuaternion}.
 
 \begin{figure}[H]
   \begin{subfigure}[h!]{0.5\textwidth}
@@ -388,7 +388,7 @@ combining \ref{eqn:rot_nut_2_1} and \ref{eqn:rot_nut_2_2}
   \end{align}
   \label{eqn:nutation_parameter_ratio}
 \end{subequations}
-The additional restriction than rotational quaternions have a unit norm can be leveraged in finding solutions
+The additional restriction that rotational quaternions have a unit norm can be leveraged in finding solutions
 \begin{equation}
   \left\| \bs{q} \right\| = \sqrt{\bs{v} \cdot \bs{v} + q_0^2} = \sqrt{q_1^2+q_2^2+q_3^2+q_0^2}
   \label{eqn:quaternion_norm}

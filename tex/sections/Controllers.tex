@@ -10,7 +10,7 @@ The second is to correct for any nutation wobble about the $x$ and $y$ body axes
 
 The third is to prevent and/or remove oscillations in the Axial Double Probe (ADP) and Spin-plane Double Probe (SDP) booms.  Out of the three, this performance goal has the largest set of dependencies for success.  This level of control is reliant on effective actuators along with reliable state estimates based on an accurate system model which include flexible boom dynamics.
 
-The first two goals are addressed in this chapter as their scope is limited to controller design.  Section \ref{sec:ActuatorConfiguration} covers the configuration of the actuators on TableSat and how their configuration is incorporated into the controller code.  The remaining sections of this chapter focus on rate and nutation control methods.  in this part of the research it is assumed that the estimators provide perfect state estimates.  These conditions temporarily limit the scope of the testing to ensure that the control techniques are being implemented properly in the software especially since with the development of some non-standard techniques.  The third goal, controlling boom oscillations, is addressed in Chapter \ref{chap:ObserverBasedControls} when multiple modules are linked together to obtain a wider view of the interactions between observer-based controllers being acted upon by noisy state measurements.
+The first two goals are addressed in this chapter as their scope is limited to controller design.  Section \ref{sec:ActuatorConfiguration} covers the configuration of the actuators on TableSat and how their configuration is incorporated into the controller code.  The remaining sections of this chapter focus on rate and nutation control methods.  In this part of the research it is assumed that the estimators provide perfect state estimates.  These conditions temporarily limit the scope of the testing to ensure that the control techniques are being implemented properly in the software especially since with the development of some non-standard techniques.  The third goal, controlling boom oscillations, is addressed in Chapter \ref{chap:ObserverBasedControls} when multiple modules are linked together to obtain a wider view of the interactions between observer-based controllers being acted upon by noisy state measurements.
 
 \section{Actuator Configuration}
 \label{sec:ActuatorConfiguration}
@@ -27,7 +27,7 @@ Sending the desired moment control commands from the controller directly to the 
   \caption{NASA MMS TableSat IA Body Axes}
   \label{fig:TableSatBodyAxes}
 \end{figure}
-Table \ref{tbl:ActuatorConfiguration} shows the fan configuration for the NASA MMS TableSat IA as arranged in Figure \ref{fig:TSatThrusters}.
+Table \ref{tbl:ActuatorConfiguration} shows the fan configuration for the NASA MMS TableSat IA as arranged in Figure \ref{fig:TSatThrusters}.  Figure \ref{fig:TableSatBodyAxes} shows the body-fixed coordinate system.
 \begin{table}[H]
   \centering
   \begin{tabular}{c|c|c|c|c}
@@ -133,7 +133,7 @@ Figure \ref{fig:PRateControl} shows the body rates and applied moments for one o
 Expanding the proportional controller to include the integral and derivative term as shown in Equation (\ref{eqn:PIDRateControl}) can improve the performance slightly in tests with perfect measurement tests, but more importantly provides tools for dealing with noisy measurements when assessing observer-based controllers in Chapter \ref{chap:ObserverBasedControls}.  The integral and derivative terms are implemented with the $\Delta t_k$ adaptive step, as with the PID estimator, to help take into account inconsistencies in update intervals by tracking the step size at each update the resulting control algorithm is
 \begin{equation}
   \begin{aligned}
-    \bs{M}_{\omega} &= \bs{K}_{\omega p} \bs{\omega}_e + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e
+    \bs{M}_{\omega} &= \bs{K}_{\omega p} \bs{\omega}_e + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs(\bs{\omega}_e(t_k) - \bs{\omega}_e(t_{k-1}))
   \end{aligned}
   \label{eqn:PIDRateControl}
 \end{equation}
@@ -151,7 +151,7 @@ The response curve in Figure \ref{fig:PIDRateControl} is generated from a random
   \end{aligned}
   \label{eqn:PIDRateControlGains}
 \end{equation}
-Figure \ref{fig:PIDRateControlMoments} shows how the moments from each of the PID components contribute to the overall moments applied.  The addition of the derivative term gives the system a slightly quicker response than that with just the P-controller.   In this perfect measurement scenario the the overall performance of the system would benefit from the integral term being removed altogether since it does not contribute much to the initial response and even causes a larger steady state error than the P-controller.
+Figure \ref{fig:PIDRateControlMoments} shows how the moments from each of the PID components contribute to the overall moments applied.  The addition of the derivative term gives the system a slightly quicker response than that with just the P-controller.   In this perfect measurement scenario the overall performance of the system would benefit from the integral term being removed altogether since it does not contribute much to the initial response and even causes a larger steady state error than the P-controller.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/pid_rate_control_moments.eps,width=6in}}
   \caption{PID rate control moments}
@@ -177,7 +177,7 @@ The SMC response in Figures \ref{fig:SMCRateControl} and \ref{fig:SMCRateControl
     S_{\omega} = 0.1404
   \label{SMCRateControlGains}
 \end{equation}
-The response to the test configuration shows significant improvements in performance over the P and PID rate controller as shown if Figure \ref{fig:SMCRateControl}.
+The response to the test configuration shows significant improvements in performance over the P and PID rate controller as shown if Figure \ref{fig:SMCRateControl}, but at the cost of higher moment couple.
 \begin{figure}[H]
   \centerline{\psfig{file=figures/smc_rate_control.eps,width=6in}}
   \caption{SMC rate control}
@@ -377,7 +377,7 @@ The PID controllers are defined as
   \begin{aligned}
     \bs{M} &= \bs{M}_{q} + \bs{M}_{\omega} \\
     \bs{M}_{q} &= \left[- K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[- K_{qi} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[- K_{qd} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed} \\
-    \bs{M}_{\omega} &= \bs{K}_{\omega p} \bs{\omega}_e + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e
+    \bs{M}_{\omega} &= \bs{K}_{\omega p} \bs{\omega}_e + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot (\bs{\omega}_e(t_k) - \bs{\omega}_e(t_{k-1}))
   \end{aligned}
 \end{equation}
 where $\bs{\hat{e}}_e, \bs{\hat{e}}_{ei}, \text{ and } \bs{\hat{e}}_{ed}$ are the Euler axes for the quaternion error, quaternion error integral, and quaternion error derivative, respectively, with the integral $\bs{q}_{ei}$ and derivative $\bs{q}_{ed}$ quaternions from Equations (\ref{eqn:IEstimator}) and (\ref{eqn:DEstimator}).

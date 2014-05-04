@@ -6,7 +6,7 @@ While the NSS versions discussed in the previous chapter provide a level of insi
 
 Python is quoted as coming ``batteries included'' which is a statement to the number of common libraries that come standard with the language including a \verb|socket| library for sending and receiving User Datagram Protocol (UDP) packets used by TableSat.  Python is also known as an expressive language where what a section of code does is generally easily discernible from a ``quick read''.
 
-To support the control system developed for this thesis to easily available for others to use and edit, python includes a variety of unit test frameworks for ensuring consistency and gives the ability to write self-documenting code.  Self-documenting code is such that if the user has an instance of a class stored in a variable \verb|v| but is unsure what can be done with the class, typing ``\verb|help(v)|'' provides documentation of the various methods available and how they are used.
+Python includes a variety of unit test frameworks for ensuring consistency throughout code revisions, and gives the ability to write self-documenting code.  Self-documenting code is such that if the user has an instance of a class stored in a variable \verb|v| but is unsure what can be done with the class, typing ``\verb|help(v)|'' provides documentation of the various methods available and how they are used.
 
 Section \ref{sec:KeyCharacteristics} covers some of the notable characteristics about the TSatPy implementation of the ADCS, and Section \ref{sec:Module Design} describes the different types of classes that are written for the program and what their role is.
 
@@ -71,7 +71,7 @@ Below is an outline of the separate modules contained in the TSatPy library and 
 input: Desired moment\\
 output: Actual moment\\
 
-This module defines the output of the controller. The actuator instance on initialization is supplied with the physical arrangement of the actuators. During run-time the actuator module first accepts a $\Re^3$ moment command from the controller.  It then compares what it is being asked to do with what it can actually be provide.  That true moment is then available for use with estimator state propagation and for conversion to actuator voltage commands. (See Section \ref{sec:ActuatorConfiguration})
+This module defines the output of the controller. The actuator instance on initialization is supplied with the physical arrangement of the actuators. During run-time the actuator module first accepts a $\Re^3$ moment command from the controller.  It then compares what it is being asked to do with what it can actually provide.  That true moment is then available for use with estimator state propagation and for conversion to actuator voltage commands. (See Section \ref{sec:ActuatorConfiguration})
 
 \subsection{ADCS}
 \label{subsec:ADCS}
@@ -101,7 +101,7 @@ From Satellite to Controller\\
 input: Sensor voltages from the system or in-memory model\\
 output: Sensor data to submit to sensor class for conversion to a state\\
 
-This module handles the interface between the control system and either the physical system or an analytical model. With the physical system, a UDP socket is opened and either listens relieved packets from the sensors or submits voltage command packets to set actuator voltages. During a simulation, the module submits and receives the voltage command messages to an ``in-memory model'' of the system that contains the system dynamics and can return simulated sensor voltages based on the behavior.
+This module handles the interface between the control system and either the physical system or an analytical model. With the physical system, a UDP socket is opened and either listens for packets from the sensors or submits voltage command packets to set actuator voltages. During a simulation, the module submits and receives the voltage command messages to an ``in-memory model'' of the system that contains the system dynamics and can return simulated sensor voltages based on the behavior.
 
 
 \subsection{Controller}
