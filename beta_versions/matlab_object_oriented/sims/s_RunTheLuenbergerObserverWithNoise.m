@@ -60,36 +60,52 @@ if (record_it)
   clear mov;
 end
 
-qa_label = text(0.5,0.5,0.5,sprintf('$$q_a = \\left( {\\matrix{ %0.4f \\cr %0.4f \\cr %0.4f \\cr %0.4f } } \\right) $$',true_state1.q.vector(1),true_state1.q.vector(2),true_state1.q.vector(3),true_state1.q.scalar),'interpreter','latex','VerticalAlignment','bottom','FontSize',12);
+qa_label = text(0.5,0.5,0.5,sprintf(['$$q_a = \\left( {\\matrix{ %0.4f \\cr %0.4f ' ...
+  '\\cr %0.4f \\cr %0.4f } } \\right) $$'],true_state1.q.vector(1), ...
+  true_state1.q.vector(2),true_state1.q.vector(3),true_state1.q.scalar), ...
+  'interpreter','latex','VerticalAlignment','bottom','FontSize',12);
 
-qm_label = text(-0.9,0.9,0.8,sprintf('$$q_m = \\left( {\\matrix{ %0.4f \\cr %0.4f \\cr %0.4f \\cr %0.4f } } \\right) $$',true_state1.q.vector(1),true_state1.q.vector(2),true_state1.q.vector(3),true_state1.q.scalar),'interpreter','latex','VerticalAlignment','bottom','FontSize',12);
+qm_label = text(-0.9,0.9,0.8,sprintf(['$$q_m = \\left( {\\matrix{ %0.4f \\cr %0.4f ' ...
+  '\\cr %0.4f \\cr %0.4f } } \\right) $$'],true_state1.q.vector(1), ...
+  true_state1.q.vector(2),true_state1.q.vector(3),true_state1.q.scalar), ...
+  'interpreter','latex','VerticalAlignment','bottom','FontSize',12);
 
-ql_label = text(-0.5,-0.5,-0.9,sprintf('$$q_l = \\left( {\\matrix{ %0.4f \\cr %0.4f \\cr %0.4f \\cr %0.4f } } \\right) $$',0,0,0,1),'interpreter','latex','VerticalAlignment','bottom','FontSize',12);
+ql_label = text(-0.5,-0.5,-0.9,sprintf(['$$q_l = \\left( {\\matrix{ %0.4f \\cr ' ...
+  '%0.4f \\cr %0.4f \\cr %0.4f } } \\right) $$'],0,0,0,1),'interpreter','latex', ...
+  'VerticalAlignment','bottom','FontSize',12);
 
 for frame=1:end_frame
   pause(pause_time)
-  
+
   if (frame < switch_frame)
     args.state = true_state1;
   else
     args.state = true_state2;
   end
-  set(qa_label,'String',sprintf('$$q_a = \\left( {\\matrix{ %0.4f \\cr %0.4f \\cr %0.4f \\cr %0.4f } } \\right) $$',args.state.q.vector(1),args.state.q.vector(2),args.state.q.vector(3),args.state.q.scalar));
-  
+  set(qa_label,'String',sprintf(['$$q_a = \\left( {\\matrix{ %0.4f \\cr %0.4f ' ...
+    '\\cr %0.4f \\cr %0.4f } } \\right) $$'],args.state.q.vector(1), ...
+    args.state.q.vector(2),args.state.q.vector(3),args.state.q.scalar));
+
   args.state.q.scalar = args.state.q.scalar * (rand()*0.2+.9);
   args.state.q.vector = args.state.q.vector .* (rand(3,1)*0.2+.9);
   args.state.q.normalize();
-  set(qm_label,'String',sprintf('$$q_m = \\left( {\\matrix{ %0.4f \\cr %0.4f \\cr %0.4f \\cr %0.4f } } \\right) $$',args.state.q.vector(1),args.state.q.vector(2),args.state.q.vector(3),args.state.q.scalar));
-  plot_args = struct; plot_args.plot = graphs.sim_noisy_luenberger.obj; plot_args.state = args.state;
+  set(qm_label,'String',sprintf(['$$q_m = \\left( {\\matrix{ %0.4f \\cr %0.4f \\cr ' ...
+    '%0.4f \\cr %0.4f } } \\right) $$'],args.state.q.vector(1),args.state.q.vector(2), ...
+    args.state.q.vector(3),args.state.q.scalar));
+  plot_args = struct; plot_args.plot = graphs.sim_noisy_luenberger.obj;
+  plot_args.state = args.state;
   graphs.sim_noisy_luenberger.obj = tm_true.updatePlot(plot_args);
   o = o.update(args);
-  
-  plot_args = struct; plot_args.plot = graphs.sim_noisy_luenberger.obj; plot_args.state = o.state;
+
+  plot_args = struct; plot_args.plot = graphs.sim_noisy_luenberger.obj;
+  plot_args.state = o.state;
   graphs.sim_noisy_luenberger.obj = tm_luenberger.updatePlot(plot_args);
-  
+
   args.plant_state = o.state;
-  set(ql_label,'String',sprintf('$$q_l = \\left( {\\matrix{ %0.4f \\cr %0.4f \\cr %0.4f \\cr %0.4f } } \\right) $$',o.state.q.vector(1),o.state.q.vector(2),o.state.q.vector(3),o.state.q.scalar));
-  
+  set(ql_label,'String',sprintf(['$$q_l = \\left( {\\matrix{ %0.4f \\cr %0.4f \\cr ' ...
+    '%0.4f \\cr %0.4f } } \\right) $$'],o.state.q.vector(1),o.state.q.vector(2), ...
+    o.state.q.vector(3),o.state.q.scalar));
+
   if (record_it)
     mov(frame)=getframe(fig_id);
   end

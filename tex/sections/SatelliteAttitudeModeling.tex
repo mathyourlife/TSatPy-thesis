@@ -252,13 +252,13 @@ This quaternion class for TSatPy (Chapter \ref{chap:TSatPy}) provides the implem
 For use in control systems, Section \ref{subsec:QuaternionDecompositionForNutationControl} cites the need for separating a quaternion into two quaternions.  One representing the rotational motion about the $z$-axis and the second describing the nutation about an axis in the $xy$ plane.  The attitude of TSat is represented by a single quaternion.  The change in attitude between two states can be modeled by the rotation about a single axis.  Figure \ref{fig:PreDecomposedQuaternion} show the attitude of a system described by the quaternion $\bs{q} = [\alpha, \beta, \phi], 0.16953$ which is a rotation of 2.8 radians about the axis $[\alpha, \beta, \phi]^T$.  For control purposes, decomposing the single quaternion into one representing a rotation about the z-axis and a second rotation about an axis in the x-y plane as shown in Figure \ref{fig:PostDecomposedQuaternion}.
 
 \begin{figure}[H]
-  \begin{subfigure}[h!]{0.5\textwidth}
+  \begin{subfigure}[h!]{0.45\textwidth}
     \includegraphics[width=\textwidth]{figures/quaternion_decompose_pre.eps}
     \caption{Quaternion State}
     \label{fig:PreDecomposedQuaternion}
   \end{subfigure}
   ~
-  \begin{subfigure}[h!]{0.5\textwidth}
+  \begin{subfigure}[h!]{0.45\textwidth}
     \includegraphics[width=\textwidth]{figures/quaternion_decompose_post.eps}
     \caption{Decomposed State}
     \label{fig:PostDecomposedQuaternion}

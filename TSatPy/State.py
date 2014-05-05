@@ -94,12 +94,6 @@ class Quaternion(object):
         :return: Magnitude of the quaternion
         :rtype:  float
         """
-
-        # x_est_ic:    <Quaternion [-0.772448 -0.00257112 -0.603963], 0.19633>, <BodyRate [0.003 -0.001 0.004]>
-        # (matrix([[-0.78778007],
-        #         [-0.00262215],
-        #         [-0.61595104]]), 2.7463653926463545)
-
         try:
             mag_sq = np.sum(self.vector.T * self.vector) + self.scalar ** 2
         except OverflowError:

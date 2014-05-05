@@ -164,7 +164,7 @@ Figure \ref{fig:PIDRateControlMoments} shows how the moments from each of the PI
 The Sliding Mode Controller (SMC) operates similarly to a proportional controller and is governed by the equation
 \begin{equation}
   \bs{M}_{\omega} = \bs{L}_{\omega} \bs{\omega}_e + \bs{K}_{\omega}\bs{1}_s \big(\bs{\omega}_e \big)
-  \label{eqn:SMController}would
+  \label{eqn:SMController}
 \end{equation}
 where $\bs{L}_{\omega}$ is the proportional switching gain and the $\bs{1}_s$ function is a switching finction that can take a number of forms, such as the signum and arctangent functions.  In this thesis, the SMC uses the saturation function such that $\bs{1}_s$ is
 \begin{equation}
@@ -338,7 +338,7 @@ print("x_e: %s" % (x_e))
 
 Using the proportional control
 \begin{equation}
-  \bs{M}_{q} = \left[- K_{qp} \cos^{-1} (q_{0n}) \right] \bs{\hat{e}}_n
+  \bs{M}_{q} = \left[- 2K_{qp} \cos^{-1} (q_{0n}) \right] \bs{\hat{e}}_n
   \label{eqn:PNutationControl}
 \end{equation}
 with the same initial state and desired quaternion as the proportional attitude controller from the previous example.  That is,
@@ -376,7 +376,7 @@ The PID controllers are defined as
 \begin{equation}
   \begin{aligned}
     \bs{M} &= \bs{M}_{q} + \bs{M}_{\omega} \\
-    \bs{M}_{q} &= \left[- K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[- K_{qi} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[- K_{qd} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed} \\
+    \bs{M}_{q} &= \left[- 2K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[- 2K_{qi} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[- 2K_{qd} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed} \\
     \bs{M}_{\omega} &= \bs{K}_{\omega p} \bs{\omega}_e + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot (\bs{\omega}_e(t_k) - \bs{\omega}_e(t_{k-1}))
   \end{aligned}
 \end{equation}

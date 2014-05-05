@@ -241,7 +241,8 @@ From Section \ref{sec:BodyRatePIDEstimation}, Equation (\ref{eqn:PIDEstimatorUnf
 
 \begin{equation}
   \bs{\hat{x}}(t_{k+1}) = \begin{bmatrix} \bs{\psi}\left(\bs{q}_{ed}(t_k), K_{qd}\right) \otimes \bs{\psi}\big(\bs{q}_{ei}(t_k), K_{qi}\big) \otimes \bs{\psi}(\bs{q}_e(t_{k}), K_{qp})  \otimes \bs{\hat{q}}(t_{k+1})^- \\
-  \bs{\hat{\omega}}(t_{k+1})^- + \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k}) \end{bmatrix}
+  \bs{\hat{\omega}}(t_{k+1})^- + \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \\
+  \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot (\bs{\omega}_e(t_{k})-\bs{\omega}_e(t_{k-1})) \end{bmatrix}
   \label{eqn:PIDEstimatorwithPredictionUnforcedMotion}
 \end{equation}
 with the a priori state $\bs{\hat{x}}(t_{k+1})^-$ given as

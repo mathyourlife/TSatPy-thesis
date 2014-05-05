@@ -173,9 +173,11 @@ def plot_tam_ref_for_yaw_close(tam_ref, smoothing_window, yaw, tam_pt):
         ys = [tam_ref['steady'][yaw][1], tam_ref[key][yaw][1]]
         zs = [tam_ref['steady'][yaw][2], tam_ref[key][yaw][2]]
         ax.plot(xs, ys, zs, c=colors[key], lw=4)
-        ax.plot(*tam_pt[key], marker='o', color=colors[key], ls='None', markersize=10, label=key)
+        ax.plot(*tam_pt[key], marker='o', color=colors[key], ls='None',
+            markersize=10, label=key)
 
-    ax.plot(*tam_pt['steady'], marker='o', color=colors['steady'], ls='None', markersize=10, label='steady')
+    ax.plot(*tam_pt['steady'], marker='o', color=colors['steady'], ls='None',
+        markersize=10, label='steady')
 
     ax.set_xlabel('TAM X')
     ax.set_ylabel('TAM Y')
@@ -206,9 +208,12 @@ def main():
         'xneg': ([ 2.6369, 2.6518, 2.645 , 2.6479, 2.6389, 2.6451 ],
                 [ 2.3953, 2.4002, 2.4037, 2.403, 2.3884, 2.4058 ],
                 [ 2.3243, 2.3215, 2.3228, 2.3293, 2.3149, 2.3241 ]),
-        'yneg': ([ 2.6389, 2.6279, 2.6353, 2.6282, 2.6382, 2.6305, 2.6266, 2.6342, 2.6305, 2.6333 ],
-                [ 2.3983, 2.3695, 2.3868, 2.3826, 2.3891, 2.3786, 2.3894, 2.3928, 2.3945, 2.3843 ],
-                [ 2.3237, 2.3187, 2.3177, 2.3202, 2.3264, 2.3094, 2.315, 2.312, 2.3161, 2.3093 ]),
+        'yneg': ([ 2.6389, 2.6279, 2.6353, 2.6282, 2.6382, 2.6305, 2.6266,
+                    2.6342, 2.6305, 2.6333 ],
+                [ 2.3983, 2.3695, 2.3868, 2.3826, 2.3891, 2.3786, 2.3894,
+                    2.3928, 2.3945, 2.3843 ],
+                [ 2.3237, 2.3187, 2.3177, 2.3202, 2.3264, 2.3094, 2.315,
+                    2.312, 2.3161, 2.3093 ]),
     }
 
     plot_tam_ref_for_yaw_close(

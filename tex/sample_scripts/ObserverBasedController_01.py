@@ -7,7 +7,7 @@ from TSatPy import StateOperator as SO
 from TSatPy.Clock import Metronome
 from GradientDescent import GradientDescent
 
-print("SMC - Spin-stabilized control with nutation rejection")
+print("SMO with SMC - Spin-stabilized control with nutation rejection")
 
 run_time = 400
 speed = 20
@@ -24,14 +24,17 @@ x_ic = State.State(
     State.BodyRate([0.01, -0.005, 0.2]))
     # State.BodyRate())
 
-def run_test(eLq, eLx, eLy, eLz, eKq, eKx, eKy, eKz, eSq, eSw, cLq, cLx, cLy, cLz, cKq, cKx, cKy, cKz, cSq, cSw, plot=False):
-    data = test(eLq, eLx, eLy, eLz, eKq, eKx, eKy, eKz, eSq, eSw, cLq, cLx, cLy, cLz, cKq, cKx, cKy, cKz, cSq, cSw)
+def run_test(eLq, eLx, eLy, eLz, eKq, eKx, eKy, eKz, eSq, eSw, cLq,
+    cLx, cLy, cLz, cKq, cKx, cKy, cKz, cSq, cSw, plot=False):
+    data = test(eLq, eLx, eLy, eLz, eKq, eKx, eKy, eKz, eSq, eSw, cLq,
+        cLx, cLy, cLz, cKq, cKx, cKy, cKz, cSq, cSw)
 
     if plot:
         graph_it(data)
 
 
-def test(eLq, eLx, eLy, eLz, eKq, eKx, eKy, eKz, eSq, eSw, cLq, cLx, cLy, cLz, cKq, cKx, cKy, cKz, cSq, cSw):
+def test(eLq, eLx, eLy, eLz, eKq, eKx, eKy, eKz, eSq, eSw, cLq,
+    cLx, cLy, cLz, cKq, cKx, cKy, cKz, cSq, cSw):
 
     I = [[4, 0, 0], [0, 4, 0], [0, 0, 2]]
     plant_true = State.Plant(I, x_ic, c)

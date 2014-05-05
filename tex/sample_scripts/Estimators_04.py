@@ -5,21 +5,17 @@ import matplotlib.pyplot as plt
 import time
 import random
 
-
 print('Derivative State Error')
-
 
 c = Metronome()
 
 def integrate_error(dt, varied=False):
-
     x_m = State.State(
         State.Identity(),
         State.BodyRate([0,0,0.01]))
 
     I = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
     p = State.Plant(I, x_m, c)
-
 
     k = 0.01
     Kd = StateOperator.StateGain(
