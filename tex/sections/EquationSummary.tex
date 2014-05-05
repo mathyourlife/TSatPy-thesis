@@ -12,10 +12,9 @@
   $\bs{x}$ & Measured state \\
   $\bs{\hat{x}}$ & Estimated state \\
   $\bs{\hat{x}}_e$ & Estimated state error (Estimated - Measured)\\
-  $\bs{\hat{x}}_d$ & Desired state \\
+  $\bs{x}_d$ & Desired state \\
   $\bs{x}_e$ & State error (Estimated - Desired) \\
   $\bs{\hat{x}}(t_{k+1})^-$ & Predicted state prior to update \\
-  $\bs{\hat{x}}(t_k)^+$ & State estimate modified to remove rotational quaternion \\
 \end{tabular}
 
 \begin{tabular}{lp{0.75\linewidth}}
@@ -23,6 +22,7 @@
   $\bs{v}$ & the vector portion of a quaternion equivalent to $q_1\bs{i}+q_2\bs{j}+q_3\bs{k}$ \\
   $\bs{\hat{e}}$ & Euler's axis from $\bs{\hat{e}} = \frac{\bs{v}}{|\bs{v}|}$ \\
   $q_0$ & the scalar portion of a quaternion \\
+  $\bs{q^*}$ & quaternion conjugate where $\bs{q}^* = [-\bs{v}\ q_0]^T$ \\
   $\bs{q}_I$ & identity quaternion where $\bs{q_I} = 0\bs{i}+0\bs{j}+0\bs{k}+1$ \\
   $\bs{q_n}$ & nutation quaternion in the form $ q_1 \bs{i} + q_2 \bs{j} + 0 \bs{k} + q_0 $ \\
   $\bs{q_r}$ & rotational quaternion in the form $ 0 \bs{i} + 0 \bs{j} + q_3 \bs{k} + q_0 $ \\
@@ -30,8 +30,8 @@
 \end{tabular}
 
 \begin{tabular}{lp{0.75\linewidth}}
-  $\bs{\omega}$ & Body Rate \\
-  $\bs{\omega}_d - \bs{\hat{\omega}}(t_{k+1})$ & Controller Body Rate error \\
+  $\bs{\omega}$ & Body-fixed Angular Velocities (Body Rate) \\
+  $\bs{\hat{\omega}} - \bs{\omega}_d$ & Controller Body Rate error \\
 \end{tabular}
 
 \begin{tabular}{lp{0.75\linewidth}}
@@ -49,6 +49,8 @@ Quaternion Rotation Matrix
 Quaternion Multiplication
 \begin{equation}
   \begin{aligned}
+    \bs{q} &= \bs{a} \otimes \bs{b} = \bs{a}_v b_0 + \bs{b}_v a_0 + \bs{a}_v \times \bs{b}_v + a_0 b_0 - \bs{a}_v \cdot \bs{b}_v \\
+    \text{or} & \\
     \bs{a} \otimes \bs{b} &=
     \begin{bmatrix}
       (\bs{a}_v \times) + \bs{I} a_0 & \bs{a}_v \\
@@ -107,22 +109,33 @@ Quaternion Decomposition
     Q &= \frac{q_{0}q_{1} - q_{2}q_{3}}{q_{0}q_{2} + q_{1}q_{3}}
   \end{aligned}
 \end{equation}
+Discrete Euler Moment Equations
+\begin{subequations}
+  \begin{align}
+    \dot{\omega}_{x}(t_{k}) & = \frac{1}{I_x} \left[ M_1(t_{k}) - (I_z - I_y) \omega_{y}(t_k) \omega_{z}(t_k) \right] \\
+    \dot{\omega}_{y}(t_{k}) & = \frac{1}{I_y} \left[ M_2(t_{k}) - (I_x - I_z) \omega_{x}(t_k) \omega_{z}(t_k) \right] \\
+    \dot{\omega}_{z}(t_{k}) & = \frac{1}{I_z} \left[ M_3(t_{k}) - (I_y - I_x) \omega_{x}(t_k) \omega_{y}(t_k) \right]
+  \end{align}
+\end{subequations}
 Quaternion PID Estimation with State Prediction
 \begin{equation}
   \bs{\hat{q}}(t_{k+1}) = \bs{\psi}\left(\bs{q}_{ed}(t_k), K_{qd}\right) \otimes \bs{\psi}\big(\bs{q}_{ei}(t_k), K_{qi}\big) \otimes \bs{\psi}(\bs{q}_e(t_{k}), K_{qp})  \otimes \bs{\hat{q}}(t_{k+1})^-
 \end{equation}
 Body Rate PID Estimation with State Prediction
 \begin{equation}
-  \bs{\hat{\omega}}(t_{k+1}) = \bs{\hat{\omega}}(t_{k+1})^- + \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k})
+  \begin{aligned}
+    \bs{\hat{\omega}}(t_{k+1}) &= \bs{\hat{\omega}}(t_{k+1})^- + \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \\
+    & \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot (\bs{\omega}_e(t_{k})-\bs{\omega}_e(t_{k-1}))
+  \end{aligned}
 \end{equation}
 Quaternion to moment conversion\\
-\begin{equation} \bs{M}_{q} = \left[- K_{q} \cos^{-1} (q_{0}) \right] \bs{\hat{e}} \end{equation}
+\begin{equation} \bs{M}_{q} = \left[- 2K_{q} \cos^{-1} (q_{0}) \right] \bs{\hat{e}} \end{equation}
 Quaternion PID Controller \\
-\begin{equation} \bs{M}_{q} = \left[- K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[- K_{q} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[- K_{q} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed} \end{equation}
+\begin{equation} \bs{M}_{q} = \left[- 2K_{qp} \cos^{-1} (q_{0e}) \right] \bs{\hat{e}}_e + \left[- 2K_{q} \cos^{-1} (q_{0ei}) \right] \bs{\hat{e}}_{ei} + \left[- 2K_{q} \cos^{-1} (q_{0ed}) \right] \bs{\hat{e}}_{ed} \end{equation}
 Body Rate PID Controller with Adaptive Time Steps\\
-\begin{equation}\bs{M}_{\omega} = \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot \bs{\omega}_e(t_{k})\end{equation}
+\begin{equation}\bs{M}_{\omega} = \bs{K}_{\omega p} \cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega i} \cdot (\Delta t_k \bs{I})\cdot \bs{\omega}_e(t_{k}) + \bs{K}_{\omega d} \cdot \left(\frac{1}{\Delta t_k} \bs{I}\right) \cdot (\bs{\omega}_e(t_{k}) - \bs{\omega}_e(t_{k-1}))\end{equation}
 Quaternion Saturation
-\begin{equation} \bs{1}_s\big(\bs{q} \big) = \begin{bmatrix} \bs{v} \\ sat\left( \frac{\cos^{-1} q_{0} }{S_{q}} \right) \end{bmatrix} \end{equation}
+\begin{equation} \bs{1}_s\big(\bs{q} \big) = \begin{bmatrix} \bs{v} \\ sat\left( \frac{2 \cos^{-1} q_{0} }{S_{q}} \right) \end{bmatrix} \end{equation}
 Sliding Mode Observer \\
 \begin{subequations}
   \begin{align}

@@ -19,7 +19,7 @@ Proceeding through the observer-based controller, $\bs{x}$ represents the measur
 Sections \ref{sec:StateDifference} through \ref{subsec:ThetaMultiplierWithQuaternionVectorBalancing} outline the series of improvement made to the accuracy of the state error representation.  These sections focus on the accuracy of the state error calculation along with the ability to scale the error by a proportional gain.  The accuracy of the estimators as a whole is covered in Chapter \ref{chap:Estimators}.
 
 \begin{equation}
-  \bs{\hat{x}(t_{k+1})} = \bs{\hat{x}}(t_{k}) + \bs{K_p} ( \bs{\hat{x}}(t_{k}) - \bs{x}(t_{k}) )
+  \bs{\hat{x}(t_{k+1})} = \bs{f}(\bs{\hat{x}}(t_{k})) + \bs{K_p} ( \bs{\hat{x}}(t_{k}) - \bs{x}(t_{k}) )
   \label{eqn:PEstimatorStateDiff}
 \end{equation}
 
@@ -521,7 +521,7 @@ Adjustment Quaternions
 Body Rate Error
 
 \begin{equation}
-  \bs{\omega}_e = \bs{\hat{\omega}} - \bs{\omega}
+  \bs{\omega}_e = \bs{\hat{\omega}} - \bs{\omega}_d
 \end{equation}
 
 Adjustment Body Rates
