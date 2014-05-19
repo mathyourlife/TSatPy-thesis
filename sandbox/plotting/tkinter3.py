@@ -7,7 +7,7 @@ from twisted.internet.task import LoopingCall
 import matplotlib.pyplot as plt
 
 def testing():
-    print "here"
+    print("here")
 
 
 def create_figure():
@@ -22,7 +22,7 @@ def create_figure():
 
 
 def update_it(l):
-    print "update_it"
+    print("update_it")
     t = np.arange(0.0,3.0,0.01)
     s = np.sin(2*np.pi*t)
     l.set_ydata(s)

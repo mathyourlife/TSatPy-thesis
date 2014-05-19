@@ -96,7 +96,7 @@ class GradientDescent(object):
             for key in keys:
                 args.append(kwargs[key])
             args.append(cost)
-            print args
+            print(args)
             results.append(args)
 
             if len(results) > thresh:
@@ -150,7 +150,7 @@ def main():
         # how well the parameters worked.
         'calc_cost': measure_performance,
     }
-    print GradientDescent.descend(**kwargs)
+    print(GradientDescent.descend(**kwargs))
 
     return 0
 

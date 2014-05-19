@@ -17,7 +17,7 @@ Example::
     clock = Metronome()
 
     # Do stuff
-    print "%s seconds have passed" % clock.tick()
+    print("%s seconds have passed" % clock.tick())
 
     # Make time go faster, I'm bored
     clock.set_speed(3)

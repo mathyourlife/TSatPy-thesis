@@ -145,7 +145,7 @@ def gradient_desc():
     for p, i, d in vals():
         ts, q_tracking, w_tracking = run_test(pbase**p,ibase**i,dbase**d)
         err = np.array(q_tracking['err'])
-        print "%g,%g,%g,%g,%g" % (
+        print("%g,%g,%g,%g,%g" % ()
             err.std(), err.mean(), pbase**p, ibase**i, dbase**d)
 
 

@@ -134,7 +134,7 @@ q_adj = Quaternion(
     q_e.vector / a,
     k * q_e.scalar / a
 )
-print q_adj.to_rotation()
+print(q_adj.to_rotation())
 exit()
 
 print('*' * 80)

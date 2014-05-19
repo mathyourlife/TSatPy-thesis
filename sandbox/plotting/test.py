@@ -18,7 +18,7 @@ plt.title('test')
 event_source = fig.canvas.new_timer()
 event_source.interval = 100
 def print_hi():
-    print "hi"
+    print("hi")
 event_source.add_callback(print_hi)
 
 fig.canvas.mpl_connect('draw_event', event_source.start)

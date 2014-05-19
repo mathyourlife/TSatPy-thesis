@@ -158,7 +158,7 @@ def main():
         # how well the parameters worked.
         'calc_cost': calc_err,
     }
-    print GradientDescent.descend(**kwargs)
+    print(GradientDescent.descend(**kwargs))
     return 0
 
 if __name__ == "__main__":

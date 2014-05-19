@@ -156,14 +156,14 @@ def gradient_desc():
 def test():
     I = [[2, 0, 0], [0, 2, 0], [0, 0, 2]]
     plant_est = State.Plant(I, State.State(), c)
-    print plant_est
+    print(plant_est)
 
     x_m = State.State(
         State.Quaternion([0,0,1], radians=np.pi/4),
         State.BodyRate([0,0,0.314]))
     plant_est.set_state(x_m)
 
-    print plant_est
+    print(plant_est)
 
 
 def main():

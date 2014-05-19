@@ -300,12 +300,12 @@ headerFmt = "!H2B4H"
 headerSize = struct.calcsize(headerFmt)
 
 strio = BytesIO(verPayload)
-print strio
+print(strio)
 
 header = readPrecisely(strio, headerSize)
-print header
+print(header)
 
-print struct.unpack(headerFmt, header)
+print(struct.unpack(headerFmt, header))
 m = Message()
 m.fromStr(verPayload)
 

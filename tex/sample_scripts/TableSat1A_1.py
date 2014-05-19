@@ -31,9 +31,9 @@ def convert_mat_to_csv():
 
     for line in data:
         pass
-        # print line
+        # print(line)
         # break
-    print data
+    print(data)
 
 
 def calculate_tam_nutation_refences():
