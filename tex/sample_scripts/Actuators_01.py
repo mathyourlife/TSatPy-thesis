@@ -17,7 +17,7 @@ configs = [{'type': 'fan', 'args': {'name': 'CW',
 
 
 def set_level(act, power_level):
-    print 'Setting power level=%g for: %s' % (power_level, act)
+    print('Setting power level=%g for: %s' % (power_level, act))
 
 
 def setup_actuators(configs):

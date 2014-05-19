@@ -84,10 +84,10 @@ def calculate_tam_nutation_refences():
             tam_angles[key]['tally'][deg] += 1
 
         tam_ref[key] = {}
-        for deg in xrange(360):
+        for deg in range(360):
             tally = 0
             volt = 0
-            for dx in xrange(-smoothing_window, smoothing_window + 1):
+            for dx in range(-smoothing_window, smoothing_window + 1):
                 idx = (deg + dx) % 360
                 tally += tam_angles[key]['tally'][idx]
                 volt += tam_angles[key]['volts'][idx]
@@ -109,7 +109,7 @@ def plot_tam_ref(tam_ref, smoothing_window):
         'xneg': 'g',
         'yneg': 'k'
     }
-    for key, color in colors.iteritems():
+    for key, color in colors.items():
         xs = [v[0] for v in tam_ref[key].itervalues()]
         ys = [v[1] for v in tam_ref[key].itervalues()]
         zs = [v[2] for v in tam_ref[key].itervalues()]
@@ -135,7 +135,7 @@ def plot_tam_ref_for_yaw(tam_ref, smoothing_window, yaw):
         'xneg': 'g',
         'yneg': 'k'
     }
-    for key, color in colors.iteritems():
+    for key, color in colors.items():
         xs = [v[0] for v in tam_ref[key].itervalues()]
         ys = [v[1] for v in tam_ref[key].itervalues()]
         zs = [v[2] for v in tam_ref[key].itervalues()]

@@ -173,7 +173,7 @@ class Estimator(object):
         :param M: The last applied moment
         :type  M: State.Moment
         """
-        for idx in xrange(len(self.estimators)):
+        for idx in range(len(self.estimators)):
             self.estimators[idx].update(x=x, M=M)
 
     def __str__(self):
@@ -345,7 +345,7 @@ class PID(EstimatorBase):
         :rtype: str
         """
         gains = [self.__class__.__name__, ' x_hat %s' % self.x_hat]
-        for G in self.K.iteritems():
+        for G in sorted(self.K.items()):
             gains.append(' K%s %s' % G)
         return '\n'.join(gains)
 

@@ -18,9 +18,9 @@ class TestPID(unittest.TestCase):
             'PID',
             ' x_d <Quaternion [0 0 0], 1>, <BodyRate [0 0 0]>',
             ' x_e <Quaternion [0 0 0], 1>, <BodyRate [0 0 0]>',
+            ' Kd None',
             ' Ki None',
             ' Kp <BodyRateToMoment <K [[ 0.1 0. 0. ] [ 0. 0.1 0. ] [ 0. 0. 0.1]]>>',
-            ' Kd None',
         ]
         self.assertEquals('\n'.join(str_expected), str(pid))
 

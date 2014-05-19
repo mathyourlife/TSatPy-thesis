@@ -122,7 +122,7 @@ class Actuator(object):
         """
         levels = []
         # Loop through the moments for each axis
-        for idx in xrange(3):
+        for idx in range(3):
             members = []
             # define the axis being calculated
             axis = np.mat([0, 0, 0], dtype=np.float).T

@@ -30,7 +30,7 @@ class TSat(Body):
         zeros.fill(0)
 
         dots = []
-        for pos in xrange(count + 1):
+        for pos in range(count + 1):
             dots.append(self.radius + dx * pos)
 
         self.add_path('+x boom', [np.array(dots), zeros.copy(), zeros.copy()])
@@ -61,7 +61,7 @@ class Model(object):
         self.data_model = data_model
         self.series = {}
 
-        for name, data in self.data_model.pts.iteritems():
+        for name, data in self.data_model.pts.items():
             if name == 'body':
                 self.series[name] = self.ax.plot_surface(*data, rstride=10, cstride=50, linewidth=1, alpha=1)
             else:

@@ -175,7 +175,7 @@ class PID(ControllerBase):
         gains = [self.__class__.__name__,
             ' x_d %s' % self.x_d,
             ' x_e %s' % self.x_e]
-        for G in self.K.iteritems():
+        for G in sorted(self.K.items()):
             gains.append(' K%s %s' % G)
         return '\n'.join(gains)
 

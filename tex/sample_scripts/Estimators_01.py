@@ -29,7 +29,7 @@ ks = range(N)
 eulers = np.empty([N, 3], dtype=np.float)
 scalars = np.empty(N, dtype=np.float)
 bodyrates = np.empty([N, 3], dtype=np.float)
-for k in xrange(N):
+for k in range(N):
     pid.update(x_m)
     eulers[k,:] = pid.x_hat.q.vector.T
     scalars[k] = pid.x_hat.q.scalar
