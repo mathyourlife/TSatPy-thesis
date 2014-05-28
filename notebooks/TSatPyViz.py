@@ -17,16 +17,10 @@ def show_quaternion(q):
 
     fig, ax = new_figure()
 
-    # vector, theta = q.to_rotation()
-    # qv = np.asarray(vector)
-    # r_axis = np.hstack([qv, [[0],[0],[0]], -qv])
-    # ax.plot(r_axis[0,:], r_axis[1,:], r_axis[2,:], color='r', ls='--', linewidth=4, ms=10)
-
-    count = 100
-    zeros = np.empty(count + 1)
-    zeros.fill(0)
-    z = -np.arange(count + 1) * (1 / float(count))
-    ax.plot(zeros.copy(), zeros.copy(), z, color='r', ls='--', linewidth=4, ms=10)
+    vector, theta = q.to_rotation()
+    qv = np.asarray(vector)
+    r_axis = np.hstack([qv, [[0],[0],[0]], -qv])
+    ax.plot(r_axis[0,:], r_axis[1,:], r_axis[2,:], color='r', ls='--', linewidth=4, ms=10)
 
     model = TSatModel(ax)
 
@@ -52,6 +46,9 @@ def show_quaternion(q):
     }
     ani = animation.FuncAnimation(**kwargs)
 
+    ax.set_xlabel('x-axis')
+    ax.set_ylabel('y-axis')
+    ax.set_zlabel('z-axis')
     plt.show()
 
 
@@ -59,6 +56,10 @@ def new_figure():
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d', aspect='equal')
 
+    ax.w_xaxis._axinfo.update({'grid' : {'color': (0, 0, 0, 0.2)}})
+    ax.w_yaxis._axinfo.update({'grid' : {'color': (0, 0, 0, 0.2)}})
+    ax.w_zaxis._axinfo.update({'grid' : {'color': (0, 0, 0, 0.2)}})
+    # ax.grid(color='1', linestyle='--', linewidth=1)
     ax.set_ylim(-1, 1)
     ax.set_xlim(-1, 1)
     ax.set_zlim(-1, 1)
@@ -86,17 +87,22 @@ class TSatModel():
         phi = np.linspace(0, 2 * np.pi, 100)
         r = np.linspace(0, 1, 100)
 
-        pts = [
-            self.radius * np.outer(np.cos(phi), r),
-            self.radius * np.outer(np.sin(phi), r),
-            np.zeros([100,100]),
-        ]
+        # pts = [
+        #     self.radius * np.outer(np.cos(phi), r),
+        #     self.radius * np.outer(np.sin(phi), r),
+        #     np.zeros([100,100]),
+        # ]
+        sides = 8
+        pts = np.mat([
+            self.radius * np.cos(np.linspace(0, 2 * np.pi, sides + 1)),
+            self.radius * np.sin(np.linspace(0, 2 * np.pi, sides + 1)),
+            np.zeros(sides + 1),
+        ]).T
 
         self.series['body'] = {
-            'type': 'surf',
+            'type': 'line',
             'points': pts,
-            'plot': self.ax.plot_surface(*pts, color=self.color, rstride=10,
-                                            cstride=50, linewidth=1, alpha=1),
+            'plot': self.ax.plot([], [], [], color=self.color, ls='-', linewidth=2, ms=10)[0],
         }
 
     def add_booms(self):
