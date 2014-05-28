@@ -10,27 +10,28 @@ from TSatPy import StateOperator
 rcParams['text.usetex'] = True
 rcParams['text.latex.unicode'] = True
 
-def show(state):
+def show(state, title=None):
     if isinstance(state, State.Quaternion):
-        show_quaternion(state)
+        show_quaternion(state, title)
 
-def show_quaternion(q):
-    print("Quaternion\n\t%s" % q)
+def show_quaternion(q, title=None):
+    print(q)
     sys.stdout.flush()
     refresh_rate = 0.1
     steps = 20
 
     fig, ax = new_figure()
+    if title:
+        ax.set_title(title)
     fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
     ax.view_init(azim=-45, elev=15)
 
-    info_text = q.latex().replace('boldsymbol', 'mathbf')
-    info = ax.text(0.05, 0.9, 0,
-        '$\mathbf{q} = %s$' % info_text, transform=ax.transAxes)
-    info.set_x(1)
-    info.set_y(1)
-    help(info)
+    # info_text = q.latex().replace('boldsymbol', 'mathbf')
+    #, transform=ax.transAxes
+    # info = ax.text(0.05, 0.9, 0,
+    #     '$\mathbf{q} = %s$' % info_text)
     add_rotation_axis(ax, q)
+
 
     model = TSatModel(ax)
 
@@ -87,28 +88,66 @@ class TSatModel():
         self.ax = ax
         self.color = color
         self.series = {}
+        self.labels = {}
         self.radius = 0.2
+        self.adp_len = 0.4
+        self.sdp_len = 0.6
         self.add_booms()
-        self.setup_body()
+        self.add_body()
+        self.add_labels()
 
     def update(self, q):
         for name, sdata in self.series.items():
-            if sdata['type'] == 'line':
-                p = q.rotate_points(sdata['points'])
-                sdata['plot'].set_data(
-                    np.asarray(p[:,0].T).reshape(-1),
-                    np.asarray(p[:,1].T).reshape(-1))
-                sdata['plot'].set_3d_properties(
-                    np.asarray(p[:,2].T).reshape(-1))
+            p = q.rotate_points(sdata['points'])
+            sdata['plot'].set_data(
+                np.asarray(p[:,0].T).reshape(-1),
+                np.asarray(p[:,1].T).reshape(-1))
+            sdata['plot'].set_3d_properties(
+                np.asarray(p[:,2].T).reshape(-1))
+        for name, sdata in self.labels.items():
+            p = q.rotate_points(sdata['points'])
+            sdata['plot'].set_x(p[0,0])
+            sdata['plot'].set_y(p[0,1])
+            sdata['plot'].set_3d_properties(p[0,2], sdata['zdir'])
 
-    def setup_body(self):
+    def add_labels(self):
+        x_pt = np.mat([self.radius + self.sdp_len, 0, 0])
+        y_pt = np.mat([0, self.radius + self.sdp_len, 0])
+        z_pt = np.mat([0, 0, self.radius + self.adp_len])
+
+        x_dir = tuple(np.asarray( x_pt / np.sqrt(x_pt * x_pt.T)[0,0] ).tolist()[0])
+        y_dir = tuple(np.asarray( y_pt / np.sqrt(y_pt * y_pt.T)[0,0] ).tolist()[0])
+        z_dir = tuple(np.asarray( z_pt / np.sqrt(z_pt * z_pt.T)[0,0] ).tolist()[0])
+
+        self.labels = {
+            'x': {
+                'points': x_pt,
+                'plot': self.ax.text(
+                    x_pt[0, 0], x_pt[0, 1], x_pt[0, 2], '$\mathbf{x}$', x_dir),
+                'zdir': x_dir,
+            },
+            'y': {
+                'points': y_pt,
+                'plot': self.ax.text(
+                    y_pt[0, 0], y_pt[0, 1], y_pt[0, 2], '$\mathbf{y}$', y_dir),
+                'zdir': y_dir,
+            },
+            'z': {
+                'points': z_pt,
+                'plot': self.ax.text(
+                    z_pt[0, 0], z_pt[0, 1], z_pt[0, 2], '$\mathbf{z}$', x_dir),
+                'zdir': x_dir,
+            },
+        }
+
+    def add_body(self):
 
         sides = 8
         self.series['body'] = {
             'type': 'line',
             'points': np.mat([
-                self.radius * np.cos(np.linspace(0, 2 * np.pi, sides + 1)),
-                self.radius * np.sin(np.linspace(0, 2 * np.pi, sides + 1)),
+                self.radius * np.cos(np.linspace(0, 2 * np.pi, sides + 1) + 2 * np.pi / sides / 2),
+                self.radius * np.sin(np.linspace(0, 2 * np.pi, sides + 1) + 2 * np.pi / sides / 2),
                 np.zeros(sides + 1),
             ]).T,
             'plot': self.ax.plot([], [], [],
@@ -117,13 +156,12 @@ class TSatModel():
 
     def add_booms(self):
         count = 2
-        sdp_len = 0.6
         zeros = np.empty(count + 1)
         zeros.fill(0)
 
         # sdps
         pts = np.mat([
-            np.arange(count + 1) * (sdp_len / float(count)) + self.radius,
+            np.arange(count + 1) * (self.sdp_len / float(count)) + self.radius,
             zeros.copy(),
             zeros.copy()]).T
         self.series['+x sdp'] = {
@@ -133,7 +171,7 @@ class TSatModel():
                 ls='-', linewidth=2, ms=10)[0],
         }
         pts = np.mat([
-            -(np.arange(count + 1) * (sdp_len / float(count)) + self.radius),
+            -(np.arange(count + 1) * (self.sdp_len / float(count)) + self.radius),
             zeros.copy(),
             zeros.copy()]).T
         self.series['-x sdp'] = {
@@ -144,7 +182,7 @@ class TSatModel():
         }
         pts = np.mat([
             zeros.copy(),
-            np.arange(count + 1) * (sdp_len / float(count)) + self.radius,
+            np.arange(count + 1) * (self.sdp_len / float(count)) + self.radius,
             zeros.copy()]).T
         self.series['+y sdp'] = {
             'type': 'line',
@@ -154,7 +192,7 @@ class TSatModel():
         }
         pts = np.mat([
             zeros.copy(),
-            -(np.arange(count + 1) * (sdp_len / float(count)) + self.radius),
+            -(np.arange(count + 1) * (self.sdp_len / float(count)) + self.radius),
             zeros.copy()]).T
         self.series['-y sdp'] = {
             'type': 'line',
@@ -167,7 +205,7 @@ class TSatModel():
         pts = np.mat([
             zeros.copy(),
             zeros.copy(),
-            np.arange(count + 1) * (sdp_len / float(count)) + self.radius]).T
+            np.arange(count + 1) * (self.adp_len / float(count)) + self.radius]).T
         self.series['+z adp'] = {
             'type': 'line',
             'points': pts,
@@ -177,7 +215,7 @@ class TSatModel():
         pts = np.mat([
             zeros.copy(),
             zeros.copy(),
-            -(np.arange(count + 1) * (sdp_len / float(count)) + self.radius)]).T
+            -(np.arange(count + 1) * (self.adp_len / float(count)) + self.radius)]).T
         self.series['-z adp'] = {
             'type': 'line',
             'points': pts,
