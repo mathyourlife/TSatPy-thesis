@@ -23,13 +23,8 @@ def show_quaternion(q, title=None):
     fig, ax = new_figure()
     if title:
         ax.set_title(title)
-    fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
     ax.view_init(azim=-45, elev=15)
 
-    # info_text = q.latex().replace('boldsymbol', 'mathbf')
-    #, transform=ax.transAxes
-    # info = ax.text(0.05, 0.9, 0,
-    #     '$\mathbf{q} = %s$' % info_text)
     add_rotation_axis(ax, q)
 
 
@@ -62,10 +57,55 @@ def show_quaternion(q, title=None):
     ax.set_zlabel('z-axis')
     plt.show()
 
+def show_quaternion_multiplication(q, dq, title=None):
+    print(q)
+    print(dq)
+    sys.stdout.flush()
+    refresh_rate = 1
+    steps = 20
+
+    fig, ax = new_figure()
+    if title:
+        ax.set_title(title)
+    ax.view_init(azim=-45, elev=15)
+
+    add_rotation_axis(ax, dq)
+
+    model = TSatModel(ax)
+
+    def make_frames(q, dq):
+        import sys
+        def frames():
+            for i in range(steps):
+                yield q
+                print('q ')
+                sys.stdout.flush()
+                q *= dq
+        return frames
+
+    def func(q, model):
+        model.update(q)
+
+    kwargs = {
+        'fig': fig,
+        'func': func,
+        'frames': make_frames(q, dq),
+        'blit': False,
+        'interval': float(refresh_rate) * 1000,
+        'fargs': [model],
+    }
+    ani = animation.FuncAnimation(**kwargs)
+
+    ax.set_xlabel('x-axis')
+    ax.set_ylabel('y-axis')
+    ax.set_zlabel('z-axis')
+    plt.show()
+
 
 def new_figure():
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d', aspect='equal')
+    fig.subplots_adjust(left=0, bottom=0, right=1, top=1)
 
     grid = {
         'grid' : {
