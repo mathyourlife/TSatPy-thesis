@@ -18,7 +18,7 @@ output: Voltages and actual moment delivered
 Example::
 
     def msg_handler(act, power_level):
-        print 'Setting power level=%g for: %s' % (power_level, act)
+        print('Setting power level=%g for: %s' % (power_level, act))
 
     configs = [{'type': 'fan', 'args': {'name': 'CW',
       'center': (0.2, 0, 0), 'direction': (0, 1, 0), 'F': 0.8}
@@ -28,7 +28,7 @@ Example::
     act = Actuator()
     for config in configs:
         act.add(config['type'], msg_handler, config['args'])
-    print act
+    print(act)
     M = np.mat([0, 0, 0.2])   # Request a moment that's too high
     print("Request moment: %s" % (M))
     print("Applied moment: %s" % (act.request_moment(M.T).T))
@@ -122,7 +122,7 @@ class Actuator(object):
         """
         levels = []
         # Loop through the moments for each axis
-        for idx in xrange(3):
+        for idx in range(3):
             members = []
             # define the axis being calculated
             axis = np.mat([0, 0, 0], dtype=np.float).T

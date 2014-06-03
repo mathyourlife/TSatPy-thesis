@@ -27,10 +27,10 @@ sock.sendto(msg64, (UDP_IP, UDP_PORT))
 
 try:
     for _ in range(10):
-        print 'in loop'
+        print('in loop')
         time.sleep(1)
         data = sock.recv(1024)
-        print data
+        print(data)
 except socket.error:
     pass
 
@@ -38,9 +38,9 @@ sock.sendto(msg104, (UDP_IP, UDP_PORT))
 
 try:
     for _ in range(10):
-        print 'in loop 2'
+        print('in loop 2')
         time.sleep(1)
         data = sock.recv(1024)
-        print data
+        print(data)
 except socket.error:
     pass

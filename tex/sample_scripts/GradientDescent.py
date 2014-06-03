@@ -29,7 +29,7 @@ def run_experiment_with_these(x, y, z):
     Run some experiment and generate performance data.
     """
     norms = []
-    for _ in xrange(10):
+    for _ in range(10):
         n = (np.random.randn()*3 + (x-5))**2 + \
             (np.random.randn()*0.3 + (y+2))**2 + \
             (np.random.randn()*0.1 + (z-1))**2
@@ -96,7 +96,7 @@ class GradientDescent(object):
             for key in keys:
                 args.append(kwargs[key])
             args.append(cost)
-            print args
+            print(args)
             results.append(args)
 
             if len(results) > thresh:
@@ -150,7 +150,7 @@ def main():
         # how well the parameters worked.
         'calc_cost': measure_performance,
     }
-    print GradientDescent.descend(**kwargs)
+    print(GradientDescent.descend(**kwargs))
 
     return 0
 

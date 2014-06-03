@@ -26,11 +26,11 @@ def sensor_voltages():
     count = 0
     while True:
         p.propagate([0,0,0])
-        print '*%s' % p.x
+        print('*%s' % p.x)
         yield q2v(p.x.q)
         # qr, qn = p.x.q.decompose()
-        # print '*%s' % p.x.q
-        # print np.arctan(qr.vector[2,0] / qr.scalar) / np.pi * 180
+        # print('*%s' % p.x.q)
+        # print(np.arctan(qr.vector[2,0] / qr.scalar) / np.pi * 180)
         # z = 2*np.arctan(qr.vector[2,0] / qr.scalar)
 
         # if z < 0:
@@ -53,9 +53,9 @@ def pd_array():
 
 def q2v(q):
     qr, qn = q.decompose()
-    # print '*%s' % qr
+    # print('*%s' % qr)
     z = 2*np.arctan(qr.vector[2,0] / qr.scalar)
-    # print -z / np.pi * 180
+    # print(-z / np.pi * 180)
     v = np.cos(np.mat(range(6)) * np.pi / 3.0 + z)
     v[v < 0] = 0
     return v.tolist()[0]
@@ -68,8 +68,8 @@ def main():
     for v in sensor_voltages():
         time.sleep(0.3)
         pd.update_state(v)
-        print pd.x
-        print '*'*100
+        print(pd.x)
+        print('*'*100)
 
 
 if __name__ == "__main__":

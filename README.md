@@ -146,6 +146,16 @@ This project was developed under ubuntu linxu although should operate similar un
 
 ### TSatPy Installation
 
+Required packages
+```bash
+libopenblas-dev build-essential gcc gfortran python-dev libblas-dev liblapack-dev cython
+```
+
+Required viz packages
+```bash
+libfreetype6-dev
+```
+
 ```bash
 git clone git@github.com:MathYourLife/TSatPy.git
 cd TSatPy

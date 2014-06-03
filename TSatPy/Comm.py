@@ -22,7 +22,7 @@ return mocked sensor voltages based on the behavior.
 Example::
 
     def got_it(*args):
-        print 'got_it'
+        print('got_it')
 
     import time
     bind_port = 9877
@@ -41,12 +41,12 @@ Example::
     u.send(104, 1)
     time.sleep(0.1)
     u.recieve()
-    print u.msg
+    print(u.msg)
 
     u.send(104, 1)
     time.sleep(0.1)
     u.recieve()
-    print u.msg
+    print(u.msg)
 
 """
 
@@ -138,7 +138,7 @@ class UDP(object):
     def send(self, msg_num, msg_data):
         packet = [msg_num, 0, 0, MSG_HANDLERS[msg_num][1], 0]
         packet.append(msg_data)
-        print packet
+        print(packet)
         msg = struct.pack('BBBBBd', *packet)
 
         msg = msg_data

@@ -83,9 +83,9 @@ class TestEstimator(unittest.TestCase):
         msg = """Estimator
 PID
  x_hat <Quaternion [0 0 0], 1>, <BodyRate [0 0 0]>
+ Kd <StateGain <Kq 0.00812>, <Kw = [[ 0. 0. 0.] [ 0. 0. 0.] [ 0. 0. 0.]]>>
  Ki <StateGain <Kq 0.000863>, <Kw = [[ 0. 0. 0.] [ 0. 0. 0.] [ 0. 0. 0.]]>>
- Kp <StateGain <Kq 0.0735>, <Kw = [[ 0.7 0. 0. ] [ 0. 0.7 0. ] [ 0. 0. 0.7]]>>
- Kd <StateGain <Kq 0.00812>, <Kw = [[ 0. 0. 0.] [ 0. 0. 0.] [ 0. 0. 0.]]>>"""
+ Kp <StateGain <Kq 0.0735>, <Kw = [[ 0.7 0. 0. ] [ 0. 0.7 0. ] [ 0. 0. 0.7]]>>"""
         self.assertEquals(msg, str(est))
 
 
@@ -104,9 +104,9 @@ class TestPID(unittest.TestCase):
         str_expected = [
             'PID',
             ' x_hat <Quaternion [0 0 0], 1>, <BodyRate [0 0 0]>',
+            ' Kd None',
             ' Ki None',
             ' Kp <StateGain <Kq 3>, <Kw = [[3 0 0] [0 3 0] [0 0 3]]>>',
-            ' Kd None',
         ]
         self.assertEquals('\n'.join(str_expected), str(pid))
 

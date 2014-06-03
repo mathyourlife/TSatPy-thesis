@@ -79,7 +79,7 @@ class Controller(object):
         self.fitted = False
 
     def fit(self):
-        print "fit the model"
+        print("fit the model")
         train = np.array(self.model.data)
         X = train[:, 0:2]
         y = train[:, 2]
@@ -98,7 +98,7 @@ class Controller(object):
                           gamma=gamma, coef0=coef0, degree=degree)
             clf.fit(X, y)
         if hasattr(clf, 'score'):
-            print "Accuracy:", clf.score(X, y) * 100
+            print("Accuracy:", clf.score(X, y) * 100)
         X1, X2, Z = self.decision_surface(clf)
         self.model.clf = clf
         self.model.set_surface((X1, X2, Z))
@@ -195,7 +195,7 @@ class View(object):
 
     def update(self, event, model):
         if event == "examples_loaded":
-            for i in xrange(len(model.data)):
+            for i in range(len(model.data)):
                 self.update_example(model, i)
 
         if event == "example_added":

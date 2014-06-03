@@ -27,3 +27,6 @@ clean:
 thesis:
 	make -C "$(DIR)/tex" thesis
 	make -C "$(DIR)/tex" view
+
+notebook:
+	ipython3 notebook --quiet --notebook-dir=$(DIR)/notebooks

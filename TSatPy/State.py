@@ -97,7 +97,7 @@ class Quaternion(object):
         try:
             mag_sq = np.sum(self.vector.T * self.vector) + self.scalar ** 2
         except OverflowError:
-            print self
+            print(self)
             raise
 
         return np.sqrt(mag_sq)
@@ -383,7 +383,7 @@ class Quaternion(object):
         """
         Need this for scalar last notation
         """
-        for idx in xrange(3):
+        for idx in range(3):
             yield self.vector[idx,0]
         yield self.scalar
 
@@ -511,8 +511,8 @@ class QuaternionDynamics(object):
             phi = expm(0.5 * omega_bar * dt) + 1 / 48 * (
                 omega2 * omega1 - omega1 * omega2) * dt ** 2
         except ValueError:
-            print self.w
-            print self.q
+            print(self.w)
+            print(self.q)
             raise
         q2mat = phi * self.q.mat
         q2 = Quaternion(q2mat[0:3, 0], q2mat[3, 0])

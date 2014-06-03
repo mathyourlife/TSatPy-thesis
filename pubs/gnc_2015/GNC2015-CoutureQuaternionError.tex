@@ -1,0 +1,441 @@
+% `template.tex', a bare-bones example employing the AIAA class.
+%
+% For a more advanced example that makes use of several third-party
+% LaTeX packages, see `advanced_example.tex', but please read the
+% Known Problems section of the users manual first.
+%
+% Typical processing for PostScript (PS) output:
+%
+%  latex template
+%  latex template   (repeat as needed to resolve references)
+%
+%  xdvi template    (onscreen draft display)
+%  dvips template   (postscript)
+%  gv template.ps   (onscreen display)
+%  lpr template.ps  (hardcopy)
+%
+% With the above, only Encapsulated PostScript (EPS) images can be used.
+%
+% Typical processing for Portable Document Format (PDF) output:
+%
+%  pdflatex template
+%  pdflatex template      (repeat as needed to resolve references)
+%
+%  acroread template.pdf  (onscreen display)
+%
+% If you have EPS figures, you will need to use the epstopdf script
+% to convert them to PDF because PDF is a limmited subset of EPS.
+% pdflatex accepts a variety of other image formats such as JPG, TIF,
+% PNG, and so forth -- check the documentation for your version.
+%
+% If you do *not* specify suffixes when using the graphicx package's
+% \includegraphics command, latex and pdflatex will automatically select
+% the appropriate figure format from those available.  This allows you
+% to produce PS and PDF output from the same LaTeX source file.
+%
+% To generate a large format (e.g., 11"x17") PostScript copy for editing
+% purposes, use
+%
+%  dvips -x 1467 -O -0.65in,0.85in -t tabloid template
+%
+% For further details and support, read the Users Manual, aiaa.pdf.
+
+
+% Try to reduce the number of latex support calls from people who
+% don't read the included documentation.
+%
+\typeout{}\typeout{If latex fails to find aiaa-tc, read the README file!}
+%
+
+
+\documentclass[]{aiaa-tc}% insert '[draft]' option to show overfull boxes
+
+ \usepackage{amsmath}
+
+ \title{Quaternion-Based Attitude Adjustment without Normalization}
+
+ \author{
+  Daniel R. Couture%
+    \thanks{Graduate Student, Mechanical Engineering, University of New Hampshire, daniel.robert.couture@gmail.com}
+  \\
+  {\normalsize\itshape
+   University of New Hampshire, Durham, NH, 03824}\\
+  \and
+  Dr. May-Win L. Thein%
+   \thanks{Associate Professor, Mechanical Engineering, University of New Hampshire}\\
+  {\normalsize\itshape
+  University of New Hampshire, Durham, NH, 03824}
+ }
+
+ % Data used by 'handcarry' option if invoked
+ \AIAApapernumber{2014-2025668}
+ \AIAAconference{Guidance, Navigation, and Control Conference, Jan 5-9 2015, Kissimmee FL}
+ \AIAAcopyright{\AIAAcopyrightD{2014}}
+
+ % Define commands to assure consistent treatment throughout document
+ \newcommand{\eqnref}[1]{(\ref{#1})}
+ \newcommand{\class}[1]{\texttt{#1}}
+ \newcommand{\package}[1]{\texttt{#1}}
+ \newcommand{\file}[1]{\texttt{#1}}
+ \newcommand{\BibTeX}{\textsc{Bib}\TeX}
+ \newcommand{\bs}[1]{\boldsymbol{#1}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+A quaternion-based state attitude parameterization is generally implemented through an additive correction method.  This method introduces additional error into the state estimation algorithm and does not provide an intuitive connection between gain selection and its affect on the quaternion error.  This paper details the derivation of a Theta Multiplier with Quaternion Vector Balancing method for quaternion error adjustment.  The advantages to the new method are that the algorithm; 1) only requires a scalar gain value, 2) does not require state normalization, 3) does not modify the direction of the Euler rotation axis, and 4) creates an intuitively connection between the scalar gain and the angular adjustment.
+\end{abstract}
+
+\section*{Nomenclature}
+
+\begin{tabbing}
+  XXXXXX \= \kill% this line sets tab stop
+  $\bs{x}$ \> System state \\
+  $\bs{q}$ \> Quaternion attitude \\
+  $\bs{a} \otimes \bs{b}$ \> Quaternion product \\
+  $\bs{q}^*$ \> Quaternion conjugate \\
+  $\bs{q}_{adj}$ \> State adjustment quaternion  \\
+  $\bs{\psi}(\bs{q}, k)$ \> Theta Multiplier with Quaternion Vector Balancing \\
+ \end{tabbing}
+
+
+
+
+
+\section{Introduction}
+
+A process for accurately quantifying the error between two states and making incremental improvements to state estimates is fundamental in any estimation or control technique.  The state estimate error $\bs{\hat{x}}_e$ compares the measured state $\bs{x}$ to the estimated state $\bs{\hat{x}}$.  The state control error $\bs{x}_e$ represents the offset between the estimated state $\bs{\hat{x}}$ and the desired system state $\bs{x}_d$.  In other words, the state errors can be represented as
+\begin{subequations}
+  \begin{align}
+    \bs{\hat{x}}_e &= \bs{\hat{x}} - \bs{x} \\
+    \bs{x}_e &= \bs{\hat{x}} - \bs{x}_d
+  \end{align}
+  \label{eqn:StateError}
+\end{subequations}
+
+Proceeding through the observer-based controller, $\bs{x}$ represents the measured state, $\bs{\hat{x}}_e$ represents the error between the estimated state and the measured, $\bs{\hat{x}}$ is the estimated state, $\bs{x}_e$ is the error between the estimated and desired state, and finally $\bs{x}_d$ is the desired state.
+\begin{equation}
+  \bs{x} \to \bs{\hat{x}}_e \to \bs{\hat{x}} \to \bs{x}_e \to \bs{x}_d
+\end{equation}
+
+Sections \ref{sec:StateDifference} through \ref{subsec:ThetaMultiplierWithQuaternionVectorBalancing} outline the series of improvement made to the accuracy of the state error representation ending with the preferred Theta Multiplier with Quaternion Vector Balancing technique.  This paper focuses on the accuracy of the state error calculation along with the ability to intuitively scale the error by a proportional gain.  The following state error calculation is used to provide a baseline for comparison between techniques.
+
+Let the current estimated state, $\bs{\hat{x}}(t_{k})$, be a $190^o$ rotation about the axis $0 \bs{i} + 0 \bs{j} + 1\bs{k}$, and the measured state, $\bs{x}(t_{k})$, be a $44^o$ rotation about the axis $0 \bs{i} + 0.1 \bs{j} + 1\bs{k}$.  That is,
+\begin{subequations}
+  \begin{align}
+    \bs{\hat{x}}(t_{k}) = \bs{\hat{q}}(t_{k})
+    &= \begin{bmatrix} 0 \bs{i} +0 \bs{j} -0.996195 \bs{k} -0.0871557 \end{bmatrix}\\
+    \bs{x}(t_{k}) = \bs{q}(t_{k})
+    &= \begin{bmatrix} 0 \bs{i} -0.0372747 \bs{j} -0.372747 \bs{k} +0.927184  \end{bmatrix}
+  \end{align}
+  \label{eqn:StateDifferenceQuaternionSamples}
+\end{subequations}
+where the rotational quaternion is defined as
+\begin{equation}
+  \bs{q} = \bs{v} + q_0 = \hat{\bs{e}} \sin \left( \frac{-\theta}{2} \right) + \cos \left( \frac{-\theta}{2} \right)
+  \label{eqn:RotationalQuaternionDefinition}
+\end{equation}
+
+Section \ref{sec:StateDifference} uses the state difference method of a proportional state estimator.  The procedure follows the common process of calculating the element-wise difference in state vectors to establish an error and applying a desired gain shown in Equation (\ref{eqn:PEstimatorStateDiff}).  This method is well established and accepted for many system's state representation, but applying this to a quaternion based attitude estimated introduces additional state error.
+
+\begin{equation}
+  \bs{\hat{x}(t_{k+1})} = \bs{f}(\bs{\hat{x}}(t_{k})) + \bs{K} ( \bs{\hat{x}}(t_{k}) - \bs{x}(t_{k}) )
+  \label{eqn:PEstimatorStateDiff}
+\end{equation}
+
+Section \ref{sec:QuaternionMultiplicativeError} reviews the quaternion multiplicative error as a method for combining quaternions while preserving the rotational unit norm where
+
+\begin{equation}
+  \bs{q}(t_{k+1}) = \delta \bs{q}(t_{k}) \otimes \bs{q}(t_{k})
+\end{equation}
+
+Section \ref{sec:QuaternionMultiplicativeCorrection} tests methods for incorporating the quaternion multiplicative method with a scalar gain such that they maintain the unit norm and that choice of gain values have a clear connection to the physical separation of two attitudes.
+
+\section{State Difference}
+\label{sec:StateDifference}
+
+The traditional method for calculating state estimation and control errors is to calculate an element-wise difference.  A quaternion based attitude state vector takes the form
+\begin{equation}
+  \bs{\hat{x}}_e(t_{k}) = \bs{\hat{q}}_e(t_{k}) = (\hat{q}_1 - q_{1}) \bs{i} + (\hat{q}_2 - q_{2}) \bs{j} + (\hat{q}_3 - q_{3}) \bs{k} + \hat{q}_0 - q_{0}
+  \label{eqn:StateDifference}
+\end{equation}
+Using the baseline state estimates and measurements in Equation (\ref{eqn:StateDifferenceQuaternionSamples}) yields a state error of
+\begin{equation}
+  \bs{\hat{x}}_e(t_{k}) = \bs{\hat{q}}_e(t_{k}) = 0 \bs{i} +0.0372747 \bs{j} -0.623447 \bs{k} -1.01434
+  \label{eqn:StateDifferenceSample}
+\end{equation}
+
+This state error however poses no connection to the physical difference in states as the scalar quantity of $q_0 = -1.01434$ is outside the possible range for any rotational quaternion (Equation (\ref{eqn:RotationalQuaternionDefinition})).  As such, it has no connection to the required physical adjustment in system attitude.
+
+Completing the proportional state estimate adjustment in Equation (\ref{eqn:PEstimatorStateDiff}) with a chosen gain value of $\bs{K} = -0.8$ is expected to produce an 80\% correction to the estimated attitude and yield a new attitude estimate of approximately a $73^o$ rotation about an axis close to $0 \bs{i} + 0.1 \bs{j} + 1\bs{k}$.  The quaternion adjustment, $\bs{q}_{adj}$, and predicted next attitude, $\bs{\hat{q}}(t_{k+1})$, are calculated to be
+\begin{equation}
+  \begin{aligned}
+    \bs{q}_{adj} = \bs{K} \cdot \bs{q}_e &= -0.8 \cdot (0 \bs{i} + 0.0372747 \bs{j} -0.623447 \bs{k} -1.01434 ) \\
+    &= 0 \bs{i} -0.0298198 \bs{j} +0.498758 \bs{k} +0.811472 \\
+    \bs{\hat{q}}(t_{k+1}) &= \bs{\hat{q}}(t_{k}) + \bs{q}_{adj} \\
+    &= 0 \bs{i} -0.0298198 \bs{j} -0.497437 \bs{k} + 0.724316 \\
+  \end{aligned}
+  \label{eqn:quat_add_adj}
+\end{equation}
+
+The new state estimate of $\bs{\hat{q}}(t_{k+1})$ has a magnitude of $ \| \bs{\hat{q}}(t_{k+1}) \| = 0.879185$ and fails to conform to the unit magnitude restriction for rotational quaternions.  This newly estimated attitude quaternion corrupts the systems state especially over multiple steps and/or long simulations.  When applying rotational quaternions to a system model, points rotated by a quaternion with $ \| \bs{q} \| < 1$ collapse toward the origin while quaternions with $ \| \bs{q} \| > 1$ cause points expand away from the origin.
+
+For example, a point $A(1,0,0)$ rotated about the origin via the quaternion rotational matrix
+\begin{equation}
+  \bs{R_q} = (q_0^2 - \bs{v}^T \bs{v}) \bs{I} + 2 \bs{v} \bs{v}^T - 2 q_0 (\bs{v} \times)
+\end{equation}
+where
+\begin{equation}
+  \bs{q} = 0 \bs{i} -0.0298198 \bs{j} -0.497437 \bs{k} + 0.724316
+\end{equation}
+becomes $A'(0.2763, 0.7206, -0.04320)$ which collapses it's distance to the origin from 1 to 0.7730.  To correct for the dilation or compression of points, the adjusted quaternion is commonly scaled back to a unit quaternion through a standard vector normalization of
+\begin{equation}
+  norm(\bs{q}) = \frac{\bs{q}_v + q_0}{\sqrt{\bs{q}_v \bullet \bs{q}_v + q_0^2}}
+  \label{eqn:NormalizeQuaternion}
+\end{equation}
+Applying the normalization to the estimated state $\bs{\hat{q}}(t_{k+1})$ yields the normalized quaternion state estimate
+\begin{equation}
+  norm(\bs{\hat{q}}(t_{k+1})) = 0 \bs{i} -0.0339175 \bs{j} -0.565793 \bs{k} +0.823849
+\end{equation}
+which is equivalent to approximately a $69$ degree rotation about the Euler axis
+\begin{equation}
+  \hat{\bs{e}} = [ 0 \ 0.0598 \ 0.9982 ]^T
+\end{equation}
+
+While this method of state difference followed by normalization will converge the estimated state to the measured state, the method ignores the connection between the state vector and it's physical representation and as such introduce additional errors.  For example, if the measured state matches the estimated state with some small variance in $q_1$ such that
+\begin{equation}
+  \begin{aligned}
+    \bs{q}(t_{k}) &= q_1 \bs{i} + q_2 \bs{j} + q_3 \bs{k} + q_0 \\
+    \bs{\hat{q}}(t_{k}) &= (q_1 + \epsilon) \bs{i} + q_2 \bs{j} + q_3 \bs{k} + q_0 \\
+  \end{aligned}
+\end{equation}
+The state difference with normalization method will affect all four parameters of the quaternion adjusting both the Euler rotation axis and the rotation angle.
+
+\section{Quaternion Multiplicative Error}
+\label{sec:QuaternionMultiplicativeError}
+
+The previous sections have established that the state difference approach for error adjustment introduces additional state error.  The main contributor to this error is the additive method of quaternion error correction.  Using a multiplicative quaternion correction based on the quaternion product
+\begin{equation}
+  \bs{q} = \bs{a} \otimes \bs{b} = \bs{a}_v b_0 + \bs{b}_v a_0 + \bs{a}_v \times \bs{b}_v + a_0 b_0 - \bs{a}_v \cdot \bs{b}_v
+  \label{eqn:QuaternionMultiplication}
+\end{equation}
+can be used to apply a change in attitude without violating the unit norm restriction.
+
+In this multiplicative correction method, the estimated state converges to the measured state the when error quaternion becomes the identity quaternion, $\bs{q}_I$, where
+\begin{equation}
+  \bs{q}_I = 0 \bs{i} + 0 \bs{j} + 0 \bs{k} + 1
+\end{equation}
+Rotational quaternions are considered equal if they represent the same attitude.  The same attitude can be represented by more than one distinct quaternion, so a strict equality is not adequate.  The test for equality is accomplished by using the quaternion conjugate, $\bs{q}^*$, such that
+\begin{subequations}
+  \begin{align}
+    \bs{\hat{q}} = \bs{q} & \iff \bs{\hat{q}}^* \otimes \bs{q} = \bs{q}^* \otimes \bs{\hat{q}} = \bs{q}_I \text{ or } -\bs{q}_I \\
+    \text{where } \bs{q}^* &= \begin{bmatrix} -\bs{v} \\ q_0 \end{bmatrix}
+  \end{align}
+  \label{eqn:QuaternionEquality}
+\end{subequations}
+
+Equation (\ref{eqn:QuaternionEquality}) provides a method for determining whether two quaternions represent the same attitude, it can also be used to quantify the difference between two rotational quaternions using the multiplicative comparison
+\begin{equation}
+  \bs{q}_e = \bs{q}^* \otimes \bs{\hat{q}}
+  \label{eqn:QuaternionError}
+\end{equation}
+
+From the baseline example in Equation (\ref{eqn:StateDifferenceQuaternionSamples}), the multiplicative quaternion error between these states evaluates to
+\begin{equation}
+  \begin{aligned}
+    \bs{q}_e = & \bs{q}^* \otimes \bs{\hat{q}} \\
+    = & \big( 0 \bs{i} +0.0372747 \bs{j} +0.372747 \bs{k} +0.927184 \big)  \otimes \big( 0 \bs{i} +0 \bs{j} -0.996195 \bs{k} -0.0871557 \big)\\
+    = & -0.0371329 \bs{i} -0.00324871 \bs{j} -0.956143 \bs{k} +0.29052
+  \end{aligned}
+  \label{eqn:QuaternionErrorSample}
+\end{equation}
+The state error in Equation (\ref{eqn:QuaternionErrorSample}) is a direct representation of the physical difference in attitudes as it represents a 146 degree rotation about the Euler axis $-0.0388067 \bs{i} -0.00339514 \bs{j} -0.999241\bs{k}$ which rotates the estimated quaternion to match up identically to the measured state.  This state error also conforms to the required unit norm of $\| \bs{q}_e  \| = 1 $.
+
+\section{Quaternion Multiplicative Correction}
+\label{sec:QuaternionMultiplicativeCorrection}
+
+Section \ref{sec:QuaternionMultiplicativeError} establishes a method for quantifying differences in attitude and that preserves the integrity of the rotational quaternion while creating a representative measure of the state error.  A method for applying a gain value to the state error prior to adjusting the estimated state is also needed for the proportional state estimator.  Sections \ref{subsec:ParameterMultiplier} through \ref{subsec:ThetaMultiplierWithQuaternionVectorBalancing} show derivations of methods with increasing accuracy ending in the preferred Theta Multiplier with Quaternion Vector Balancing method.
+
+\subsection{Parameter Multiplier}
+\label{subsec:ParameterMultiplier}
+
+With a parameter multiplier method, the four parameters of the error quaternion are scaled by a term $\bs{K}$, similar to the standard proportional adjustment:
+\begin{equation}
+  \bs{q}_{adj} = \bs{K} \bs{q}_e
+    = \bs{K} \begin{bmatrix} \bs{v}_e \\ q_{e0} \end{bmatrix}
+    = \begin{bmatrix} \bs{K_{v}}\bs{v}_e \\ K_{0} \cdot q_{e0} \end{bmatrix}
+  \label{eqn:ParameterMultiplier}
+\end{equation}
+where the $\bs{K_{v}}$ term is a 3x3 matrix.  Since $\bs{v}_e$ defines the axis of rotation for the quaternion which if adjusted should only change in magnitude, $\bs{K_{v}}\bs{v}_e$ simplifies to
+\begin{equation}
+  \bs{K_{v}} \bs{v}_e = \lambda \bs{v}_e
+  \label{eqn:QuaternionVectorCorrection}
+\end{equation}
+where $\lambda$ is a scalar.
+Combining \ref{eqn:QuaternionVectorCorrection} with \ref{eqn:ParameterMultiplier} yields
+\begin{equation}
+  \bs{q}_{adj} = \begin{bmatrix} \lambda \bs{v}_e \\ K_{0} \cdot q_{e0} \end{bmatrix}
+  \label{eqn:QuaternionScalarMultiplier}
+\end{equation}
+thus, reducing the tunable parameters for the proportional quaternion estimator to scalars $\lambda$ and $K_{0}$.  This configuration, shares the same flaws as the state difference approach described previously where the magnitude of the adjusted quaternion can vary from the unit quaternion causing dilation or compression of rotated points.  Continuing from Snippet  the $\bs{q}_e$ is a unit norm quaternion representing the error between two attitudes.  For example, using the state error in Equation (\ref{eqn:QuaternionErrorSample}) with chosen gains of $\lambda = 0.7, K_{0} = 0.4$ the quaternion adjustment becomes
+\begin{equation}
+  \bs{q}_{adj} = -0.025993 \bs{i} -0.0022741 \bs{j} -0.6693 \bs{k} +0.116208
+\end{equation}
+with a magnitude of $\| \bs{q}_{adj} \| = 0.67981$.  This method is unable to maintain the connection between the state vector and the physical attitude.
+
+\subsection{Parameter Multiplier with Normalization}
+\label{subsec:ParameterMultiplierwithNormalization}
+
+Normalizing the parameter multiplier's adjustment quaternion resolves the issues of dilating and contracting points caused by non unit norms as before.  A normalized parameter multiplier quaternion does not suffer from an invalid Euler axis of rotation as only the magnitude of the quaternion's vector is modified.  The scalar quantity, however, changes due to the coupling effect between $\lambda$ and $K_{0}$ during normalization.  As a result, a constant angular error and $K_{0}$ can create varied adjustment values based on the selection of the $\lambda$ gain making this method undesirable for a quaternion error scaling function.
+
+\subsection{$q_0$ Multiplier with Normalization}
+\label{subsec:q0MultiplierWithNormalization}
+
+Since the vector gain $\lambda$ provides no benefit and complicates the quaternion adjustment calculation, it can be removed simplifying the quaternion adjustment to be based solely on a modification of the quaternion scalar quantity.  After the scalar gain $k$, the quaternion can be normalized to a unit quaternion.
+\begin{equation}
+  \begin{aligned}
+  \bs{q}_{adj} = & \begin{bmatrix} \bs{v}_e / \alpha \\ ( k \cdot q_{0e} )  / \alpha \end{bmatrix} \\
+  \text{where } \alpha & = \sqrt{\bs{v}_e \bullet \bs{v}_e + k^2 \cdot q_{0e}^2}
+  \end{aligned}
+  \label{eqn:ScalarMultiplierWithNormalization}
+\end{equation}
+where $\bs{v}_e$ and $q_{0e}$ are the vector and scalar parameters from the error quaternion.  Equation (\ref{eqn:ScalarMultiplierWithNormalization}) is based upon the multiplicative correction quaternion that accurately quantifies the difference in estimated and measured states.  The normalization ensures that the rotational quaternion representation is not corrupted and when applied will not cause dilation or compression of the model.
+
+The disadvantage to using this representation is that the quaternion scalar parameter is a nonlinear function of the rotation angle (Equation (\ref{eqn:RotationalQuaternionDefinition})).  Applying a constant scalar multiplier results in inconsistent adjustments depending on the position along the sinusoidal value.
+
+\subsection{Theta Multiplier with Quaternion Vector Balancing}
+\label{subsec:ThetaMultiplierWithQuaternionVectorBalancing}
+
+The section describes the final version of the quaternion adjustment calculation that takes into consideration all the issues encountered in the previous sections.  From Euler's rotation theorem, A quaternion is defined by its axis of rotation, $\bs{\hat{e}}$, and the angle of rotation $\theta$.  What is needed in an accurate and intuitive scaling algorithm is one that:
+\begin{enumerate}
+  \item Adheres to the unit rotational quaternion restriction
+  \item Does not modify the direction of the $\bs{\hat{e}}$ axis
+  \item Scales $\theta$ (not $q_0$) so a $4^o$ error can be intuitively scaled to down to a $1^o$ adjustment with a selected gain value of 0.25.
+\end{enumerate}
+Derivation of this scaling algorithm begins with the error quaternion given as
+\begin{equation}
+  \bs{q}_e = \begin{bmatrix} \bs{v}_e \\ q_{0e} \end{bmatrix} = \begin{bmatrix} \bs{v}_e \\ \cos(-\theta_e / 2) \end{bmatrix}
+\end{equation}
+where $q_{0e} = \cos(-\theta_e/2)$ rearranged becomes
+\begin{equation}
+  \theta_e = -2 \cos^{-1}(q_{0e})
+\end{equation}
+and scaling by attitude error $\theta_e$ by a gain $k$ yields
+\begin{equation}
+  k\theta_e = -2 k\cos^{-1}(q_{0e})
+\end{equation}
+Using the scaled attitude, $k\theta$, in the creation of the adjustment quaternion has the structure
+\begin{equation}
+  \bs{q}_{adj} = \begin{bmatrix} \bs{v}_{adj} \\ \cos(-(k\theta_e) / 2) \end{bmatrix}
+\end{equation}
+where $\bs{v}_{adj}$ is some scalar multiple of $\bs{v}_e$ such that $\bs{v}_{adj} = \bs{v}_{e} / \gamma$ which simplifies to
+\begin{equation}
+  \bs{q}_{adj} = \begin{bmatrix} \bs{v}_{e} / \gamma \\ \cos( k \cos^{-1} (q_{0e})) \end{bmatrix}
+  \label{eqn:almost_there}
+\end{equation}
+The scalar quantity is now defined such that the gain $k$ is a linear scaling factor for the attitude error $\theta_e$, and the vector component is consistent with the original error quaternion's Euler axis.  The remaining condition is that the quaternion adhere to the rotational quaternion's unit norm.
+
+The vector normalization of Equation (\ref{eqn:almost_there}) produces
+\begin{subequations}
+  \begin{align}
+    \| \bs{q}_{adj} \| &= 1 \\
+    \frac{\bs{v}_e \bullet \bs{v}_e}{\gamma^2} + \cos^2 \big( k \cos^{-1} (q_{0e}) \big) &= 1
+  \end{align}
+\end{subequations}
+and solving for $\gamma$
+\begin{subequations}
+  \begin{align}
+    \frac{\bs{v}_e \bullet \bs{v}_e}{\gamma^2}  &= 1 - \cos^2 \big( k \cos^{-1} (q_{0e}) \big)\\
+    \frac{\bs{v}_e \bullet \bs{v}_e}{\gamma^2}  &= \sin^2 \big( k \cos^{-1} (q_{0e}) \big)\\
+    \gamma &= \sqrt{\frac{\bs{v}_e \bullet \bs{v}_e}{\sin^2 \big( k \cos^{-1} (q_{0e}) \big)}}
+  \end{align}
+\end{subequations}
+
+This ``Theta Multiplier with Quaternion Vector Balancing'' method is shown to adhere to the three restrictions above.  The notation for scaling a quaternion $\bs{q}$ by a gain $k$ is denoted as
+\begin{equation}
+  \begin{aligned}
+    \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot \cos^{-1} (q_0))  \end{bmatrix} \\
+    \text{where } \gamma &= \sqrt{\frac{\bs{v} \bullet \bs{v}}{\sin^2 ( k \cdot \cos^{-1} (q_0))}} \\
+  \end{aligned}
+  \label{eqn:PSI}
+\end{equation}
+Using Equation (\ref{eqn:PSI}) to create a rotational quaternion adjustment for the proportional estimator results in
+\begin{equation}
+  \bs{q}_{adj} = \bs{\psi}(\bs{q}_e, k)
+  \label{eqn:PEstimatorAngleMultiplierwithVectorMagnitudeNormalization}
+\end{equation}
+and implementing this method in the proportional state estimator becomes
+\begin{equation}
+  \bs{\hat{q}}(t_{k+1}) = \bs{\psi}(\bs{q}_e, k) \otimes \bs{\hat{q}}(t_{k})
+\end{equation}
+
+\section{Conclusion}
+\label{sec:Conclusion}
+
+The work described in Sections \ref{sec:StateDifference} through \ref{subsec:ThetaMultiplierWithQuaternionVectorBalancing} have established a solid foundation to quantify the state error along with appropriate methods for scaling state errors.
+
+Quaternion Error
+
+\begin{equation}
+  \bs{q}_e = \bs{q}^* \otimes \bs{\hat{q}}
+\end{equation}
+
+Adjustment Quaternions
+
+\begin{equation}
+  \begin{aligned}
+    \bs{q}_{adj} &= \bs{\psi}(\bs{q}_e, k) \\
+    \text{where } \bs{\psi}(\bs{q}, k) &= \begin{bmatrix} \bs{v} / \gamma \\ \cos ( k \cdot \cos^{-1} (q_0))  \end{bmatrix} \\
+    \gamma &= \sqrt{\frac{\bs{v} \bullet \bs{v}}{\sin^2 ( k \cdot \cos^{-1} (q_0))}}
+  \end{aligned}
+\end{equation}
+
+Proportional State Estimator
+
+\begin{equation}
+  \bs{\hat{q}}(t_{k+1}) = \bs{\psi}(\bs{q}_e, k) \otimes \bs{\hat{q}}(t_{k})
+\end{equation}
+
+\section*{Acknowledgments}
+
+I'd like to thank Professor May-Win Thein for her countless hours of support and guidance in my research.
+
+\begin{thebibliography}{9}% maximum number of references (for label width)
+\bibitem{euler_theorem}
+Bob Palais, Richard Palais, and Stephen Rodi.
+\newblock A disorienting look at euler’s theorem on the axis of a rotation.
+\newblock {\em American Mathematical Monthly}, pages 892–--909, Aug 2009.
+
+\bibitem{kuipers}
+Jack Kuipers.
+\newblock Quaternions and Rotation Sequences.
+\newblock {\em Princeton University Press}, 1999.
+
+\bibitem{shuster}
+Malcolm~D. Shuster.
+\newblock The nature of the quaternion.
+\newblock {\em The Journal of the Astronautical Sciences}, Mar 2005.
+
+
+\bibitem{kaplan}
+Marshall~H. Kaplan.
+\newblock {\em Modern Spacecraft Dynamics \& Control}.
+\newblock Wiley, 1976.
+
+\bibitem{marslab}
+Nikolas Trawny and Stergios~I. Roumeliotis.
+\newblock Indirect kalman filter for 3d attitude estimation a tutorial for
+  quaternion algebra.
+\newblock {\em Multiple Autonomous Robotic Systems Laboratory - Technical
+  Report}, Sep 2008.
+
+
+\end{thebibliography}
+
+
+
+\end{document}
+
+% - Release $Name:  $ -

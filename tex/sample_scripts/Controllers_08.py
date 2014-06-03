@@ -36,7 +36,7 @@ def test(Kpq, Kpwx, Kpwy, Kpwz, Kiq, Kiwx, Kiwy, Kiwz, Kdq, Kdwx, Kdwy, Kdwz):
         State.Quaternion(np.random.rand(3,1),radians=np.random.rand()*3),
         State.BodyRate(np.random.rand(3,1)))
     print("x_est_ic:    %s" % (x_est_ic))
-    print x_est_ic.q.to_rotation()
+    print(x_est_ic.q.to_rotation())
 
     I = [[4, 0, 0], [0, 4, 0], [0, 0, 2]]
     plant_est = State.Plant(I, x_est_ic, c)
@@ -155,7 +155,7 @@ def main():
         # how well the parameters worked.
         'calc_cost': calc_err,
     }
-    print GradientDescent.descend(**kwargs)
+    print(GradientDescent.descend(**kwargs))
     return 0
 
 

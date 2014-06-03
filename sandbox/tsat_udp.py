@@ -19,17 +19,17 @@ class TSatComm(DatagramProtocol):
         self.callbacks[msg_num].add(callback)
 
     def datagramReceived(self, msg, (host, port)):
-        print "received %r from %s:%d" % (msg, host, port)
+        print("received %r from %s:%d" % (msg, host, port))
         msgio = BytesIO(msg)
 
         msg_num, f1, f2, size, f3 = struct.unpack(self.HEADER_FMT, msgio.read(5))
-        print msg_num, f1, f2, size, f3
+        print(msg_num, f1, f2, size, f3)
 
         fmt, handler, name = self.msgs[msg_num]
-        print fmt
+        print(fmt)
         # msg_data = struct.unpack_from('dddd', payload[1:])
         data_str = struct.unpack_from(fmt, msgio.read())
-        print data_str
+        print(data_str)
         if handler is None:
             for callback in self.callbacks[msg_num]:
                 callback()
@@ -46,15 +46,15 @@ class TSatComm(DatagramProtocol):
 
 
 def ReadAckMsg(msg):
-    print 'in ReadAckMsg'
+    print('in ReadAckMsg')
     return msg[0] == 1
 
 def EndDataMsg(msg):
-    print 'in EndDataMsg'
+    print('in EndDataMsg')
     pass
 
 def ReadRawData(msg):
-    print 'in ReadRawData'
+    print('in ReadRawData')
     return [float(v) for v in msg]
 
 def main():

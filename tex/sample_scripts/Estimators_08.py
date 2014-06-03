@@ -71,8 +71,8 @@ def graph_it(ts, pid_err, smo_err):
     smo_np = np.array(smo_err)
     ss_pid = np.argmax(pid_np < pid_np.mean())
     ss_smo = np.argmax(smo_np < smo_np.mean())
-    print pid_np.std()
-    print smo_np.std()
+    print(pid_np.std())
+    print(smo_np.std())
 
     fig = plt.figure(dpi=80, facecolor='w', edgecolor='k')
     ax = fig.add_subplot(1,1,1)
