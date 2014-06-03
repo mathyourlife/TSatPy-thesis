@@ -20,7 +20,7 @@ def show_tmqvb(q):
     refresh_rate = 0.3
     steps = 20
     template = r"""Theta Multiplier with Quaternion Vector Balancing
-$\mathbf{\psi}(\mathbf{q}, %g) = \left( \begin{array}{c} \mathbf{v} / \gamma \\ \cos ( %g \cdot \cos^{-1} (q_0))  \end{array} \right)$
+$\mathbf{\psi}(\mathbf{q}, %g) =  \mathbf{v} / \gamma + \cos ( %g \cdot \cos^{-1} (q_0)) $
 $\gamma = \sqrt{\frac{\mathbf{v} \bullet \mathbf{v}}{\sin^2 ( %g \cdot \cos^{-1} (q_0))}}$"""
     fig, ax = new_figure()
     text = ax.text2D(0.5, 0.95, template % (0,0,0), fontsize=24, transform=ax.transAxes,
