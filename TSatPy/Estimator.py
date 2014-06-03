@@ -27,7 +27,6 @@ Example::
 
 import time
 import numpy as np
-from twisted.internet.task import LoopingCall
 from TSatPy import State
 from TSatPy import StateOperator as SO
 
