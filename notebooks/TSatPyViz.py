@@ -20,14 +20,13 @@ def show_tmqvb(q):
     refresh_rate = 0.3
     steps = 20
     template = r"""Theta Multiplier with Quaternion Vector Balancing
-$\mathbf{\psi}(\mathbf{q}, %g) = \left( \begin{array}{c} \mathbf{v} / \gamma \\ \cos ( %g \cdot \cos^{-1} (q_0))  \end{array} \right)$
+$\mathbf{\psi}(\mathbf{q}, %g) =  \mathbf{v} / \gamma + \cos ( %g \cdot \cos^{-1} (q_0)) $
 $\gamma = \sqrt{\frac{\mathbf{v} \bullet \mathbf{v}}{\sin^2 ( %g \cdot \cos^{-1} (q_0))}}$"""
     fig, ax = new_figure()
     text = ax.text2D(0.5, 0.95, template % (0,0,0), fontsize=24, transform=ax.transAxes,
         horizontalalignment='center', verticalalignment='top')
 
     add_rotation_axis(ax, q)
-
 
     model = TSatModel(ax)
 
@@ -448,7 +447,7 @@ def show_pid():
         Kd = StateOperator.StateGain(
             StateOperator.QuaternionGain(G['Kdq']),
             StateOperator.BodyRateGain(np.eye(3) * G['Kdw']))
-        pid.set_Ki(Kd)
+        pid.set_Kd(Kd)
 
     sliders = {
         'Kpq': Slider(plt.axes([0.1, 0.25, 0.8, 0.03]), 'Kpq', 0, 1, valinit=0, color='#AAAAEE'),
