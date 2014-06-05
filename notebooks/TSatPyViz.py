@@ -28,7 +28,6 @@ $\gamma = \sqrt{\frac{\mathbf{v} \bullet \mathbf{v}}{\sin^2 ( %g \cdot \cos^{-1}
 
     add_rotation_axis(ax, q)
 
-
     model = TSatModel(ax)
 
     def frames():
@@ -448,7 +447,7 @@ def show_pid():
         Kd = StateOperator.StateGain(
             StateOperator.QuaternionGain(G['Kdq']),
             StateOperator.BodyRateGain(np.eye(3) * G['Kdw']))
-        pid.set_Ki(Kd)
+        pid.set_Kd(Kd)
 
     sliders = {
         'Kpq': Slider(plt.axes([0.1, 0.25, 0.8, 0.03]), 'Kpq', 0, 1, valinit=0, color='#AAAAEE'),
