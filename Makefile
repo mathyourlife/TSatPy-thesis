@@ -3,6 +3,9 @@ DIR := $(shell pwd)
 VERSION := $(shell grep version $(DIR)/TSatPy/__init__.py | cut -d "'" -f 2)
 PIDFILE := /tmp/tsatpy.pid
 
+bump:
+	python $(DIR)/bin/bump.py
+
 test:
 	nosetests --nocapture --with-coverage --cover-erase --cover-package=TSatPy --cover-html --cover-html-dir=coverage_report
 
